@@ -8,10 +8,11 @@ const ProjectVideoSchema=new mongoose.Schema({
     requireCapital:Number,
     summary:String,
     videoUrl:String,
-    investorInterests:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User'
-    }],
+    investorInterests:{
+        type:[mongoose.Schema.Types.ObjectId],
+        ref:'User',
+        default:[]
+    },
     viewCount:Number,
 },{timestamps:true})
 const VideoData=mongoose.model("ProjectVideo",ProjectVideoSchema)

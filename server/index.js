@@ -6,7 +6,7 @@ app.use(express.urlencoded({ extended: true }));
 require('dotenv').config();
 const port=process.env.PORT;
 const upload=require("./app/middlewares/Multer")
-const uploadCtrl=require("./app/controllers/ProjectVideo-controller")
+const uploadVedioCtrl=require("./app/controllers/ProjectVideo-controller")
 const ConfigureDB=require('./config/db')
 const AuthenticateUser=require('./app/middlewares/AuthenticateUser')
 const AuthorizeUser=require('./app/middlewares/Authorizeuser')
@@ -14,7 +14,7 @@ const UserCtrl=require('./app/controllers/Users-controller')
 const EntrepreneurCtrl=require("./app/controllers/Entrepreneur-Controller")
 const InvesterCtrl=require('./app/controllers/Invester-controller')
 ConfigureDB()
-app.post('/api/upload/video', upload.single('video'), uploadCtrl.create);
+app.post('/api/upload/video',AuthenticateUser,AuthorizeUser(["entrepreneur"]), upload.single('video'), uploadVedioCtrl.create);
 // user register /login
 app.post('/register',UserCtrl.register)
 app.post('/login',UserCtrl.login);
