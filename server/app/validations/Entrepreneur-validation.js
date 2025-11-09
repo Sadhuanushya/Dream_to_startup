@@ -30,6 +30,7 @@ const educationSchema=joi.object({
 
 const EnterPreneurValidation = joi.object({
     username:joi.string().trim().min(3).max(50).required(),
+    profilePicture:joi.string().uri().max(100).optional(),
     fullname: joi.string().trim().min(3).max(50).required(),
     email: joi.string().email().trim().required(),
     phone: joi.string().length(10).pattern(/^[0-9]+$/).required(), 

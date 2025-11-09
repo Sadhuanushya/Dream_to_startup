@@ -1,6 +1,6 @@
 const mongoose=require('mongoose');
 const RegisterSchema=mongoose.Schema({
-    username:String,
+    fullname:String,
     email:String,
     password:String,
     clickcount:{

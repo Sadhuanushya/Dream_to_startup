@@ -1,6 +1,6 @@
 const joi=require('joi');
 const RegisterValidation=joi.object({
-    username:joi.string().min(3).max(50).trim().required(),
+    fullname:joi.string().min(3).max(50).trim().required(),
     email:joi.string().email().trim().required(),
     password:joi.string().regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/).trim().required()
     .messages({

@@ -8,7 +8,7 @@ EntrepreneurCtrl.create=async(req,res)=>{
     }
     const existUsername=await Entrepreneur.findOne({username:value.username})
     if(existUsername){
-        return res.status(400).json({error:"username Already Exist try another"})
+        return res.status(400).json({error:"username not available"})
     }
     const existEmail=await Entrepreneur.findOne({email:value.email})
     if(existEmail){
@@ -18,6 +18,7 @@ EntrepreneurCtrl.create=async(req,res)=>{
     try{
     const profiledata=new Entrepreneur(value)
     console.log("value",value,req.body)
+    profiledata.userId=req.userId
     await profiledata.save()
     res.status(201).json(profiledata)
     }catch(err){
@@ -50,10 +51,25 @@ EntrepreneurCtrl.show=async(req,res)=>{
 EntrepreneurCtrl.update=async(req,res)=>{
     const id=req.params.id
     try{
-        if (req.role !== 'admin' && req.userId !== id) {
-         return res.status(403).json({ error: "Forbidden: cannot modify this resource" });
+    const {error}=EnterPreneurValidation.validate(req.body)
+    if(error){
+        return res.status(400).json(error)
+    }
+    const profile=await Entrepreneur.findOne({_id:id})
+        if(!profile){
+            return  res.status(404).json("record not found")
         }
+        console.log("id",profile.userId)
+        
+     const Admin = req.role === "admin" 
+     const Entrepreneur = req.userId == profile.userId;
+     if (!Admin && !Entrepreneur) {
+      return res.status(403).json({ error: "Unauthorized user" });
+     }
         const EntrepreneurProfile =await Entrepreneur.findOneAndUpdate({_id:id},req.body,{new:true})
+        if(!EntrepreneurProfile){
+            return res.status(404).json("record not found")
+        }
         res.status(200).json(EntrepreneurProfile)
     }catch(err){
         res.status(500).json(err)
@@ -62,6 +78,17 @@ EntrepreneurCtrl.update=async(req,res)=>{
 EntrepreneurCtrl.delete=async(req,res)=>{
     const id=req.params.id
     try{
+     const profile=await Entrepreneur.findOne({_id:id})
+        if(!profile){
+            return  res.status(404).json("record not found")
+        }
+        console.log("id",profile.userId)
+        
+     const Admin = req.role === "admin" 
+     const Entrepreneur = req.userId == profile.userId;
+     if (!Admin && !Entrepreneur) {
+      return res.status(403).json({ error: "Unauthorized user" });
+     }
         const EntrepreneurProfile=await Entrepreneur.findOneAndDelete({_id:id})
         if(!EntrepreneurProfile){
             return res.status(404).json("record not found")
@@ -71,7 +98,5 @@ EntrepreneurCtrl.delete=async(req,res)=>{
     }catch(err){
         res.status(500).json(err)
     }
-
-
 }
 module.exports=EntrepreneurCtrl;

@@ -29,6 +29,7 @@ const EntrepreneurSchema=new mongoose.Schema({
         ref:"User"
     },
     username:String,
+    profilePicture:String,
     fullname:String,
     email:String,
     phone:String,

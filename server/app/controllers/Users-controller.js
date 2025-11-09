@@ -2,8 +2,8 @@ const bcryptjs=require('bcryptjs');
 const User=require('../models/Users-model')
 const jwt=require('jsonwebtoken')
 const {RegisterValidation,LoginValidation}=require('../validations/Users-validation')
-const ctrl={};
-ctrl.register=async(req,res)=>{
+const UserCtrl={};
+UserCtrl.register=async(req,res)=>{
     const body=req.body;
     const {error,value}=RegisterValidation.validate(body,{abortEarly:false})
     if(error){
@@ -30,7 +30,7 @@ ctrl.register=async(req,res)=>{
         res.status(500).json(err)
     }
 }
-ctrl.login=async(req,res)=>{
+UserCtrl.login=async(req,res)=>{
     const body=req.body;
     const{error,value}=LoginValidation.validate(body,{abortEarly:false})
     if(error){
@@ -52,7 +52,7 @@ ctrl.login=async(req,res)=>{
        
         valid.clickcount+=1;
         valid.lastLogin=new Date()
-        valid.save()
+        await  valid.save()
         res.status(200).json({token:token})
 
     }catch(err){
@@ -61,4 +61,4 @@ ctrl.login=async(req,res)=>{
     }
 }
 
-module.exports=ctrl;
+module.exports=UserCtrl;
