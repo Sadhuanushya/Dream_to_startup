@@ -8,6 +8,7 @@ const ProjectVideoSchema=new mongoose.Schema({
     requireCapital:Number,
     summary:String,
     videoUrl:String,
+    cloudinaryId:String,
     investorInterests:{
         type:[mongoose.Schema.Types.ObjectId],
         ref:'User',

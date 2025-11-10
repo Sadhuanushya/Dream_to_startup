@@ -1,6 +1,17 @@
 const bcryptjs=require('bcryptjs');
 const User=require('../models/Users-model')
 const jwt=require('jsonwebtoken')
+const nodemailer = require('nodemailer');
+const transporter=nodemailer.createTransport({
+       
+        host:process.env.SMT_HOST,
+        port:process.env.SMT_PORT,
+        secure:true,
+        auth:{
+            user:process.env.EMAIL_USER,
+            pass:process.env.EMAIL_PASS
+        }
+ })
 const {RegisterValidation,LoginValidation}=require('../validations/Users-validation')
 const UserCtrl={};
 UserCtrl.register=async(req,res)=>{
@@ -23,8 +34,31 @@ UserCtrl.register=async(req,res)=>{
         register.role="admin"
     }
     await register.save()
-    res.status(201).json(register)
 
+    const mail = {
+      from: process.env.EMAIL_USER, // sender email
+      to: register.email, // receiver
+      subject: "Welcome to Our Platform dream to startup🎉",
+      html: `
+        <h2>Hi ${register.fullname},</h2>
+        <p>Thank you for registering with us!</p>
+        <br/>
+        <p>Regards,<br/>Team Support</p>
+      `
+    };
+
+    transporter.sendMail(mail, (err, info) => {
+      if (err) {
+        console.error("Error sending mail:", err);
+      } else {
+        console.log("Mail sent:", info.response);
+      }
+    });
+
+    res.status(201).json({
+      message: "Registration successfull, Confirmation email sent.",
+      user: register
+    });
     }catch(err){
         console.log(err)
         res.status(500).json(err)
