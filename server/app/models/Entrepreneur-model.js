@@ -21,7 +21,13 @@ const PastProjectSchema=new mongoose.Schema({
     websiteUrl:String,
     revenue:Number
 },{ _id: false })
-
+DocumentSchema=new mongoose.Schema({
+    EntrepreneurId:{
+        type:mongoose.Schema.Types.ObjectId
+    },
+    DocumentUrl:String,
+    Cloudinary_Id:String
+})
 
 const EntrepreneurSchema=new mongoose.Schema({
     userId:{
@@ -55,13 +61,18 @@ const EntrepreneurSchema=new mongoose.Schema({
         type:[PastProjectSchema],
         default:[]
     },
-    identityDocument:String,
-    BusinessRegistrationDocument:String,
+    identityDocument:{
+        type:DocumentSchema,
+        default:{}
+    },
+    BusinessRegistrationDocument:{
+        type:DocumentSchema,
+        default:{}
+    },
     projectVideo:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"ProjectVideo"
     },
-     //verification Status
     isVerified:{
         type:Boolean,
         default:false
