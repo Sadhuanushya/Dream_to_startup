@@ -22,9 +22,6 @@ const PastProjectSchema=new mongoose.Schema({
     revenue:Number
 },{ _id: false })
 DocumentSchema=new mongoose.Schema({
-    EntrepreneurId:{
-        type:mongoose.Schema.Types.ObjectId
-    },
     DocumentUrl:String,
     Cloudinary_Id:String
 })
@@ -35,7 +32,10 @@ const EntrepreneurSchema=new mongoose.Schema({
         ref:"User"
     },
     username:String,
-    profilePicture:String,
+    profilePicture:{
+        type:DocumentSchema,
+        default:{}
+    },
     fullname:String,
     email:String,
     phone:String,

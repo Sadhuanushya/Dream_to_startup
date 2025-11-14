@@ -28,7 +28,6 @@ const educationSchema=joi.object({
 
 })
 const DocumentSchema=joi.object({
-    filename:joi.string().min(3).max(80).trim().required(),
     DocumentUrl:joi.string().uri().trim().max(200).required(),
     Cloudinary_Id:joi.string().min(3).max(80).trim().required()
 })
@@ -36,7 +35,7 @@ const DocumentSchema=joi.object({
 
 const EnterPreneurValidation = joi.object({
     username:joi.string().trim().min(3).max(50).required(),
-    profilePicture:joi.string().uri().max(100).optional(),
+    profilePicture:DocumentSchema.optional(),
     fullname: joi.string().trim().min(3).max(50).required(),
     email: joi.string().email().trim().required(),
     phone: joi.string().length(10).pattern(/^[0-9]+$/).required(), 
@@ -49,7 +48,7 @@ const EnterPreneurValidation = joi.object({
     pastProject: joi.array().items(pastProjectSchema).max(10).optional(),
     projectVideo:joi.string().optional(),
     identityDocument:DocumentSchema.optional(),
-    businessRegistrationDocument:DocumentSchema.optional()
+    BusinessRegistrationDocument:DocumentSchema.optional()
 });
 
 module.exports = EnterPreneurValidation;

@@ -32,18 +32,33 @@ app.post('/api/login',UserCtrl.login);
 //Entreprenuer
 app.post('/api/Entrepreneur',AuthenticateUser,AuthorizeUser(["entrepreneur"]),  upload.fields([
     { name: 'identityDocument', maxCount: 1 },
-    { name: 'businessDocument', maxCount: 1 }
+    { name: 'BusinessRegistrationDocument', maxCount: 1 },
+    { name: 'profilePicture', maxCount: 1 }
   ]),EntrepreneurCtrl.create)
 app.get('/api/Entrepreneurs',AuthenticateUser,AuthorizeUser(["admin","entrepreneur"]),EntrepreneurCtrl.list)
 app.get('/api/Entrepreneur/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","invester"]),EntrepreneurCtrl.show)
-app.put('/api/Entrepreneur/:id',AuthenticateUser,AuthorizeUser(["admin","entrepreneur"]),EntrepreneurCtrl.update)
+app.put('/api/Entrepreneur/:id',AuthenticateUser,AuthorizeUser(["admin","entrepreneur"]),
+upload.fields([
+    { name: 'identityDocument', maxCount: 1 },
+    { name: 'BusinessRegistrationDocument', maxCount: 1 },
+    { name: 'verificationDocument', maxCount: 1 }
+  ])
+,EntrepreneurCtrl.update)
 app.delete('/api/Entreprenuer/:id',AuthenticateUser,AuthorizeUser(["admin","entrepreneur"]),EntrepreneurCtrl.delete)
 
 //invester
-app.post('/api/Invester',AuthenticateUser,AuthorizeUser(["invester"]),InvesterCtrl.create)
+app.post('/api/Invester',AuthenticateUser,AuthorizeUser(["invester","user"]),upload.fields([
+    { name: 'profilePicture', maxCount: 1 },
+    { name: 'pastInvestment', maxCount: 3},
+    { name: 'verificationDocument', maxCount: 1 }
+  ]),InvesterCtrl.create)
 app.get('/api/Investers',AuthenticateUser,AuthorizeUser(["admin","invester"]),InvesterCtrl.list)
 app.get('/api/Invester/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","invester"]),InvesterCtrl.show)
-app.put('/api/Invester/:id',AuthenticateUser,AuthorizeUser(["invester","admin"]),InvesterCtrl.update)
+app.put('/api/Invester/:id',AuthenticateUser,AuthorizeUser(["invester","admin"]),upload.fields([
+    { name: 'profilePicture', maxCount: 1 },
+    { name: 'pastInvestment', maxCount: 3},
+    { name: 'verificationDocument', maxCount: 1 }
+  ]),InvesterCtrl.update)
 app.delete('/api/Invester/:id',AuthenticateUser,AuthorizeUser(["admin","invester"]),InvesterCtrl.delete)
 
 //video upload

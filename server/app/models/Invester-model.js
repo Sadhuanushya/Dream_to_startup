@@ -1,4 +1,5 @@
 const mongoose =require('mongoose')
+const { type } = require('../validations/Entrepreneur-validation')
 const LocationSchema=new mongoose.Schema({
     address:String,
     city:String,
@@ -15,7 +16,12 @@ const sectorSchema=mongoose.Schema({
 const PastInvestmentSchema=new mongoose.Schema({
     projectName:String,
     investment:Number,
-    investmentDocument:String
+    investmentDocument:String,
+    Cloudinary_Id:String,
+})
+const DocumentSchema=new mongoose.Schema({
+    DocumentUrl:String,
+    Cloudinary_Id:String
 })
 const InvesterSchema=new mongoose.Schema({
     userId:{
@@ -23,7 +29,10 @@ const InvesterSchema=new mongoose.Schema({
         ref:"User"
     },
     username:String,
-    profilePicture:String,
+    profilePicture:{
+        type:DocumentSchema,
+        default:{}
+    },
     fullName:String,
     email:String,
     bio:String,
@@ -37,10 +46,13 @@ const InvesterSchema=new mongoose.Schema({
         default:[]
     },
     pastInvestment:{
-        type:[PastInvestmentSchema],
-        default:[]
+        type:PastInvestmentSchema,
+        default:{}
     },
-    verificationDocument:String,
+    verificationDocument:{
+        type:DocumentSchema,
+        default:{}
+    },
     isVerified:{
         type: Boolean,
         default:false
