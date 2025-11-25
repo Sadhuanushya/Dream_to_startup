@@ -1,5 +1,7 @@
 console.log("Dream to Startup")
+
 const express=require('express');
+
 const app=express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -23,8 +25,12 @@ const AuthorizeUser=require('./app/middlewares/Authorizeuser')
 const UserCtrl=require('./app/controllers/Users-controller')
 const EntrepreneurCtrl=require("./app/controllers/Entrepreneur-Controller")
 const InvesterCtrl=require('./app/controllers/Invester-controller')
+const PaymentCtrl=require("./app/controllers/Payment-Controller");
 ConfigureDB()
 
+
+
+app.post("/payment/process",PaymentCtrl.pay)
 // user register /login
 app.post('/api/register',UserCtrl.register)
 app.post('/api/login',UserCtrl.login);
