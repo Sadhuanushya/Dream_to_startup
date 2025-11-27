@@ -1,5 +1,5 @@
-const InvesterValidation=require('../validations/Invester-validation')
-const Invester=require('../models/Invester-model')
+const InvesterValidation=require('../validations/Investor-validation')
+const Invester=require('../models/Investor-model')
 const cloudinary=require("cloudinary");
 const fs=require('fs');
 const { profile } = require('console');

@@ -10,11 +10,11 @@ require('dotenv').config();
 const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
-
-app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:3080",
-  credentials: true
-}));
+app.use(cors());
+// app.use(cors({
+//   origin: process.env.CLIENT_URL || "http://localhost:3080",
+//   credentials: true
+// }));
 const port=process.env.PORT;
 const upload = require("./app/middlewares/Multer")
 const VedioCtrl=require("./app/controllers/ProjectVideo-controller")
@@ -24,11 +24,11 @@ const AuthenticateUser=require('./app/middlewares/AuthenticateUser')
 const AuthorizeUser=require('./app/middlewares/Authorizeuser')
 const UserCtrl=require('./app/controllers/Users-controller')
 const EntrepreneurCtrl=require("./app/controllers/Entrepreneur-Controller")
-const InvesterCtrl=require('./app/controllers/Invester-controller')
+const InvesterCtrl=require('./app/controllers/Investor-controller')
 const PaymentCtrl=require("./app/controllers/Payment-Controller");
 ConfigureDB()
-
-
+const Ai=require('./app/controllers/Ai')
+app.post("/get-review", Ai.getResponse);
 
 app.post("/payment/process",PaymentCtrl.pay)
 // user register /login

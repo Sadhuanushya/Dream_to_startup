@@ -1,6 +1,6 @@
 const mongoose=require('mongoose');
 const RegisterSchema=mongoose.Schema({
-    fullname:String,
+    username:String,
     email:String,
     password:String,
     clickcount:{
@@ -8,8 +8,8 @@ const RegisterSchema=mongoose.Schema({
         default:0
     },
     role:{
-        type:String,
-        default:'user'
+         type: String,
+         enum: ['admin', 'Entrepreneur', 'Investor']
     },
     lastLogin:{
         type:Date,
