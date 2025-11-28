@@ -27,8 +27,8 @@ const EntrepreneurCtrl=require("./app/controllers/Entrepreneur-Controller")
 const InvesterCtrl=require('./app/controllers/Investor-controller')
 const PaymentCtrl=require("./app/controllers/Payment-Controller");
 ConfigureDB()
-const Ai=require('./app/controllers/Ai')
-app.post("/get-review", Ai.getResponse);
+const AiReviewCtrl=require('./app/controllers/AiReview-controller')
+app.post("/get-review", AiReviewCtrl.getResponse);
 
 app.post("/payment/process",PaymentCtrl.pay)
 // user register /login
