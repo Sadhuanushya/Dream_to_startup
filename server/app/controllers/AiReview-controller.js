@@ -31,5 +31,18 @@ try{
     res.status(500).json({error:err})
 }
 }
+AiReviewCtrl.remove=async(req,res)=>{
+    const id=req.params.id;
+    try{
+        const reviewData=await AiReview.findById(id);  
+       if(!reviewData){
+            return res.json('record not found');
+        }
+        const deleteReview=await AiReview.findByIdAndUpdate(id);
+        res.status(200).json({status:"successfully deleted",deleteReview})
+    }catch(err){
+        res.status(500).json(err);
+    }
+}
 module.exports=AiReviewCtrl;
    
