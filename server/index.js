@@ -11,10 +11,6 @@ const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
 app.use(cors());
-// app.use(cors({
-//   origin: process.env.CLIENT_URL || "http://localhost:3080",
-//   credentials: true
-// }));
 const port=process.env.PORT;
 const upload = require("./app/middlewares/Multer")
 const VedioCtrl=require("./app/controllers/ProjectVideo-controller")
