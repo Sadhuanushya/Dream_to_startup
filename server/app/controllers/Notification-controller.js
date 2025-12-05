@@ -3,7 +3,7 @@ const NotificationCtrl={};
 NotificationCtrl.create=(async(req,res)=>{
     
     try{
-        const notifications = new Notifications({
+        const notifications = new Notification({
             senderId: senderId,
             ReceiverId: receiverId,
             message: message
