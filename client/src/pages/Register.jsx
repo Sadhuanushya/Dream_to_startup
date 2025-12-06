@@ -1,20 +1,40 @@
 import  { useState } from "react";
-
+import axios from 'axios';
 export default function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
 
-  const handleRoleChange = (e) => {
-
-    setRole(e.target.value);
-  };
+const handleRoleChange = (e) => {
+  const selectedRole = e.target.value;
+  setRole(selectedRole);
+};
   console.log("username",username);
   console.log("email",email);
   console.log("password",password);
   console.log("role",role)
   
+  const handleRegister=async()=>{
+    try{
+      const Register={
+        username,
+        email,
+        password,
+        role
+      }
+      const response=await axios.post('http://localhost:3080/api/register',Register);
+      console.log(response.data)
+      alert(response.data.message)
+      setUsername("");
+      setEmail("");
+      setPassword("");
+      setRole("")
+
+    }catch(err){
+      console.log(err);
+    }
+  }
   return (
     <div className="bg-gray-900 w-screen min-h-screen flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
@@ -108,7 +128,7 @@ export default function Register() {
         <button
             type="submit"
             className="w-full bg-indigo-600 text-black p-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-200 shadow-md"
-        >
+        onClick={handleRegister}>
             Register
         </button>
 
