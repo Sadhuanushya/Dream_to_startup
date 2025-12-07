@@ -1,3 +1,4 @@
+import Login from "./Login";
 import  { useState } from "react";
 import axios from 'axios';
 export default function Register() {
@@ -5,15 +6,13 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
+  const [error,SetError]=useState("");
+
 
 const handleRoleChange = (e) => {
   const selectedRole = e.target.value;
   setRole(selectedRole);
 };
-  console.log("username",username);
-  console.log("email",email);
-  console.log("password",password);
-  console.log("role",role)
   
   const handleRegister=async()=>{
     try{
@@ -30,9 +29,14 @@ const handleRoleChange = (e) => {
       setEmail("");
       setPassword("");
       setRole("")
+      SetError("");
+
 
     }catch(err){
       console.log(err);
+
+
+      SetError(err.response.data.error.details[0].message)
     }
   }
   return (
@@ -122,6 +126,8 @@ const handleRoleChange = (e) => {
                     <span className="ml-2">Entrepreneur</span>
                 </label>
             </div>
+            {error && <p style=
+            {{color:"red"}}>{error}</p>}
         </div>
 
 
@@ -133,6 +139,8 @@ const handleRoleChange = (e) => {
         </button>
 
       </div>
+      <Login/>
     </div>
+    
   );
 }
