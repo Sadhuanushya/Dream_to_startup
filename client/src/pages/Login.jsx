@@ -1,6 +1,8 @@
 import  {useState} from 'react';
+import {useNavigate} from 'react-router-dom'
 import axios from "axios";
 export default function Login(){
+    const navigate=useNavigate();
 const[form,SetForm]=useState({
     email:"",
     password:""
@@ -13,9 +15,13 @@ try{
     }
     const response=await axios.post('http://localhost:3080/api/login',login);
     console.log(response.data);
+    if(response.data){
+        navigate('/dashboard')
+    }
 
 }catch(err){
     console.log(err)
+    
 }
 }
     return(

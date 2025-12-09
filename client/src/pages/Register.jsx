@@ -1,44 +1,80 @@
-import Login from "./Login";
-import  { useState } from "react";
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
 export default function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
-  const [error,SetError]=useState("");
+  const [errors, setErrors] = useState({
+    username: '',
+    email: '',
+    password: '',
+    role: '',
+  });
+  const navigate = useNavigate();
 
+  const handleRoleChange = (e) => {
+    const selectedRole = e.target.value;
+    setRole(selectedRole);
+  };
+    
+  const handleRegister = async () => {
+    setErrors({ username: '', email: '', password: '', role: '' });
+ 
 
-const handleRoleChange = (e) => {
-  const selectedRole = e.target.value;
-  setRole(selectedRole);
-};
-  
-  const handleRegister=async()=>{
-    try{
-      const Register={
+    let newErrors = {};
+    if (!username) {
+      newErrors.username = 'Username is required.';
+    }
+    if (!email) {
+      newErrors.email = 'Email is required.';
+    }
+    if (!password) {
+      newErrors.password = 'Password is required.';
+    }
+    if (!role) {
+      newErrors.role = 'Role is required.';
+    }
+    
+    setErrors(newErrors);
+
+    try {
+      const RegisterPayload = {
         username,
         email,
         password,
         role
+      };
+      
+      const response = await axios.post('http://localhost:3080/api/register', RegisterPayload);
+      
+      alert(response.data)
+        
+        // Clear form fields on success
+        setUsername("");
+        setEmail("");
+        setPassword("");
+        setRole("");
+        
+        // Navigate after a slight delay to allow message to show
+        setTimeout(() => {
+          navigate("/login");
+        }, 1000);
       }
-      const response=await axios.post('http://localhost:3080/api/register',Register);
-      console.log(response.data)
-      alert(response.data.message)
-      setUsername("");
-      setEmail("");
-      setPassword("");
-      setRole("")
-      SetError("");
-
-
-    }catch(err){
-      console.log(err);
-
-
-      SetError(err.response.data.error.details[0].message)
+     catch (err) {
+      console.error("Registration Error:", err);
+      
+      // 3. FIXED: Properly extract and set the API error string to the general error state
+      const apiErrorMessage = 
+        err.response?.data?.message || 
+        err.response?.data?.error?.details?.[0]?.message || 
+        "An unknown error occurred during registration. Check server status.";
+      
     }
-  }
+  };
+
   return (
     <div className="bg-gray-900 w-screen min-h-screen flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
@@ -61,6 +97,8 @@ const handleRoleChange = (e) => {
             }} 
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
           />
+         
+          {errors.username && <p className="text-sm text-red-500 mt-1">{errors.username}</p>}
         </div>
         
 
@@ -73,12 +111,12 @@ const handleRoleChange = (e) => {
             type="email" 
             value={email} 
             placeholder="Enter Email" 
-
             onChange={(e) => {
               setEmail(e.target.value);
             }} 
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
           />
+          {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
         </div>
         
 
@@ -96,6 +134,7 @@ const handleRoleChange = (e) => {
             }} 
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
           />
+          {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
         </div>
         
         <div className="mb-8 space-y-2">
@@ -126,20 +165,19 @@ const handleRoleChange = (e) => {
                     <span className="ml-2">Entrepreneur</span>
                 </label>
             </div>
-            {error && <p style=
-            {{color:"red"}}>{error}</p>}
+            {errors.role && <p className="text-sm text-red-500 mt-1">{errors.role}</p>}
         </div>
 
 
         <button
-            type="submit"
-            className="w-full bg-indigo-600 text-black p-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-200 shadow-md"
-        onClick={handleRegister}>
+            type="button" // Use type="button" to prevent default form submission
+            className="w-full bg-indigo-600 text-indigo-600 p-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-200 shadow-md"
+            onClick={handleRegister}>
             Register
         </button>
 
       </div>
-      <Login/>
+    
     </div>
     
   );
