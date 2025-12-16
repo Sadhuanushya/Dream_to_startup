@@ -13,6 +13,7 @@ export default function Register() {
     password: '',
     role: '',
   });
+  const [serverErrors,setServerErrors]=useState('');
   const navigate = useNavigate();
 
   const handleRoleChange = (e) => {
@@ -41,37 +42,33 @@ export default function Register() {
     setErrors(newErrors);
 
     try {
-      const RegisterPayload = {
+      const RegisterData = {
         username,
         email,
         password,
         role
       };
       
-      const response = await axios.post('http://localhost:3080/api/register', RegisterPayload);
+      const response = await axios.post('http://localhost:3080/api/register', RegisterData);
+      console.log(response.data.user.username)
       
-      alert(response.data)
+      alert('Successfully Registerd');
         
-        // Clear form fields on success
+
         setUsername("");
         setEmail("");
         setPassword("");
         setRole("");
         
-        // Navigate after a slight delay to allow message to show
-        setTimeout(() => {
+
+     
           navigate("/login");
-        }, 1000);
+   
       }
      catch (err) {
       console.error("Registration Error:", err);
-      
-      // 3. FIXED: Properly extract and set the API error string to the general error state
-      const apiErrorMessage = 
-        err.response?.data?.message || 
-        err.response?.data?.error?.details?.[0]?.message || 
-        "An unknown error occurred during registration. Check server status.";
-      
+    
+      setServerErrors( err.response?.data?.error?.details?.[0]?.message)
     }
   };
 
@@ -167,6 +164,7 @@ export default function Register() {
             </div>
             {errors.role && <p className="text-sm text-red-500 mt-1">{errors.role}</p>}
         </div>
+        {serverErrors && <p>{serverErrors}</p>}
 
 
         <button

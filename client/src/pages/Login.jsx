@@ -3,18 +3,31 @@ import {useNavigate} from 'react-router-dom'
 import axios from "axios";
 export default function Login(){
     const navigate=useNavigate();
-const[form,SetForm]=useState({
+    const[form,SetForm]=useState({
     email:"",
     password:""
-})
+    })
+    const[error,SetError]=useState({
+        email:'',
+        password:''
+    })
 const handleLogin=async()=>{
+    SetError({email:'',password:''});
+    let newErrors={}
+    if(!form.email){
+        newErrors.email='email required'
+    }
+    if(!form.password){
+        newErrors.password='password required'
+    }
+    SetError(newErrors);
 try{
     const login={
         email:form.email,
         password:form.password
     }
     const response=await axios.post('http://localhost:3080/api/login',login);
-    console.log(response.data);
+    localStorage.setItem('token',response.data.token);
     if(response.data){
         navigate('/dashboard')
     }
