@@ -2,6 +2,10 @@ const bcryptjs=require('bcryptjs');
 const User=require('../models/Users-model')
 const jwt=require('jsonwebtoken')
 const nodemailer = require('nodemailer');
+const {RegisterValidation,LoginValidation}=require('../validations/Users-validation')
+const UserCtrl={};
+
+//while user successfully register ,welcome email sent to registered mail id
 const transporter=nodemailer.createTransport({
        
         host:process.env.SMT_HOST,
@@ -12,8 +16,8 @@ const transporter=nodemailer.createTransport({
             pass:process.env.EMAIL_PASS
         }
  })
-const {RegisterValidation,LoginValidation}=require('../validations/Users-validation')
-const UserCtrl={};
+ 
+
 UserCtrl.register=async(req,res)=>{
     const body=req.body;
     const {error,value}=RegisterValidation.validate(body,{abortEarly:false})
@@ -42,6 +46,7 @@ UserCtrl.register=async(req,res)=>{
       html: `
         <h2>Hi ${register.fullname},</h2>
         <p>Thank you for registering with us!</p>
+         <p>Welcome to Dream to Startup</p>
         <br/>
         <p>Regards,<br/>Team Support</p>
       `
@@ -93,6 +98,17 @@ UserCtrl.login=async(req,res)=>{
         console.log(err)
         res.status(500).json(err)
     }
+}
+UserCtrl.account=async(req,res)=>{
+  try{
+    const UserAccount=await User.findById(req.userId);
+    console.log(UserAccount);
+    res.json(UserAccount)
+    console.log(req.userId)
+
+  }catch(err){
+    console.log(err);
+  }
 }
 
 module.exports=UserCtrl;

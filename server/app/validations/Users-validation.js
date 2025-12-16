@@ -1,4 +1,5 @@
 const joi=require('joi');
+
 const RegisterValidation=joi.object({
     username:joi.string().min(3).max(50).trim().required(),
     email:joi.string().email().trim().required(),
@@ -7,12 +8,14 @@ const RegisterValidation=joi.object({
       "string.pattern.base":
         "Password must be at least 8 characters, include 1 uppercase, 1 lowercase, 1 number, and 1 special character (@$!%*?&)",
     }),
-    role: joi.string().valid('Entrepreneur', 'Investor')
+    role: joi.string().valid('Entrepreneur', 'Investor','admin')
 })
+
 const LoginValidation=joi.object({
     email:joi.string().email().trim().required(),
     password:joi.string().required().trim().required()
 })
+
 module.exports={
 RegisterValidation,
 LoginValidation

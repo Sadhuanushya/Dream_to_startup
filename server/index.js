@@ -30,7 +30,7 @@ app.post("/payment/process",PaymentCtrl.pay)
 // user register /login
 app.post('/api/register',UserCtrl.register)
 app.post('/api/login',UserCtrl.login);
-
+app.get('/api/account',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","Investor"]),UserCtrl.account)
 //Entreprenuer
 app.post('/api/Entrepreneur',AuthenticateUser,AuthorizeUser(["entrepreneur"]),  upload.fields([
     { name: 'identityDocument', maxCount: 1 },
