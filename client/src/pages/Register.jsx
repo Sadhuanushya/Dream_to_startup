@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import UserContext from "../Context/UserContext";
+import { useContext } from "react";
 
 export default function Register() {
+  const {handleRegister} =useContext(UserContext);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,16 +14,17 @@ export default function Register() {
     password: '',
     role: '',
   });
-  const [serverErrors,setServerErrors]=useState('');
-  const navigate = useNavigate();
 
   const handleRoleChange = (e) => {
     const selectedRole = e.target.value;
     setRole(selectedRole);
   };
     
-  const handleRegister = async () => {
+  const resetForm=()=>{
     setErrors({ username: '', email: '', password: '', role: '' });
+  }
+  const handleSubmit = async () => {
+    
  
 
     let newErrors = {};
@@ -41,35 +43,14 @@ export default function Register() {
     
     setErrors(newErrors);
 
-    try {
-      const RegisterData = {
+  
+     const RegisterData = {
         username,
         email,
         password,
         role
       };
-      
-      const response = await axios.post('http://localhost:3080/api/register', RegisterData);
-      console.log(response.data.user.username)
-      
-      alert('Successfully Registerd');
-        
-
-        setUsername("");
-        setEmail("");
-        setPassword("");
-        setRole("");
-        
-
-     
-          navigate("/login");
-   
-      }
-     catch (err) {
-      console.error("Registration Error:", err);
-    
-      setServerErrors( err.response?.data?.error?.details?.[0]?.message)
-    }
+      handleRegister(RegisterData,resetForm);
   };
 
   return (
@@ -143,8 +124,8 @@ export default function Register() {
                     <input 
                         type="radio" 
                         name="role" 
-                        value="Investor" 
-                        checked={role === "Investor"}
+                        value="investor" 
+                        checked={role === "investor"}
                         onChange={handleRoleChange} 
                         className="form-radio h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
                     />
@@ -154,8 +135,8 @@ export default function Register() {
                     <input 
                         type="radio" 
                         name="role" 
-                        value="Entrepreneur" 
-                        checked={role === "Entrepreneur"}
+                        value="entrepreneur" 
+                        checked={role === "entrepreneur"}
                         onChange={handleRoleChange} 
                         className="form-radio h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
                     />
@@ -164,13 +145,13 @@ export default function Register() {
             </div>
             {errors.role && <p className="text-sm text-red-500 mt-1">{errors.role}</p>}
         </div>
-        {serverErrors && <p>{serverErrors}</p>}
+    
 
 
         <button
             type="button" // Use type="button" to prevent default form submission
             className="w-full bg-indigo-600 text-indigo-600 p-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-200 shadow-md"
-            onClick={handleRegister}>
+            onClick={handleSubmit}>
             Register
         </button>
 

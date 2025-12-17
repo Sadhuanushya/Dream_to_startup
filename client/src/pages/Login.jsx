@@ -1,7 +1,9 @@
 import  {useState} from 'react';
 import {useNavigate} from 'react-router-dom'
-import axios from "axios";
+import {useContext} from 'react';
+import UserContext from '../Context/UserContext';
 export default function Login(){
+    const {handleLogin}=useContext(UserContext)
     const navigate=useNavigate();
     const[form,SetForm]=useState({
     email:"",
@@ -11,8 +13,14 @@ export default function Login(){
         email:'',
         password:''
     })
-const handleLogin=async()=>{
+        const loginData={
+            email:form.email,
+            password:form.password
+        }
+    const resetForm=()=>{
     SetError({email:'',password:''});
+    }
+    const handleSubmit=()=>{
     let newErrors={}
     if(!form.email){
         newErrors.email='email required'
@@ -21,21 +29,7 @@ const handleLogin=async()=>{
         newErrors.password='password required'
     }
     SetError(newErrors);
-try{
-    const login={
-        email:form.email,
-        password:form.password
-    }
-    const response=await axios.post('http://localhost:3080/api/login',login);
-    localStorage.setItem('token',response.data.token);
-    if(response.data){
-        navigate('/dashboard')
-    }
-
-}catch(err){
-    console.log(err)
-    
-}
+    handleLogin(loginData,resetForm);
 }
     return(
         <>
@@ -58,7 +52,9 @@ try{
     });
             }} 
         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"/>
+       {error.email && <p className="text-sm text-red-500 mt-1">{error.email}</p>}
         </div>
+        
         <div className="mb-6">
         <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">password</label>
          <input 
@@ -72,13 +68,15 @@ try{
       [e.target.id]: e.target.value // Update the specific field (password)
     });
             }} 
+      
         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"/>
+         {error.password && <p className="text-sm text-red-500 mt-1">{error.password}</p>}
          </div>
-         
+        
             <button
             type="submit"
             className="w-full bg-indigo-600 text-black p-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-200 shadow-md"
-        onClick={handleLogin}>
+        onClick={handleSubmit}>
             Login
         </button>
          
