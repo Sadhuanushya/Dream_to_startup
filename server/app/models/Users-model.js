@@ -9,7 +9,7 @@ const RegisterSchema=mongoose.Schema({
     },
     role:{
          type: String,
-         enum: ['admin', 'Entrepreneur', 'Investor']
+         enum: ['admin', 'entrepreneur', 'investor']
     },
     lastLogin:{
         type:Date,

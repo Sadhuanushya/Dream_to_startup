@@ -101,7 +101,7 @@ UserCtrl.login=async(req,res)=>{
 }
 UserCtrl.account=async(req,res)=>{
   try{
-    const UserAccount=await User.findById(req.userId);
+    const UserAccount=await User.findById(req.userIds);
     console.log(UserAccount);
     res.json(UserAccount)
     console.log(req.userId)

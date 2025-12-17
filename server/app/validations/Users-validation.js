@@ -8,7 +8,7 @@ const RegisterValidation=joi.object({
       "string.pattern.base":
         "Password must be at least 8 characters, include 1 uppercase, 1 lowercase, 1 number, and 1 special character (@$!%*?&)",
     }),
-    role: joi.string().valid('Entrepreneur', 'Investor','admin')
+    role: joi.string().valid('entrepreneur','investor','admin')
 })
 
 const LoginValidation=joi.object({
