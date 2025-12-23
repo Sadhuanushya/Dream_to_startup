@@ -10,6 +10,9 @@ const userReducer=(state,action)=>{
         case "SET_SERVER_ERRORS":{
             return{...state,serverError:action.payload}
         }
+        case "Account":{
+            return{...state,user:action.payload}
+        }
         default:{
             return {...state}
         }
@@ -20,13 +23,14 @@ export default function AuthProvider(props){
     const[userState,userDispatch]=useReducer(userReducer,{
         user:null,
         serverError:''
-    })
-    useEffect(()=>{
+    });
+    console.log("user",userState)
+const handleAccount=async()=>{
         if(localStorage.getItem('token')){
             const fetchUserData=async()=>{
                 try{
-                    const response=await axios.get('http://localhost:3080/api/account')
-                    console.log(response.data)
+                    const response=await axios.get('http://localhost:3080/api/account',{headers:{Authorization:localStorage.getItem('token')}})
+                    console.log("response",response.data)
                     userDispatch({type:"Account",payload:response.data})
 
                 }catch(err){
@@ -36,7 +40,7 @@ export default function AuthProvider(props){
             }
             fetchUserData();
         }
-    },[]);
+    }
     const handleRegister=async(RegisterData,resetForm)=>{
          try {
       const response = await axios.post('http://localhost:3080/api/register', RegisterData);
@@ -65,10 +69,12 @@ try{
     console.log(err)
     
 }
+console.log("user",userState)
     }
     return(
         <>
-        <UserContext.Provider value={{...userState,handleRegister,handleLogin}}>
+         
+        <UserContext.Provider value={{...userState,handleRegister,handleLogin,handleAccount}}>
             {props.children}
         </UserContext.Provider>
         </>
