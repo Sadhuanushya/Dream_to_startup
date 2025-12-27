@@ -30,7 +30,7 @@ app.post("/payment/process",PaymentCtrl.pay)
 // user register /login
 app.post('/api/register',UserCtrl.register)
 app.post('/api/login',UserCtrl.login);
-app.get('/api/account',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","Investor"]),UserCtrl.account)
+app.get('/api/account',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),UserCtrl.account)
 //Entreprenuer
 app.post('/api/Entrepreneur',AuthenticateUser,AuthorizeUser(["entrepreneur"]),  upload.fields([
     { name: 'identityDocument', maxCount: 1 },
@@ -38,7 +38,7 @@ app.post('/api/Entrepreneur',AuthenticateUser,AuthorizeUser(["entrepreneur"]),  
     { name: 'profilePicture', maxCount: 1 }
   ]),EntrepreneurCtrl.create)
 app.get('/api/Entrepreneurs',AuthenticateUser,AuthorizeUser(["admin","entrepreneur"]),EntrepreneurCtrl.list)
-app.get('/api/Entrepreneur/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","invester"]),EntrepreneurCtrl.show)
+app.get('/api/Entrepreneur/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),EntrepreneurCtrl.show)
 app.put('/api/Entrepreneur/:id',AuthenticateUser,AuthorizeUser(["admin","entrepreneur"]),
 upload.fields([
     { name: 'identityDocument', maxCount: 1 },
@@ -49,24 +49,24 @@ upload.fields([
 app.delete('/api/Entreprenuer/:id',AuthenticateUser,AuthorizeUser(["admin","entrepreneur"]),EntrepreneurCtrl.delete)
 
 //invester
-app.post('/api/Invester',AuthenticateUser,AuthorizeUser(["invester","user"]),upload.fields([
+app.post('/api/Investor',AuthenticateUser,AuthorizeUser(["investor","user"]),upload.fields([
     { name: 'profilePicture', maxCount: 1 },
     { name: 'pastInvestment', maxCount: 3},
     { name: 'verificationDocument', maxCount: 1 }
   ]),InvesterCtrl.create)
-app.get('/api/Investers',AuthenticateUser,AuthorizeUser(["admin","invester"]),InvesterCtrl.list)
-app.get('/api/Invester/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","invester"]),InvesterCtrl.show)
-app.put('/api/Invester/:id',AuthenticateUser,AuthorizeUser(["invester","admin"]),upload.fields([
+app.get('/api/Investors',AuthenticateUser,AuthorizeUser(["admin","investor"]),InvesterCtrl.list)
+app.get('/api/Investor/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),InvesterCtrl.show)
+app.put('/api/Investor/:id',AuthenticateUser,AuthorizeUser(["investor","admin"]),upload.fields([
     { name: 'profilePicture', maxCount: 1 },
     { name: 'pastInvestment', maxCount: 3},
     { name: 'verificationDocument', maxCount: 1 }
   ]),InvesterCtrl.update)
-app.delete('/api/Invester/:id',AuthenticateUser,AuthorizeUser(["admin","invester"]),InvesterCtrl.delete)
+app.delete('/api/Investor/:id',AuthenticateUser,AuthorizeUser(["admin","investor"]),InvesterCtrl.delete)
 
 //video upload
 app.post('/api/video',AuthenticateUser,AuthorizeUser(["entrepreneur","admin"]), upload.single('video'), VedioCtrl.create);
-app.get('/api/videos',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","invester"]),VedioCtrl.list);
-app.get('/api/videos/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","invester"]),VedioCtrl.listByUser);
+app.get('/api/videos',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),VedioCtrl.list);
+app.get('/api/videos/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),VedioCtrl.listByUser);
 app.put('/api/video/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin"]), upload.single('video'), VedioCtrl.update); 
 app.delete('/api/video/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin"]),VedioCtrl.delete);
 
