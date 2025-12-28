@@ -23,9 +23,9 @@
 
 //     )
 // }
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { FiBell, FiSearch } from "react-icons/fi";
-
+import Admin from "./Admin";
 export default function Dashboard() {
   const sections = [
     { name: "Investors", to: "investors" },
@@ -76,6 +76,7 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto px-6 py-4">
+        <Link to="admin">Admin</Link>
         <Outlet />
       </main>
     </div>
