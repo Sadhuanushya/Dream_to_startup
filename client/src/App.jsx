@@ -20,13 +20,12 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+
         <Route path="/dashboard" element={<DashBoard/>}>
+
         <Route path="account" element={<Account/>}/>
-
         <Route path="investors" element={<Investers/>}/>
-
         <Route path ="entrepreneurs" element={<Entrepreneurs/>}/>
-    
         <Route path="pinch" element={<Pinch/>}/>
         <Route path="notifications" element={<Notifications/>}/>
         <Route path="entrepreneurProfile" element={<EntrepreneurProfile/>}/>

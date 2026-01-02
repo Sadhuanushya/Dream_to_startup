@@ -76,7 +76,9 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto px-6 py-4">
-        <Link to="admin">Admin</Link>
+        <Link to="admin">Admin</Link><br/>
+        <Link to="entrepreneurProfile">entrepreneurprofile</Link><br/>
+       <Link to="investerProfile">investerProfile</Link> 
         <Outlet />
       </main>
     </div>
