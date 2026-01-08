@@ -30,7 +30,7 @@ export default function Dashboard() {
   const sections = [
     { name: "Investors", to: "investors" },
     { name: "Entrepreneurs", to: "entrepreneurs" },
-    { name: "Pinch", to: "pinch" },
+    { name: "Pitch", to: "Pitch" },
     { name: "Notifications", to: "notifications" },
     { name: "Messages", to: "message" },
   ];
