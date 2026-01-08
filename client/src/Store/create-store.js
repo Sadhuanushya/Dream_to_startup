@@ -1,11 +1,15 @@
 import {configureStore} from "@reduxjs/toolkit";
-import investerReducer from "../Slice/Invester-Slice";
+import investorReducer from "../Slice/Invester-Slice";
 import UserReducer from "../Slice/Users-Slice";
+import EntrepreneurReducer from "../Slice/Entreprenuer-Slice"
+import PitchReducer from "../Slice/Pitch-Slice"
 const createStore=()=>{
     return configureStore({
         reducer:{
-            invester:investerReducer,
-            Users:UserReducer
+            investor:investorReducer,
+            Users:UserReducer,
+            Entrepreneur:EntrepreneurReducer,
+            Pitch:PitchReducer
         }
     })
 }
