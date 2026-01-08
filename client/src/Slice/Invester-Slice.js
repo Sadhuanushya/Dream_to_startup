@@ -3,15 +3,15 @@ import axios from "axios";
 
 export const fetchInvestersList=createAsyncThunk("invester/fetchinvesterList",async(undefined,{rejectWithValue})=>{
     try{
-        const response=await axios.get("http://localhost:3080/api/Investers",{headers:{Authorization:localStorage.getItem('token')}})
-        console.log(response.data,"investerList")
+        const response=await axios.get("http://localhost:3080/api/Investors",{headers:{Authorization:localStorage.getItem('token')}})
+        console.log(response.data,"investorList")
         return response.data
     }catch(err){
         console.log(err)
     }
 })
-const InvesterSlice=createSlice({
-    name:"Invester",
+const InvestorSlice=createSlice({
+    name:"Investor",
     initialState:{
         data:[],
         serverErrors:null
@@ -20,8 +20,8 @@ const InvesterSlice=createSlice({
     extraReducers:(builder)=>{
         builder
         .addCase(fetchInvestersList.fulfilled,(state,action)=>{
-            state.data.push(action.payload)
+            state.data=action.payload;
         })
     }
 })
-export default InvesterSlice.reducer;
+export default InvestorSlice.reducer;
