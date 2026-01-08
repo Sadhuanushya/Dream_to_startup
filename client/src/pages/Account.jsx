@@ -8,7 +8,7 @@ const {handleAccount,user}=useContext(UserContext)
 return(
         <div>
             <h1>Account</h1>
-            <p>{`hello ${user.username} welcome to d2s`}</p>
+            <p>{user && (`hello ${user.username} welcome to d2s`)}</p>
         </div>
     )
 }
