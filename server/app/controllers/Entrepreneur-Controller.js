@@ -101,6 +101,7 @@ EntrepreneurCtrl.list=async(req,res)=>{
     try{
     const Entrepreneurs= await Entrepreneur.find().populate('projectVideo',['_id','videoUrl'])
     res.status(200).json(Entrepreneurs)
+    console.log(Entrepreneurs)
     }catch(err){
 
         res.status(500).json({error:err})

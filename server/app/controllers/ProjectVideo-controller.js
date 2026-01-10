@@ -45,11 +45,12 @@ await video.save()
 
   } catch (err) {
     console.error("Upload error:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to upload",
-      error: err.message
-    });
+    // return res.status(500).json({
+    //   success: false,
+    //   message: "Failed to upload",
+    //   error: err.message
+    // });
+    return res.json(err)
   }
 };
 VedioCtrl.list=async(req,res)=>{
@@ -59,6 +60,7 @@ VedioCtrl.list=async(req,res)=>{
       return res.status(404).json({error:"record not found"})
     }
     res.status(200).json(videos)
+    console.log("video list")
 
   }catch(err){
     res.status(500).json({error:err})

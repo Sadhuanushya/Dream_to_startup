@@ -28,9 +28,17 @@ const InvesterValidation=joi.object({
     email:joi.string().email().required(),
     bio:joi.string().trim().min(10).max(300).required(),
     linkedinUrl:joi.string().uri().max(200).required(),
+    investorType:joi.string().valid('Angel Investor','Accelerator Investor','Seed Investor','Other').required(),
+
+    customInvestorType: joi.when('investorType', {
+    is: 'Other',
+    then: joi.string().trim().min(3).max(50).required(),
+    otherwise: joi.forbidden()
+    }),
+    
     officeLocation:officeLocationSchema.required(),
     prefferedSector:joi.array().items(SectorSchema).min(1).max(10).required(),
-    pastInvestment:pastInvestmentSchema.max(10).min(0).optional(),
+    pastInvestment:pastInvestmentSchema.optional(),
     verificationDocument:DocumentSchema.optional()
     
 })

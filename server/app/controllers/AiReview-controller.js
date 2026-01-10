@@ -7,7 +7,7 @@ const AiReview=require("../models/AiReview-model");
 const AiReviewCtrl={}
 
 AiReviewCtrl.getResponse = async (req, res)=>{
-    const id=req.body.id;
+    const id=req.params.id;
 try{
     const Aireview=await AiReview.findOne({videoId:new mongoose.Types.ObjectId(id)});
 

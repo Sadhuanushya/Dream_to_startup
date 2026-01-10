@@ -37,6 +37,11 @@ const InvesterSchema=new mongoose.Schema({
     email:String,
     bio:String,
     linkedinUrl:String,
+    investorType:{
+        type:String,
+        enum:['Angel Investor','Accelerator Investor','Seed Investor','Other']
+    },
+    customInvestorType:String,
     officeLocation:{
         type:LocationSchema,
         default:{}

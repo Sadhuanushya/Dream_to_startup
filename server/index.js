@@ -36,21 +36,21 @@ app.post('/api/login',UserCtrl.login);
 app.get('/api/account',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),UserCtrl.account)
 //Entreprenuer
 app.post('/api/Entrepreneur',AuthenticateUser,AuthorizeUser(["entrepreneur"]),EntrepreneurUploads,EntrepreneurCtrl.create)
-app.get('/api/Entrepreneurs',AuthenticateUser,AuthorizeUser(["admin","entrepreneur"]),EntrepreneurCtrl.list)
+app.get('/api/Entrepreneurs',AuthenticateUser,AuthorizeUser(["admin","entrepreneur","investor"]),EntrepreneurCtrl.list)
 app.get('/api/Entrepreneur/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),EntrepreneurCtrl.show)
 app.put('/api/Entrepreneur/:id',AuthenticateUser,AuthorizeUser(["admin","entrepreneur"]),EntrepreneurUploads,EntrepreneurCtrl.update)
 app.delete('/api/Entreprenuer/:id',AuthenticateUser,AuthorizeUser(["admin","entrepreneur"]),EntrepreneurCtrl.delete)
 
 //invester
 app.post('/api/Investor',AuthenticateUser,AuthorizeUser(["investor","user"]),InvesterUploads,InvesterCtrl.create)
-app.get('/api/Investors',AuthenticateUser,AuthorizeUser(["admin","investor"]),InvesterCtrl.list)
+app.get('/api/Investors',AuthenticateUser,AuthorizeUser(["admin","investor","entrepreneur"]),InvesterCtrl.list)
 app.get('/api/Investor/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),InvesterCtrl.show)
 app.put('/api/Investor/:id',AuthenticateUser,AuthorizeUser(["investor","admin"]),InvesterUploads,InvesterCtrl.update)
 app.delete('/api/Investor/:id',AuthenticateUser,AuthorizeUser(["admin","investor"]),InvesterCtrl.delete)
 
 //video upload
-app.post('/api/video',AuthenticateUser,AuthorizeUser(["entrepreneur","admin"]), upload.single('video'), VedioCtrl.create);
-app.get('/api/videos',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),VedioCtrl.list);
+app.post('/api/video',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]), upload.single('video'), VedioCtrl.create);
+app.get('/api/Pitch',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),VedioCtrl.list);
 app.get('/api/videos/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),VedioCtrl.listByUser);
 app.put('/api/video/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin"]), upload.single('video'), VedioCtrl.update); 
 app.delete('/api/video/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin"]),VedioCtrl.delete);
@@ -58,6 +58,7 @@ app.delete('/api/video/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admi
 app.post("/api/messages/add", MessageController.addMessage); 
 app.get("/api/messages/get", MessageController.getAllMessage);
 
+app.get('/api/Aireview/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),AiReviewCtrl.getResponse);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
