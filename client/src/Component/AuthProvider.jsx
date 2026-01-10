@@ -27,7 +27,6 @@ export default function AuthProvider(props){
     console.log("user",userState)
 const handleAccount=async()=>{
         if(localStorage.getItem('token')){
-            const fetchUserData=async()=>{
                 try{
                     const response=await axios.get('http://localhost:3080/api/account',{headers:{Authorization:localStorage.getItem('token')}})
                     console.log("response",response.data)
@@ -36,11 +35,12 @@ const handleAccount=async()=>{
                 }catch(err){
                     console.log(err);
 
-                }
-            }
-            fetchUserData();
-        }
+             }
+        } 
     }
+useEffect(() => {
+  handleAccount();
+}, []);
     const handleRegister=async(RegisterData,resetForm)=>{
          try {
       const response = await axios.post('http://localhost:3080/api/register', RegisterData);
