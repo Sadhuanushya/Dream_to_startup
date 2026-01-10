@@ -1,146 +1,97 @@
-// import { NavLink,Outlet } from "react-router-dom"
-
-// export default function DashBoard(){
-//     return(
-//         <>
-//         <h1>Dashboard</h1>
-//         <nav>
-//         <ul>
-//        <li> <NavLink  to='account'>Account</NavLink ></li>
-//        <li><NavLink  to='investors'>Investers</NavLink ></li>
-//         <li><NavLink  to='entrepreneurs'>Entrepreneurs</NavLink ></li>
-//        <li><NavLink  to='pinch'>Pinch</NavLink ></li>
-//         <li><NavLink  to='notifications'>Notifications</NavLink ></li>
-//         <li><NavLink  to='entrepreneurProfile'>EntrepreneurProfile</NavLink ></li>
-//         <li><NavLink  to='investerProfile'>InvesterProfile</NavLink ></li>
-//         <li><NavLink  to='subscription'>Subscription</NavLink ></li>
-//         <li><NavLink  to='message'>Message</NavLink ></li>
-//          <li><NavLink  to='admin'>admin</NavLink ></li>
-//         </ul>
-//         </nav>
-// <Outlet/>
-//         </>
-
-//     )
-// }
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { FiBell, FiSearch } from "react-icons/fi";
-import Admin from "./Admin";
+import { FiBell, FiSearch, FiUser, FiSettings, FiBriefcase } from "react-icons/fi";
+
 export default function Dashboard() {
+
   const sections = [
     { name: "Investors", to: "investors" },
     { name: "Entrepreneurs", to: "entrepreneurs" },
     { name: "Pitch", to: "Pitch" },
-    { name: "Notifications", to: "notifications" },
     { name: "Messages", to: "message" },
   ];
 
   return (
-    <div className="flex flex-col w-screen min-h-screen  bg-gray-100">
-
+    <div className="flex flex-col w-screen min-h-screen bg-slate-50 font-sans selection:bg-indigo-100">
+      
       {/* Top Navbar */}
-      <header className="bg-white px-6 py-3 shadow flex items-center justify-between">
+      <header className="bg-white px-8 py-4 border-b border-slate-100 flex items-center justify-between sticky top-0 z-50">
         
+        {/* Logo/Brand Area */}
+        <div className="flex items-center gap-3 mr-8">
+           <div className="bg-indigo-600 p-1.5 rounded-lg shadow-md shadow-indigo-100">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4.5 16.5c-1.5 1.26-2 3.4-2 3.4s2.14-.5 3.4-2c1.76 1.35 4.31 1.05 5.7-.7l9-11c.7-.85.75-2.1.15-3-.6-.9-1.85-1.1-2.7-.4l-11 9c-1.75 1.39-2.05 3.94-.7 5.7Z"/>
+              </svg>
+           </div>
+           <span className="font-black text-slate-800 tracking-tighter text-lg hidden md:block ">DreamToStartup</span>
+        </div>
+
         {/* Search Bar */}
-        <div className="relative w-1/3">
-          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+        <div className="relative flex-1 max-w-md">
+          <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Search..."
-            className="w-full border border-gray-300 rounded-lg py-2 px-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="Search startups, investors..."
+            className="w-full bg-slate-100 border-none rounded-2xl py-2.5 px-12 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm font-medium"
           />
         </div>
-<NavLink  to='account'>Account</NavLink >
-        {/* Notification */}
-        <div className="relative cursor-pointer">
-          <FiBell className="text-2xl text-gray-600" />
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">
-            5
-          </span>
+
+        {/* Right Actions */}
+        <div className="flex items-center gap-6 ml-8">
+          <NavLink to='account' className="text-sm font-bold text-slate-600 hover:text-indigo-600 transition flex items-center gap-2">
+            <FiUser className="text-lg" />
+            <span className="hidden sm:inline">Account</span>
+          </NavLink>
+
+          {/* 2. Wrapped the Notification Icon in a NavLink to the 'notifications' route */}
+          <NavLink to="notifications" className={({ isActive }) => `relative cursor-pointer group p-2 rounded-full transition-all ${isActive ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600'}`}>
+            <FiBell className="text-xl group-hover:text-indigo-600 transition" />
+            <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black rounded-full w-4 h-4 flex items-center justify-center border-2 border-white">
+              5
+            </span>
+          </NavLink>
         </div>
       </header>
 
-      {/* Top Section List — like Naukri job list UI */}
-      <section className="flex overflow-x-auto  gap-4 py-4 px-6 bg-white shadow-sm">
-        {sections.map((section) => (
-          <NavLink
-            key={section.name}
-            to={section.to}
-            className="flex-none text-gray-700 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap"
-            activeclassname="bg-indigo-500 text-white"
-          >
-            {section.name}
-          </NavLink>
-        ))}
+      {/* Horizontal Nav Bar (Pill style) */}
+      <section className="bg-white border-b border-slate-100 px-8 py-3 overflow-x-auto no-scrollbar">
+        <div className="flex gap-3 max-w-7xl mx-auto">
+          {sections.map((section) => (
+            <NavLink
+              key={section.name}
+              to={section.to}
+              className={({ isActive }) => 
+                `flex-none px-6 py-2 rounded-xl text-sm font-bold transition-all ${
+                  isActive 
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-100" 
+                  : "bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-indigo-600"
+                }`
+              }
+            >
+              {section.name}
+            </NavLink>
+          ))}
+        </div>
       </section>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto px-6 py-4">
-        <Link to="admin">Admin</Link><br/>
-        <Link to="entrepreneurProfile">entrepreneurprofile</Link><br/>
-       <Link to="investerProfile">investerProfile</Link> 
-        <Outlet />
+      {/* Main Content Area */}
+      <main className="flex-1 px-8 py-8 max-w-7xl mx-auto w-full">
+        <div className="flex flex-wrap gap-4 mb-8">
+           <Link to="admin" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
+             <FiSettings className="text-indigo-600" /> Admin Panel
+           </Link>
+           <Link to="entrepreneurProfile" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
+             <FiBriefcase className="text-indigo-600" /> Startup Profile
+           </Link>
+           <Link to="investerProfile" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
+             <FiUser className="text-indigo-600" /> Investor Profile
+           </Link>
+        </div>
+
+        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 min-h-[60vh]">
+           <Outlet />
+        </div>
       </main>
     </div>
   );
 }
-// import { NavLink, Outlet } from "react-router-dom";
-// import { FiBell, FiSearch } from "react-icons/fi"; // bell + search icons
-
-// export default function Dashboard() {
-//   return (
-//     <div className="flex w-screen h-screen bg-gray-100">
-      
-//       {/* Sidebar */}
-//       <aside className="w-64 bg-gray-800 text-white p-5">
-//         <h2 className="text-2xl font-bold mb-6">My Dashboard</h2>
-//         <nav className="flex flex-col gap-3">
-//           <NavLink className="hover:bg-gray-700 p-2 rounded" to="account">Account</NavLink>
-//           {/* add more links here */}
-//         </nav>
-//       </aside>
-
-//       {/* Main Area */}
-//       <div className="flex-1 flex flex-col">
-        
-//         {/* 📌 Top Navigation */}
-//         <header className="bg-white shadow p-4 flex items-center justify-between">
-          
-//           {/* Search Bar */}
-//           <div className="relative w-1/3">
-//             <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
-//             <input 
-//               type="text"
-//               placeholder="Search..."
-//               className="w-full border border-gray-300 rounded-lg py-2 px-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-//             />
-//           </div>
-
-//           {/* Right Icons */}
-//           <div className="flex items-center gap-4">
-//             <div className="relative cursor-pointer">
-//               <FiBell className="text-2xl text-gray-600" />
-//               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">3</span>
-//             </div>
-//             {/* user avatar / profile can go here */}
-//           </div>
-//         </header>
-
-//         {/* 📌 Quick Link/Cards Section */}
-//         <section className="p-4 grid grid-cols-5 gap-4 bg-gray-100">
-//           {["Investors","Entrepreneurs","Pinch","Notifications","Messages"].map((item) => (
-//             <div key={item} className="bg-white p-4 rounded-lg shadow hover:shadow-lg cursor-pointer text-center">
-//               {item}
-//             </div>
-//           ))}
-//         </section>
-
-//         {/* 🧩 Main Content Area */}
-//         <main className="p-6 flex-1 overflow-auto">
-//           <Outlet />
-//         </main>
-
-//       </div>
-//     </div>
-//   );
-// }
