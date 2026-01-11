@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-export default function InvesterProfile(){
+export default function InvestorProfile(){
   const [formData, setFormData] = useState({
     username: '',
     fullName: '',

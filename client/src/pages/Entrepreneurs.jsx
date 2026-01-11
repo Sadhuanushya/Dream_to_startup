@@ -16,9 +16,13 @@ export default function Entrepreneurs(){
         <>
         <h1>Entrepreneurs page</h1>
         <h2>Entreprenuer list</h2>
-        <ul>{data.map(ele=>{
-            return<li key={ele._id}>{ele.fullname}</li>
-        })}</ul>
+        <div>{data.map(ele=>{
+            return<><div key={ele._id}>{ele.fullname}</div>
+            <div>{ele.profilePicture?.DocumentUrl}</div>
+            <h3>{ele.skills}</h3>
+            <h3>{ele.verified ? <p>true</p>:<p>false</p>}</h3>
+            <p>{ele.bio}</p></>
+        })}</div>
         </>
 
     )

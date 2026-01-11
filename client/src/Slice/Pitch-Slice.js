@@ -13,6 +13,7 @@ export const fetchAiReview=createAsyncThunk("AiReview/AiReview",async(id,{reject
     try{
         const response=await axios.get(`http://localhost:3080/api/Aireview/${id}`,{headers:{Authorization:localStorage.getItem('token')}})
         console.log(response.data,"AiReview")
+        console.log("id",id)
         return response.data
     }catch(err){
         console.log(err)

@@ -1,14 +1,14 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { fetchInvestersList } from "../Slice/Invester-Slice";
+import { fetchInvestorsList } from "../Slice/Investor-Slice";
 import { FiMapPin } from "react-icons/fi";
 
-export default function Investers() {
+export default function Investors() {
   const dispatch = useDispatch();
   const { data } = useSelector((state) => state.investor);
 
   useEffect(() => {
-    dispatch(fetchInvestersList());
+    dispatch(fetchInvestorsList());
   }, [dispatch]);
 
   return (

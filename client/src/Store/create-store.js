@@ -1,5 +1,5 @@
 import {configureStore} from "@reduxjs/toolkit";
-import investorReducer from "../Slice/Invester-Slice";
+import investorReducer from "../Slice/Investor-Slice";
 import UserReducer from "../Slice/Users-Slice";
 import EntrepreneurReducer from "../Slice/Entreprenuer-Slice"
 import PitchReducer from "../Slice/Pitch-Slice"

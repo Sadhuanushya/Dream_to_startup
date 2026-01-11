@@ -5,14 +5,15 @@ import DashBoard from './pages/DashBoard';
 import Home from "../src/pages/Home";
 import Notifications from './pages/Notifications';
 import Account from "./pages/Account"
-import Investers from "./pages/Investers"
+import Investors from "./pages/Investors"
 import Entrepreneurs from "./pages/Entrepreneurs"
-import Pinch from "./pages/Pinch"
+import Pitch from "./pages/Pitch"
 import EntrepreneurProfile from './pages/EntrepreneurProfile';
-import InvesterProfile from './pages/InvesterProfile';
+import InvestorProfile from './pages/InvestorProfile';
 import Message from './pages/Message';
 import Subscription from './pages/Subscription';
 import Admin from "./pages/Admin"
+import AiReview from "./pages/AiReview"
 export default function App() {
   return (
   
@@ -20,19 +21,20 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-
+        <Route path="/aireview" element={<AiReview/>}/>
         <Route path="/dashboard" element={<DashBoard/>}>
 
         <Route path="account" element={<Account/>}/>
-        <Route path="investors" element={<Investers/>}/>
+        <Route path="investors" element={<Investors/>}/>
         <Route path ="entrepreneurs" element={<Entrepreneurs/>}/>
-        <Route path="pinch" element={<Pinch/>}/>
+        <Route path="Pitch" element={<Pitch/>}/>
         <Route path="notifications" element={<Notifications/>}/>
         <Route path="entrepreneurProfile" element={<EntrepreneurProfile/>}/>
-        <Route path="investerProfile" element={<InvesterProfile/>}/>
+        <Route path="InvestorProfile" element={<InvestorProfile/>}/>
         <Route path="message" element={<Message/>}/>
         <Route path="subscription" element={<Subscription/>}/>
         <Route path="admin" element={<Admin/>}/>
+       
 
      </Route>
       </Routes>

@@ -5,27 +5,25 @@ export default function Home() {
   const handleRegister = () => navigate("/register");
   const handleLogin = () => navigate("/login");
 
-  // Modern Professional Logo
+ 
   const Logo = () => (
     <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate("/")}>
-      <div className="bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-100 group-hover:scale-110 transition-transform">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4.5 16.5c-1.5 1.26-2 3.4-2 3.4s2.14-.5 3.4-2c1.76 1.35 4.31 1.05 5.7-.7l9-11c.7-.85.75-2.1.15-3-.6-.9-1.85-1.1-2.7-.4l-11 9c-1.75 1.39-2.05 3.94-.7 5.7Z"/>
-        </svg>
-      </div>
-      <span className="text-2xl font-black tracking-tighter text-slate-900 ">
-        Dream<span className="text-indigo-600">To</span>Startup
-      </span>
+    <div className="bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-100 group-hover:scale-110 transition-transform">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4.5 16.5c-1.5 1.26-2 3.4-2 3.4s2.14-.5 3.4-2c1.76 1.35 4.31 1.05 5.7-.7l9-11c.7-.85.75-2.1.15-3-.6-.9-1.85-1.1-2.7-.4l-11 9c-1.75 1.39-2.05 3.94-.7 5.7Z"/>
+    </svg>
+    </div>
+    <span className="text-2xl font-black tracking-tighter text-slate-900 ">
+     Dream<span className="text-indigo-600">To</span>Startup
+    </span>
     </div>
   );
 
   return (
-    <div className="w-screen min-h-screen bg-white text-slate-900 font-sans selection:bg-indigo-100">
-      
-      {/* HEADER */}
+      <div className="w-screen min-h-screen bg-white text-slate-900 font-sans selection:bg-indigo-100">
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100 px-8 h-20 flex justify-between items-center">
-        <Logo />
-        <div className="flex items-center gap-6">
+      <Logo />
+      <div className="flex items-center gap-6">
           <button onClick={handleLogin} className="text-sm font-bold text-slate-600 hover:text-indigo-600 transition">
             Sign In
           </button>
@@ -38,7 +36,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* HERO SECTION */}
       <section className="relative pt-48 pb-32 px-6 flex flex-col items-center text-center bg-slate-50">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-indigo-100/40 via-transparent to-transparent -z-10"></div>
 
@@ -53,15 +50,14 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col items-center justify-center gap-6">
-            {/* Main CTA Button - Restored Styling */}
+         
             <button 
               onClick={handleRegister} 
               className="bg-indigo-600 hover:bg-indigo-700 text-grey font-black px-14 py-4 rounded-2xl shadow-xl shadow-indigo-200 transition-all transform hover:-translate-y-1 active:scale-95 text-lg"
             >
               Register Now
             </button>
-            
-            {/* Secondary Login Prompt */}
+    
             <p className="text-slate-500 font-medium">
               Already have an account?{" "}
               <button 
@@ -75,7 +71,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SUCCESS STORIES */}
+ 
       <section className="bg-slate-50 py-32 px-8 border-t border-slate-200">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
@@ -104,7 +100,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
+  
       <footer className="bg-white py-12 px-8 border-t border-slate-100">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <Logo />

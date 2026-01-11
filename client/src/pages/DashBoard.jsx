@@ -83,7 +83,7 @@ export default function Dashboard() {
            <Link to="entrepreneurProfile" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
              <FiBriefcase className="text-indigo-600" /> Startup Profile
            </Link>
-           <Link to="investerProfile" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
+           <Link to="InvestorProfile" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
              <FiUser className="text-indigo-600" /> Investor Profile
            </Link>
         </div>
