@@ -4,12 +4,12 @@ const EntrepreneurUploads=upload.fields([
     { name: 'BusinessRegistrationDocument', maxCount: 1 },
     { name: 'profilePicture', maxCount: 1 }
   ])
-const InvesterUploads=upload.fields([
+const InvestorUploads=upload.fields([
     { name: 'profilePicture', maxCount: 1 },
     { name: 'pastInvestment', maxCount: 3},
     { name: 'verificationDocument', maxCount: 1 }
   ])
   module.exports={
     EntrepreneurUploads,
-    InvesterUploads
+    InvestorUploads
   }

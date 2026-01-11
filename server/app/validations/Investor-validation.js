@@ -21,7 +21,7 @@ const DocumentSchema=joi.object({
     DocumentUrl:joi.string().uri().trim().max(200).required(),
     Cloudinary_Id:joi.string().min(3).max(80).trim().required()
 })
-const InvesterValidation=joi.object({
+const InvestorValidation=joi.object({
     username:joi.string().trim().min(3).max(50).required(),
     profilePicture:DocumentSchema.optional(),
     fullName:joi.string().trim().min(3).max(100).required(),
@@ -42,4 +42,4 @@ const InvesterValidation=joi.object({
     verificationDocument:DocumentSchema.optional()
     
 })
-module.exports=InvesterValidation;
+module.exports=InvestorValidation;

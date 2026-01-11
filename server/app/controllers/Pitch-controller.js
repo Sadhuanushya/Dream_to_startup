@@ -1,10 +1,10 @@
 const cloudinary=require("../utils/Cloudinary")
-const ProjectVideo=require("../models/ProjectVideo-model")
-const ProjectVideoSchema=require("../validations/ProjectVideo-validation")
+const PitchData=require("../models/Pitch-model")
+const PitchSchema=require("../validations/Pitch-validation")
 const fs=require("fs")
-const VedioCtrl = {};
+const PitchCtrl = {};
 
-VedioCtrl.create = async (req, res) => {
+PitchCtrl.create = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -13,7 +13,7 @@ VedioCtrl.create = async (req, res) => {
       });
     }
 
-const {error,value}=ProjectVideoSchema.validate(req.body)
+const {error,value}=PitchSchema.validate(req.body)
 if(error){
   return res.status(400).json({error:error})
 }
@@ -21,7 +21,7 @@ if(error){
       req.file.path,
       {
         resource_type: "video",   
-        folder: "videos",
+        folder: "Pitchs",
         public_id: req.file.filename,
         overwrite: true  
       }
@@ -30,16 +30,16 @@ if(error){
       if (err) console.error("Failed to remove local file:", err);
     });
 
-const video=new ProjectVideo(value)
-video.videoUrl=result.secure_url
-video.EnterprenuerId=req.userId
-video.cloudinaryId=result.public_id
-await video.save()
+const Pitch=new PitchData(value)
+Pitch.pitchUrl=result.secure_url
+Pitch.EnterprenuerId=req.userId
+Pitch.cloudinaryId=result.public_id
+await Pitch.save()
     return res.status(201).json({
       success: true,
       message: "Uploaded",
       // data: result
-      videoData:video
+      PitchData:Pitch
 
     });
 
@@ -53,59 +53,59 @@ await video.save()
     return res.json(err)
   }
 };
-VedioCtrl.list=async(req,res)=>{
+PitchCtrl.list=async(req,res)=>{
   try{
-    const videos=await ProjectVideo.find()
-    if(!videos){
+    const Pitchs=await PitchData.find()
+    if(!Pitchs){
       return res.status(404).json({error:"record not found"})
     }
-    res.status(200).json(videos)
-    console.log("video list")
+    res.status(200).json(Pitchs)
+    console.log("Pitch list")
 
   }catch(err){
     res.status(500).json({error:err})
   }
 }
-VedioCtrl.listByUser=async(req,res)=>{
+PitchCtrl.listByUser=async(req,res)=>{
   const userId=req.params.id
   try{
-    const video=await ProjectVideo.find({EnterprenuerId:userId}) 
-    if(!video){
+    const Pitch=await PitchData.find({EnterprenuerId:userId}) 
+    if(!Pitch){
       return res.status(404).json({error:err})
     }
-    res.status(200).json(video)
+    res.status(200).json(Pitch)
 
   }catch(err){
     res.status(500).json({error:err})
   }
 }
-VedioCtrl.update=async(req,res)=>{
+PitchCtrl.update=async(req,res)=>{
   const id=req.params.id
     if(!req.file){
-      return res.status(400).json({error:"video not uploded"})
+      return res.status(400).json({error:"Pitch not uploded"})
     }
   try{
-    const video=await ProjectVideo.findById(id)
-    if(!video){
-      return res.status(404).json({error:"video not found"})
+    const Pitch=await PitchData.findById(id)
+    if(!Pitch){
+      return res.status(404).json({error:"Pitch not found"})
     }
-    const {error,value}=ProjectVideoSchema.validate(req.body)
+    const {error,value}=PitchSchema.validate(req.body)
     console.log("checked body")
-    console.log("cloudinarid",video.cloudinaryId)
+    console.log("cloudinarid",Pitch.cloudinaryId)
       if(error){
         return res.status(400).json({error:error})
       }
     console.log("file",req.file)
 
-      console.log("cloudinarid",video.cloudinaryId)
+      console.log("cloudinarid",Pitch.cloudinaryId)
 
-      await cloudinary.uploader.destroy(video.cloudinaryId,{resource_type:"video"});
-      console.log("video delete from cloudinary",video.cloudinaryId)
+      await cloudinary.uploader.destroy(Pitch.cloudinaryId,{resource_type:"Pitch"});
+      console.log("Pitch delete from cloudinary",Pitch.cloudinaryId)
      const result = await cloudinary.uploader.upload(
       req.file.path,
       {
         resource_type: "video",   
-        folder: "videos",
+        folder: "Pitchs",
         public_id: req.file.filename,
         overwrite: true  
       }
@@ -116,10 +116,10 @@ VedioCtrl.update=async(req,res)=>{
         }
       });
       const updateData={...value}
-      updateData.videoUrl=result.secure_url;
+      updateData.pitchUrl=result.secure_url;
       updateData.cloudinaryId=result.public_id;
       console.log("data created")
-      const update=await ProjectVideo.findByIdAndUpdate(id,updateData,{new:true});
+      const update=await PitchData.findByIdAndUpdate(id,updateData,{new:true});
       console.log("data updated")
       res.status(200).json({
         status:"successfully updated",
@@ -131,24 +131,24 @@ VedioCtrl.update=async(req,res)=>{
     res.status(500).json({error:err})
   }
 }
-VedioCtrl.delete=async(req,res)=>{
+PitchCtrl.delete=async(req,res)=>{
   try{
-    const video=await ProjectVideo.findById(req.params.id);
-    if(!video){
+    const Pitch=await PitchData.findById(req.params.id);
+    if(!Pitch){
       return res.status(404).json({error:"record not found"})
     }
     console.log("before destroy")
-    const RemoveVideo=await cloudinary.uploader.destroy(video.cloudinaryId,{resource_type:"video"})
+    const RemovePitch=await cloudinary.uploader.destroy(Pitch.cloudinaryId,{resource_type:"Pitch"})
     console.log("after destroy")
-    const removeVideoData=await ProjectVideo.findByIdAndDelete(req.params.id)
+    const removePitchData=await PitchData.findByIdAndDelete(req.params.id)
     console.log("after update")
     res.status(200).json({
       status:"successfully deleted",
-      RemoveVideo,
-      removeVideoData
+      RemovePitch,
+      removePitchData
     })
   }catch(err){
     res.status(500).json({error:err})
   }
 }
-module.exports = VedioCtrl;
+module.exports = PitchCtrl;

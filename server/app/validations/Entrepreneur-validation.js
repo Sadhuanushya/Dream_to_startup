@@ -46,7 +46,7 @@ const EnterPreneurValidation = joi.object({
     education: joi.array().items(educationSchema).max(5).optional(), 
     workExperience: joi.array().items(workExperienceItemSchema).min(0).max(6).optional(), 
     pastProject: joi.array().items(pastProjectSchema).max(10).optional(),
-    projectVideo:joi.string().optional(),
+    PitchData:joi.string().optional(),
     identityDocument:DocumentSchema.optional(),
     BusinessRegistrationDocument:DocumentSchema.optional()
 });

@@ -1,5 +1,5 @@
 const mongoose =require('mongoose')
-const { type } = require('../validations/Entrepreneur-validation')
+
 const LocationSchema=new mongoose.Schema({
     address:String,
     city:String,
@@ -23,7 +23,7 @@ const DocumentSchema=new mongoose.Schema({
     DocumentUrl:String,
     Cloudinary_Id:String
 })
-const InvesterSchema=new mongoose.Schema({
+const InvestorSchema=new mongoose.Schema({
     userId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
@@ -63,5 +63,5 @@ const InvesterSchema=new mongoose.Schema({
         default:false
     }
 },{timestamps:true})
-const Invester=mongoose.model('Invester',InvesterSchema)
-module.exports=Invester
+const Investor=mongoose.model('Investor',InvestorSchema)
+module.exports=Investor

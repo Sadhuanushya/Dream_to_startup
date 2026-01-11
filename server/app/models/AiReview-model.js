@@ -1,9 +1,8 @@
 const mongoose=require("mongoose");
 const AiReviewSchema=new mongoose.Schema({
-    videoId:{
+    pitchId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'ProjectVideo',
-        unique:true
+        ref:'PitchData'
     },
     review:{
         type:String,

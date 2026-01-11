@@ -14,15 +14,15 @@ const port=process.env.PORT;
 //middlewares
 const AuthenticateUser=require('./app/middlewares/AuthenticateUser')
 const AuthorizeUser=require('./app/middlewares/Authorizeuser')
-const {EntrepreneurUploads,InvesterUploads} =require("./app/middlewares/UploadConfig")
+const {EntrepreneurUploads,InvestorUploads} =require("./app/middlewares/UploadConfig")
 const upload=require('./app/middlewares/Multer')
 
 //controllers
-const VedioCtrl=require("./app/controllers/ProjectVideo-controller")
+const PitchCtrl=require("./app/controllers/Pitch-controller")
 const MessageController =require('./app/controllers/Message-controller');
 const UserCtrl=require('./app/controllers/Users-controller')
 const EntrepreneurCtrl=require("./app/controllers/Entrepreneur-Controller")
-const InvesterCtrl=require('./app/controllers/Investor-controller')
+const InvestorCtrl=require('./app/controllers/Investor-controller')
 const PaymentCtrl=require("./app/controllers/Payment-Controller");
 const AiReviewCtrl=require('./app/controllers/AiReview-controller')
 
@@ -41,19 +41,19 @@ app.get('/api/Entrepreneur/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","
 app.put('/api/Entrepreneur/:id',AuthenticateUser,AuthorizeUser(["admin","entrepreneur"]),EntrepreneurUploads,EntrepreneurCtrl.update)
 app.delete('/api/Entreprenuer/:id',AuthenticateUser,AuthorizeUser(["admin","entrepreneur"]),EntrepreneurCtrl.delete)
 
-//invester
-app.post('/api/Investor',AuthenticateUser,AuthorizeUser(["investor","user"]),InvesterUploads,InvesterCtrl.create)
-app.get('/api/Investors',AuthenticateUser,AuthorizeUser(["admin","investor","entrepreneur"]),InvesterCtrl.list)
-app.get('/api/Investor/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),InvesterCtrl.show)
-app.put('/api/Investor/:id',AuthenticateUser,AuthorizeUser(["investor","admin"]),InvesterUploads,InvesterCtrl.update)
-app.delete('/api/Investor/:id',AuthenticateUser,AuthorizeUser(["admin","investor"]),InvesterCtrl.delete)
+//Investor
+app.post('/api/Investor',AuthenticateUser,AuthorizeUser(["investor","user"]),InvestorUploads,InvestorCtrl.create)
+app.get('/api/Investors',AuthenticateUser,AuthorizeUser(["admin","investor","entrepreneur"]),InvestorCtrl.list)
+app.get('/api/Investor/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),InvestorCtrl.show)
+app.put('/api/Investor/:id',AuthenticateUser,AuthorizeUser(["investor","admin"]),InvestorUploads,InvestorCtrl.update)
+app.delete('/api/Investor/:id',AuthenticateUser,AuthorizeUser(["admin","investor"]),InvestorCtrl.delete)
 
-//video upload
-app.post('/api/video',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]), upload.single('video'), VedioCtrl.create);
-app.get('/api/Pitch',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),VedioCtrl.list);
-app.get('/api/videos/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),VedioCtrl.listByUser);
-app.put('/api/video/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin"]), upload.single('video'), VedioCtrl.update); 
-app.delete('/api/video/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin"]),VedioCtrl.delete);
+//Pitch upload
+app.post('/api/Pitch',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]), upload.single('Pitch'), PitchCtrl.create);
+app.get('/api/Pitch',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),PitchCtrl.list);
+app.get('/api/Pitchs/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin","investor"]),PitchCtrl.listByUser);
+app.put('/api/Pitch/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin"]), upload.single('Pitch'), PitchCtrl.update); 
+app.delete('/api/Pitch/:id',AuthenticateUser,AuthorizeUser(["entrepreneur","admin"]),PitchCtrl.delete);
 
 app.post("/api/messages/add", MessageController.addMessage); 
 app.get("/api/messages/get", MessageController.getAllMessage);

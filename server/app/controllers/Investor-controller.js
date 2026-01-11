@@ -1,21 +1,21 @@
-const InvesterValidation=require('../validations/Investor-validation')
-const Invester=require('../models/Investor-model')
+const InvestorValidation=require('../validations/Investor-validation')
+const Investor=require('../models/Investor-model')
 const cloudinary=require("cloudinary");
 const fs=require('fs');
-const { profile } = require('console');
-const InvesterCtrl={}
-InvesterCtrl.create=async(req,res)=>{
+
+const InvestorCtrl={}
+InvestorCtrl.create=async(req,res)=>{
 console.log(req.body)
     try{
-    const {error,value}=InvesterValidation.validate(req.body)
+    const {error,value}=InvestorValidation.validate(req.body)
     if(error){
         return res.status(400).json(error)
     }
-    const ExistUsername=await Invester.findOne({username:value.username})
+    const ExistUsername=await Investor.findOne({username:value.username})
     if(ExistUsername){
         return res.status(400).json("username not available")
     }
-    const Existemail=await Invester.findOne({email:value.email})
+    const Existemail=await Investor.findOne({email:value.email})
         if(Existemail){
            return  res.status(400).json({error:"An account with this email address already exists"})
         }
@@ -27,7 +27,7 @@ console.log(req.body)
       const file = req.files.verificationDocument[0];
       const result = await cloudinary.uploader.upload(file.path, {
         resource_type: "raw",
-        folder: "invester document",
+        folder: "Investor document",
         public_id: file.filename,
         overwrite: true
       });
@@ -58,7 +58,7 @@ console.log(req.body)
       const file = req.files.pastInvestment[0];
       const result = await cloudinary.uploader.upload(file.path, {
         resource_type: "raw",
-        folder: "invester document",
+        folder: "Investor document",
         public_id: file.filename,
         overwrite: true
       });
@@ -70,7 +70,7 @@ console.log(req.body)
           Cloudinary_Id: result.public_id
         }
     }
-    const profile=new Invester(value)
+    const profile=new Investor(value)
     console.log("value",value,req.body)
     profile.userId=req.userId
     if(documentUpload){
@@ -90,42 +90,42 @@ console.log(req.body)
         res.status(500).json(err)
     }
 }
-InvesterCtrl.list=async(req,res)=>{
+InvestorCtrl.list=async(req,res)=>{
     try{
-    const Investers= await Invester.find()
-    res.status(200).json(Investers)
+    const Investors= await Investor.find()
+    res.status(200).json(Investors)
     }catch(err){
         res.status(500).json(err)
     }
 }
-InvesterCtrl.show=async(req,res)=>{
+InvestorCtrl.show=async(req,res)=>{
     const id=req.params.id
     try{
-        const InvesterProfile=await Invester.findById({_id:id})
-        if(!InvesterProfile){
+        const InvestorProfile=await Investor.findById({_id:id})
+        if(!InvestorProfile){
            return res.status(404).json("record not found")
         }
-        res.status(200).json(InvesterProfile)
+        res.status(200).json(InvestorProfile)
     }
     catch(err){
         res.status(500).json(err)
     }
 }
-InvesterCtrl.update=async(req,res)=>{
+InvestorCtrl.update=async(req,res)=>{
     const id=req.params.id
-    const {error,value}=await InvesterValidation.validate(req.body)
+    const {error,value}=await InvestorValidation.validate(req.body)
     if(error){
         return res.status(400).json(error)
     }
     try{
-        const investerprofile=await Invester.findOne({_id:id})
-        if(!investerprofile){
+        const Investorprofile=await Investor.findOne({_id:id})
+        if(!Investorprofile){
             return  res.status(404).json("record not found")
         }
-        console.log("id",investerprofile.userId)
+        console.log("id",Investorprofile.userId)
         
      const isAdmin = req.role === "admin" 
-     const isOwner = req.userId == investerprofile.userId;
+     const isOwner = req.userId == Investorprofile.userId;
      if (!isAdmin && !isOwner) {
       return res.status(403).json({ error: "Unauthorized user" });
      }
@@ -133,8 +133,8 @@ InvesterCtrl.update=async(req,res)=>{
     let profileUpload=null;
     let pastInvestmentUpload=null;
      if (req.files && req.files.profilePicture) {
-        if(investerprofile.profilePicture?.Cloudinary_Id){
-        await cloudinary.uploader.destroy(investerprofile.profilePicture.Cloudinary_Id,{resource_type:"raw"});
+        if(Investorprofile.profilePicture?.Cloudinary_Id){
+        await cloudinary.uploader.destroy(Investorprofile.profilePicture.Cloudinary_Id,{resource_type:"raw"});
         console.log("profile picture delete from cloudinary")
         }
         const file = req.files.profilePicture[0];
@@ -153,15 +153,15 @@ InvesterCtrl.update=async(req,res)=>{
 console.log("profileupload",profileUpload)
      }
      if (req.files && req.files.verificationDocument) { 
-        if(investerprofile.verificationDocument?.Cloudinary_Id){
-        await cloudinary.uploader.destroy(investerprofile.verificationDocument.Cloudinary_Id,{resource_type:"raw"});
+        if(Investorprofile.verificationDocument?.Cloudinary_Id){
+        await cloudinary.uploader.destroy(Investorprofile.verificationDocument.Cloudinary_Id,{resource_type:"raw"});
         console.log("business document delete from cloudinary")           
         }    
 
           const file = req.files.verificationDocument[0];
             const result = await cloudinary.uploader.upload(file.path, {
             resource_type: "raw",
-            folder: "invester document",
+            folder: "Investor document",
             public_id: file.filename,
             overwrite: true
   });
@@ -176,15 +176,15 @@ console.log("profileupload",profileUpload)
 
 
      if (req.files && req.files.pastInvestment) {
-        if(investerprofile.pastInvestment?.Cloudinary_Id){
-        await cloudinary.uploader.destroy(investerprofile.pastInvestment.Cloudinary_Id,{resource_type:"raw"});
+        if(Investorprofile.pastInvestment?.Cloudinary_Id){
+        await cloudinary.uploader.destroy(Investorprofile.pastInvestment.Cloudinary_Id,{resource_type:"raw"});
         console.log("identity delete from cloudinary")
         }
 
         const file = req.files.pastInvestment[0];
         const result = await cloudinary.uploader.upload(file.path, {
         resource_type: "raw",
-        folder: "invester document",
+        folder: "Investor document",
         public_id: file.filename,
         overwrite: true
      });
@@ -203,46 +203,46 @@ console.log("result",result.secure_url)
       updateData.verificationDocument=documentUpload;
       updateData.pastInvestment=pastInvestmentUpload
       console.log("data created")
-        const InvesterProfileUpdate =await Invester.findOneAndUpdate({_id:id},updateData,{new:true})
+        const InvestorProfileUpdate =await Investor.findOneAndUpdate({_id:id},updateData,{new:true})
 
-        res.status(200).json(InvesterProfileUpdate)
+        res.status(200).json(InvestorProfileUpdate)
     }catch(err){
         res.status(500).json(err)
     }
 }
-InvesterCtrl.delete=async(req,res)=>{
+InvestorCtrl.delete=async(req,res)=>{
     const id=req.params.id
     try{
-     const investerprofile=await Invester.findOne({_id:id})
-        if(!investerprofile){
+     const Investorprofile=await Investor.findOne({_id:id})
+        if(!Investorprofile){
             return  res.status(404).json("record not found")
         }
-        console.log("id",investerprofile.userId)
+        console.log("id",Investorprofile.userId)
         
      const isAdmin = req.role === "admin" 
-     const isOwner = req.userId == investerprofile.userId;
+     const isOwner = req.userId == Investorprofile.userId;
      if (!isAdmin && !isOwner) {
       return res.status(403).json({ error: "Unauthorized user" });
      }
-    if (investerprofile.profilePicture.Cloudinary_Id) {
-        await cloudinary.uploader.destroy(investerprofile.profilePicture.Cloudinary_Id,{resource_type:"raw"});
+    if (Investorprofile.profilePicture.Cloudinary_Id) {
+        await cloudinary.uploader.destroy(Investorprofile.profilePicture.Cloudinary_Id,{resource_type:"raw"});
         console.log("profile picture delete from cloudinary")
       }
-    if (investerprofile.verificationDocument.Cloudinary_Id) {
-        await cloudinary.uploader.destroy(investerprofile.verificationDocument.Cloudinary_Id,{resource_type:"raw"});
+    if (Investorprofile.verificationDocument.Cloudinary_Id) {
+        await cloudinary.uploader.destroy(Investorprofile.verificationDocument.Cloudinary_Id,{resource_type:"raw"});
         console.log("verification delete from cloudinary")
       }
 
-    if (investerprofile.pastInvestment.Cloudinary_Id) {
-        await cloudinary.uploader.destroy(investerprofile.pastInvestment.Cloudinary_Id,{resource_type:"raw"});
+    if (Investorprofile.pastInvestment.Cloudinary_Id) {
+        await cloudinary.uploader.destroy(Investorprofile.pastInvestment.Cloudinary_Id,{resource_type:"raw"});
         console.log("past investment delete from cloudinary")
       }
-        const InvesterProfile=await Invester.findOneAndDelete({_id:id})
-        res.status(200).json(InvesterProfile)
+        const InvestorProfile=await Investor.findOneAndDelete({_id:id})
+        res.status(200).json(InvestorProfile)
     }catch(err){
         res.status(500).json(err)
     }
 }
 
 
-module.exports=InvesterCtrl;
+module.exports=InvestorCtrl;

@@ -69,9 +69,9 @@ const EntrepreneurSchema=new mongoose.Schema({
         type:DocumentSchema,
         default:{}
     },
-    projectVideo:{
+    PitchData:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"ProjectVideo"
+        ref:"PitchData"
     },
     isVerified:{
         type:Boolean,

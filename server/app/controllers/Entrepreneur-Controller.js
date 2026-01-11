@@ -99,7 +99,7 @@ res.status(201).json({
 }
 EntrepreneurCtrl.list=async(req,res)=>{
     try{
-    const Entrepreneurs= await Entrepreneur.find().populate('projectVideo',['_id','videoUrl'])
+    const Entrepreneurs= await Entrepreneur.find().populate('PitchData',['_id','pitchUrl'])
     res.status(200).json(Entrepreneurs)
     console.log(Entrepreneurs)
     }catch(err){
@@ -110,7 +110,7 @@ EntrepreneurCtrl.list=async(req,res)=>{
 EntrepreneurCtrl.show=async(req,res)=>{
     const id=req.params.id
     try{
-        const EntrepreneurProfile=await Entrepreneur.findOne({_id:id}).populate('projectVideo',['_id','videoUrl'])
+        const EntrepreneurProfile=await Entrepreneur.findOne({_id:id}).populate('PitchData',['_id','pitchUrl'])
         if(!EntrepreneurProfile){
             return res.status(404).json("record not found")
         }

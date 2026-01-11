@@ -1,13 +1,13 @@
 const mongoose=require('mongoose')
-const ProjectVideoSchema=new mongoose.Schema({
+const PitchSchema=new mongoose.Schema({
     EnterprenuerId:{
     type:mongoose.Schema.Types.ObjectId,
     ref:'User'
     },
-    Title:String,
+    startup:String,
     requireCapital:Number,
     summary:String,
-    videoUrl:String,
+    pitchUrl:String,
     cloudinaryId:String,
     investorInterests:{
         type:[mongoose.Schema.Types.ObjectId],
@@ -16,5 +16,5 @@ const ProjectVideoSchema=new mongoose.Schema({
     },
     viewCount:Number,
 },{timestamps:true})
-const VideoData=mongoose.model("ProjectVideo",ProjectVideoSchema)
-module.exports=VideoData;
+const PitchData=mongoose.model("PitchData",PitchSchema)
+module.exports=PitchData;

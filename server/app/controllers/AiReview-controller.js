@@ -1,6 +1,6 @@
 const AiServices=require("./AiServices")
 const mongoose=require('mongoose');
-const projectVideo=require("../models/ProjectVideo-model")
+const PitchData=require("../models/Pitch-model")
 const AiReview=require("../models/AiReview-model");
 
 
@@ -8,20 +8,23 @@ const AiReviewCtrl={}
 
 AiReviewCtrl.getResponse = async (req, res)=>{
     const id=req.params.id;
+    console.log("paramsid",id)
 try{
-    const Aireview=await AiReview.findOne({videoId:new mongoose.Types.ObjectId(id)});
-
-    if(Aireview){
-        return res.status(200).json({response:Aireview});
+    const reviewResponse=await AiReview.findOne({pitchId:new mongoose.Types.ObjectId(id)});
+    console.log("reviewResponse",reviewResponse)
+    if(reviewResponse){
+        return res.status(200).json({response:reviewResponse});
     }
 
-    const Video=await projectVideo.findById(id)
-    if(!Video.summary){
+    const Pitch=await PitchData.findById(id)
+    console.log('Pitch',Pitch)
+   
+    if(!Pitch.summary){
         return res.status(400).json({error: "summary is required"})
     }
-    const response = await AiServices(Video.summary);
+    const response = await AiServices(Pitch.summary);
     const review=new AiReview({
-    videoId:id,
+    pitchId:id,
     review: response
 });
     await review.save();
