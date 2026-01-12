@@ -1,49 +1,56 @@
-
+const mongoose = require("mongoose");
 const Message = require("../models/MessageChat-model");
 
-module.exports = {
+const MessageCtrl = {};
 
-  addMessage: async (req, res) => {
+/**
+ * MESSAGE CONTROLLER
+ */
+
+// 1. Send Message (Used for HTTP fallback or direct persistence)
+MessageCtrl.sent = async (req, res) => {
+    const { senderId, receiverId, text } = req.body;
     try {
-      const { from, to, message } = req.body;
-      const data = await Message.create({
-        message: { text: message },
-        users: [from, to],
-        sender: from
-      });
-
-      if (!data) {
-        return res.status(500).json({ msg: "Failed to add message to the database" });
-      }
-     res.status(201).json({ msg: "Message added successfully." });
-    } catch (err) {
-      res.status(500).json({error:err})
+        const newMessage = new Message({
+            senderId,
+            receiverId,
+            text
+        });
+        const savedMessage = await newMessage.save();
+        // Added response handling (was missing in your snippet)
+        return res.status(201).json(savedMessage);
+    } catch (error) {
+        console.error("Error saving message:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
     }
-  },
-
-  getAllMessage: async (req, res) => {
-    try {
-      const { from, to } = req.query; 
-
-      if (!from || !to) {
-          return res.status(400).json({ msg: "Missing 'from' or 'to' user IDs in query." });
-      }
-
-      const messages = await Message.find({
-        users: { $all: [from, to] }
-      })
-        .sort({ updatedAt: 1 });
-
-      const projectMessages = messages.map((msg) => {
-        return {
-          fromSelf: msg.sender.toString() === from,
-          message: msg.message.text
-        };
-      });
-
-      return res.status(200).json(projectMessages);
-    } catch (err) {
-      res.status(500).json({error:err})
-    }
-  }
 };
+
+// 2. Get conversation history between two users
+MessageCtrl.getmessage = async (req, res) => {
+    try {
+        const { userId, otherUserId } = req.params;
+        const messages = await Message.find({
+            $or: [
+                { senderId: userId, receiverId: otherUserId },
+                { senderId: otherUserId, receiverId: userId }
+            ]
+        }).sort({ createdAt: 1 });
+
+        res.status(200).json(messages);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch messages" });
+    }
+};
+
+// 3. Mark messages as seen
+MessageCtrl.seen = async (req, res) => {
+    try {
+        const { messageId } = req.body;
+        const updated = await Message.findByIdAndUpdate(messageId, { seen: true }, { new: true });
+        res.status(200).json(updated);
+    } catch (error) {
+        res.status(500).json({ error: "Update failed" });
+    }
+};
+
+module.exports = MessageCtrl;
