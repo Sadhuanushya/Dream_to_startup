@@ -62,7 +62,7 @@ app.get('/api/Pitchs/:id', AuthenticateUser, AuthorizeUser(["entrepreneur", "adm
 app.put('/api/Pitch/:id', AuthenticateUser, AuthorizeUser(["entrepreneur", "admin"]), upload.single('Pitch'), PitchCtrl.update);
 app.delete('/api/Pitch/:id', AuthenticateUser, AuthorizeUser(["entrepreneur", "admin"]), PitchCtrl.delete);
 
-app.post("/api/messages/add", MessageCtrl.sent);
+app.post("/api/messages/send", MessageCtrl.sent);
 app.get("/api/messages/get/:userId/:otherUserId", MessageCtrl.getmessage);
 
 app.get('/api/Aireview/:id', AuthenticateUser, AuthorizeUser(["entrepreneur", "admin", "investor"]), AiReviewCtrl.getResponse);

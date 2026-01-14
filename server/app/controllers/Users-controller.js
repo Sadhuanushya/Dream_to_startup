@@ -92,7 +92,7 @@ UserCtrl.login=async(req,res)=>{
         valid.clickcount+=1;
         valid.lastLogin=new Date()
         await  valid.save()
-        res.status(200).json({token:token})
+        res.status(200).json({token:token,userId:valid._id});
 
     }catch(err){
         console.log(err)
