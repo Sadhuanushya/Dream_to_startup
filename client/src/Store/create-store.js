@@ -3,13 +3,15 @@ import investorReducer from "../Slice/Investor-Slice";
 import UserReducer from "../Slice/Users-Slice";
 import EntrepreneurReducer from "../Slice/Entreprenuer-Slice"
 import PitchReducer from "../Slice/Pitch-Slice"
+import MessageReducer from "../Slice/Message-Slice"
 const createStore=()=>{
     return configureStore({
         reducer:{
             investor:investorReducer,
             Users:UserReducer,
             Entrepreneur:EntrepreneurReducer,
-            Pitch:PitchReducer
+            Pitch:PitchReducer,
+            Message:MessageReducer
         }
     })
 }

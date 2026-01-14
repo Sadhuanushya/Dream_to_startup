@@ -13,6 +13,9 @@ const userReducer=(state,action)=>{
         case "Account":{
             return{...state,user:action.payload}
         }
+        case "UserId":{
+            return {...state,senderId:action.payload}
+        }
         default:{
             return {...state}
         }
@@ -22,7 +25,8 @@ export default function AuthProvider(props){
     const navigate=useNavigate();
     const[userState,userDispatch]=useReducer(userReducer,{
         user:null,
-        serverError:''
+        serverError:'',
+        senderId:null
     });
     console.log("user",userState)
 const handleAccount=async()=>{
@@ -64,6 +68,8 @@ try{
         navigate('/dashboard')
         resetForm()
     }
+     userDispatch({type:"UserId",payload:response.data.userId})
+    // console.log("response for login",response.data);
 
 }catch(err){
     console.log(err)

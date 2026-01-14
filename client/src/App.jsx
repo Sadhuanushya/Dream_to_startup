@@ -28,10 +28,11 @@ export default function App() {
         <Route path="investors" element={<Investors/>}/>
         <Route path ="entrepreneurs" element={<Entrepreneurs/>}/>
         <Route path="Pitch" element={<Pitch/>}/>
+         <Route path="message" element={<Message/>}/>
         <Route path="notifications" element={<Notifications/>}/>
         <Route path="entrepreneurProfile" element={<EntrepreneurProfile/>}/>
         <Route path="InvestorProfile" element={<InvestorProfile/>}/>
-        <Route path="message" element={<Message/>}/>
+        
         <Route path="subscription" element={<Subscription/>}/>
         <Route path="admin" element={<Admin/>}/>
        

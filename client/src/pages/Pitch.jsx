@@ -106,12 +106,6 @@ export default function Pitch() {
           </div>
         ))}
       </div>
-
-      {(!data || data.length === 0) && (
-        <div className="text-center py-20 bg-white rounded-[3rem] border-2 border-dashed border-slate-200">
-           <p className="text-slate-400 font-bold uppercase tracking-widest">No pitches found in the database.</p>
-        </div>
-      )}
     </div>
   );
 };
