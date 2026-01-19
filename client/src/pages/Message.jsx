@@ -16,14 +16,14 @@ import { useContext } from 'react';
 import UserContext from '../Context/UserContext';
 export default function Message() {
   const dispatch = useDispatch();
-  const { messages, loading, typingStatus, onlineStatus } = useSelector(state => state.Message);
+  const { messages, loading, typingStatus, onlineStatus,setReceiver } = useSelector(state => state.Message);
   const { senderId } = useContext(UserContext);
-  const {setReceiver}=useSelector((state)=>state.Message)
   const [inputText, setInputText] = useState('');
   const scrollRef = useRef(null);
 const safeMessages = Array.isArray(messages) ? messages : [];
-  const currentUser = { id: senderId};
-  const receiver = {id:setReceiver};
+  const currentUser = { id:localStorage.getItem("senderId") };
+  const receiver = {id:localStorage.getItem("receiverId") };
+  console.log("final","cu",currentUser,"re",receiver)
 
   useEffect(() => {
     socket.connect();

@@ -2,7 +2,8 @@ import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { fetchEntrepreneursList } from "../Slice/Entreprenuer-Slice";
-// export default function Entrepreneurs(){
+import { setReceiver } from "../Slice/Message-Slice"
+
 
 //     return(
 //         <>
@@ -43,18 +44,18 @@ const RocketIcon = () => (
 );
 
 export default function Entrepreneurs() {
-    const dispatch=useDispatch()
-    const {data}=useSelector((state)=>{
-        return state.Entrepreneur;
-    })
-    console.log(data.fullname)
- useEffect(() => {
-  dispatch(fetchEntrepreneursList());
-}, [dispatch]);
-    console.log(data,"Entrepreneur data from useSelector")
+    const dispatch = useDispatch()
+    const { data, listLoading, listError } = useSelector((state) => state.Entrepreneur)
 
-  const placeholderImg = "https://images.unsplash.com/photo-1551434678-e076c223a692?w=300&h=300&fit=crop";
+    useEffect(() => {
+        dispatch(fetchEntrepreneursList());
+    }, [dispatch]);
 
+    const handleReceiver = (id) => {
+        dispatch(setReceiver(id));
+    }
+
+    const placeholderImg = "https://images.unsplash.com/photo-1551434678-e076c223a692?w=300&h=300&fit=crop";
   return (
     <div className="min-h-screen bg-white p-6 md:p-12 font-sans antialiased text-slate-900">
       <div className="max-w-4xl mx-auto">
@@ -64,6 +65,21 @@ export default function Entrepreneurs() {
           <p className="text-slate-500 mt-2 text-lg">Direct access to innovative minds and their ventures.</p>
         </header>
 
+        {listError && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+            {typeof listError === 'string' ? listError : 'Failed to load entrepreneurs'}
+          </div>
+        )}
+
+        {listLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="text-slate-500">Loading entrepreneurs...</div>
+          </div>
+        ) : !data || data.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-slate-500 text-lg">No entrepreneurs found</p>
+          </div>
+        ) : (
           <div className="space-y-6">
             {data.map((ele) => (
               <div 
@@ -78,7 +94,7 @@ export default function Entrepreneurs() {
                       alt={ele.fullname}
                       className="w-20 h-20 md:w-28 md:h-28 rounded-2xl object-cover ring-2 ring-slate-50 group-hover:ring-indigo-50 transition-all"
                     />
-                    {ele.verified && (
+                    {ele.isVerified && (
                       <div className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md border border-slate-50">
                         <VerifiedBadge />
                       </div>
@@ -92,12 +108,14 @@ export default function Entrepreneurs() {
                     </div>
                     
                     <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm text-slate-500 mb-4">
-                      <span className="flex items-center gap-1.5 text-indigo-600 font-bold bg-indigo-50 px-3 py-1.5 rounded-xl">
-                        <RocketIcon /> {ele.startup || "Stealth Startup"}
-                      </span>
-                      {ele.location && (
+                      {ele.skills && ele.skills.length > 0 && (
+                        <span className="flex items-center gap-1.5 text-indigo-600 font-bold bg-indigo-50 px-3 py-1.5 rounded-xl">
+                          <RocketIcon /> {ele.skills[0]}
+                        </span>
+                      )}
+                      {ele.address?.city && (
                         <span className="flex items-center gap-1.5 font-medium">
-                          <MapPin /> {ele.location}
+                          <MapPin /> {ele.address.city}
                         </span>
                       )}
                     </div>
@@ -109,7 +127,10 @@ export default function Entrepreneurs() {
 
                   {/* Action Buttons */}
                   <div className="flex flex-row md:flex-col justify-end gap-3 min-w-[140px]">
-                    <button className="flex-1 md:flex-none bg-slate-900 text-white px-5 py-3 rounded-2xl text-sm font-bold hover:bg-indigo-600 active:scale-95 transition-all">
+                    <button 
+                      className="flex-1 md:flex-none bg-slate-900 text-white px-5 py-3 rounded-2xl text-sm font-bold hover:bg-indigo-600 active:scale-95 transition-all" 
+                      onClick={() => handleReceiver(ele._id)}
+                    >
                       Connect
                     </button>
                     <button className="flex-1 md:flex-none border border-slate-200 text-slate-600 px-5 py-3 rounded-2xl text-sm font-bold hover:bg-slate-50 transition-all">
@@ -120,6 +141,7 @@ export default function Entrepreneurs() {
               </div>
             ))}
           </div>
+        )}
       </div>
     </div>
   );

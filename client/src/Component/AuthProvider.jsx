@@ -13,7 +13,8 @@ const userReducer=(state,action)=>{
         case "Account":{
             return{...state,user:action.payload}
         }
-        case "UserId":{
+        case "userId":{
+            
             return {...state,senderId:action.payload}
         }
         default:{
@@ -32,6 +33,7 @@ export default function AuthProvider(props){
 const handleAccount=async()=>{
         if(localStorage.getItem('token')){
                 try{
+                    console.log("fetching account details")
                     const response=await axios.get('http://localhost:3080/api/account',{headers:{Authorization:localStorage.getItem('token')}})
                     console.log("response",response.data)
                     userDispatch({type:"Account",payload:response.data})
@@ -44,6 +46,7 @@ const handleAccount=async()=>{
     }
 useEffect(() => {
   handleAccount();
+
 }, []);
     const handleRegister=async(RegisterData,resetForm)=>{
          try {
@@ -64,22 +67,25 @@ const handleLogin=async(loginData,resetForm)=>{
 try{
     const response=await axios.post('http://localhost:3080/api/login',loginData);
     localStorage.setItem('token',response.data.token);
+    localStorage.setItem('senderId',response.data.userId);
     if(response.data){
+        userDispatch({type:"userId",payload:response.data.userId})
+        console.log("user id from login",response.data.userId)  
         navigate('/dashboard')
         resetForm()
     }
-     userDispatch({type:"UserId",payload:response.data.userId})
+    
     // console.log("response for login",response.data);
 
 }catch(err){
     console.log(err)
     
 }
-console.log("user",userState)
+console.log("user",userState);
     }
     return(
         <>
-         
+     
         <UserContext.Provider value={{...userState,handleRegister,handleLogin,handleAccount}}>
             {props.children}
         </UserContext.Provider>

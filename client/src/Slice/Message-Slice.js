@@ -34,11 +34,12 @@ export const sendMessages = createAsyncThunk(
   }
 );
 
+
 const MessageSlice = createSlice({
   name: 'Message',
   initialState: {
     messages: [],
-    setReceiver:null,
+    setReceiver:localStorage.getItem("receiverId")||null,
     loading: false,
     typingStatus: false,
     onlineStatus: 'connecting'
@@ -50,7 +51,9 @@ const MessageSlice = createSlice({
     },
     setReceiver: (state, action) => {
       state.setReceiver= action.payload;
+      localStorage.setItem("receiverId",action.payload);
     },
+
     setOnlineStatus: (state, action) => {
       state.onlineStatus = action.payload;
     }
@@ -71,5 +74,5 @@ const MessageSlice = createSlice({
 });
   }
 });
-export const { setReceiver,addMessage, setTyping, setOnlineStatus } = MessageSlice.actions;
+export const { setReceiver,addMessage, setTyping, setOnlineStatus ,setSenderId} = MessageSlice.actions;
 export default MessageSlice.reducer;
