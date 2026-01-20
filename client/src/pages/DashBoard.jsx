@@ -1,13 +1,16 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { FiBell, FiSearch, FiUser, FiSettings, FiBriefcase } from "react-icons/fi";
-
+import { useContext } from "react";
+import UserContext from "../Context/UserContext";
 export default function Dashboard() {
-
+const {user}=useContext(UserContext);
+console.log("dashboard user",user)
   const sections = [
     { name: "Investors", to: "investors" },
     { name: "Entrepreneurs", to: "entrepreneurs" },
     { name: "Pitch", to: "Pitch" },
     { name: "Messages", to: "message" },
+    { name: "Subscription", to: "subscription" }
   ];
 
   return (
@@ -80,11 +83,15 @@ export default function Dashboard() {
            <Link to="admin" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
              <FiSettings className="text-indigo-600" /> Admin Panel
            </Link>
-           <Link to="entrepreneurProfile" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
-             <FiBriefcase className="text-indigo-600" /> Startup Profile
-           </Link>
-           <Link to="InvestorProfile" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
+           {user?.role == "entrepreneur" && <Link to="entrepreneurProfile" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
+             <FiBriefcase className="text-indigo-600" /> Entreprenuer Profile
+           </Link>}
+          {user?.role == "investor" && <Link to="InvestorProfile" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
              <FiUser className="text-indigo-600" /> Investor Profile
+           </Link>} 
+
+           <Link to="subscription" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
+             <FiUser className="text-indigo-600" /> Subscription
            </Link>
         </div>
 

@@ -22,14 +22,15 @@ export const submitEntrepreneurProfile = createAsyncThunk(
     "entrepreneurs/submitProfile",
     async (formData, { rejectWithValue }) => {
         try {
+            console.log("its came to entreprenuer slice")
             const token = localStorage.getItem('token');
-            
+             console.log("token got")
             // If formData is already FormData object, use it directly
             // Otherwise, create a new FormData
             let multipartFormData = formData;
             if (!(formData instanceof FormData)) {
                 multipartFormData = new FormData();
-                
+                 console.log("its came to multiformdtata")
                 multipartFormData.append('fullname', formData.fullname);
                 multipartFormData.append('email', formData.email);
                 multipartFormData.append('phone', formData.phone);
@@ -40,18 +41,18 @@ export const submitEntrepreneurProfile = createAsyncThunk(
                 multipartFormData.append('education', JSON.stringify(formData.education));
                 multipartFormData.append('workExperience', JSON.stringify(formData.workExperience));
                 multipartFormData.append('pastProject', JSON.stringify(formData.pastProject));
-                
+                 console.log("its came to after append")
                 if (formData.profilePicture) multipartFormData.append('profilePicture', formData.profilePicture);
                 if (formData.identityDocument) multipartFormData.append('identityDocument', formData.identityDocument);
                 if (formData.BusinessRegistrationDocument) multipartFormData.append('BusinessRegistrationDocument', formData.BusinessRegistrationDocument);
             }
-            
+             console.log("its came to before api call")
             const response = await axios.post("http://localhost:3080/api/Entrepreneur", multipartFormData, {
                 headers: {
-                    Authorization: token,
-                    'Content-Type': 'multipart/form-data'
+                    Authorization: token
                 }
             });
+             console.log("its came to after api call")
             console.log(response.data);
             return response.data;
         } catch (err) {

@@ -32,8 +32,8 @@ export default function App() {
         <Route path="notifications" element={<Notifications/>}/>
         <Route path="entrepreneurProfile" element={<EntrepreneurProfile/>}/>
         <Route path="InvestorProfile" element={<InvestorProfile/>}/>
-        
-        <Route path="subscription" element={<Subscription/>}/>
+        <Route path="/dashboard/investors/message" element={<Message/>}/>  
+        <Route path="Subscription" element={<Subscription/>}/>
         <Route path="admin" element={<Admin/>}/>
        
 

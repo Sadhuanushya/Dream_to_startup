@@ -16,6 +16,19 @@ export const fetchMessages = createAsyncThunk(
     }
   }
 );
+
+export const fetchConversations = createAsyncThunk(
+  'chat/fetchConversations',
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`http://localhost:3080/api/messages/conversations/${userId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch conversations');
+    }
+  }
+);
+
 export const sendMessages = createAsyncThunk(
   'chat/sendMessages',
   async (msgData, { rejectWithValue }) => {
@@ -39,8 +52,10 @@ const MessageSlice = createSlice({
   name: 'Message',
   initialState: {
     messages: [],
+    conversations: [],
     setReceiver:localStorage.getItem("receiverId")||null,
     loading: false,
+    conversationLoading: false,
     typingStatus: false,
     onlineStatus: 'connecting'
   },
@@ -51,11 +66,16 @@ const MessageSlice = createSlice({
     },
     setReceiver: (state, action) => {
       state.setReceiver= action.payload;
+      console.log("receiverId",state.setReceiver,action.payload)
       localStorage.setItem("receiverId",action.payload);
     },
 
     setOnlineStatus: (state, action) => {
       state.onlineStatus = action.payload;
+    },
+
+    addMessage: (state, action) => {
+      state.messages.push(action.payload);
     }
   },
   extraReducers: (builder) => {
@@ -66,13 +86,16 @@ const MessageSlice = createSlice({
         state.messages = action.payload;
       })
       .addCase(fetchMessages.rejected, (state) => { state.loading = false; })
+      .addCase(fetchConversations.pending, (state) => { state.conversationLoading = true; })
+      .addCase(fetchConversations.fulfilled, (state, action) => {
+        state.conversationLoading = false;
+        state.conversations = action.payload;
+      })
+      .addCase(fetchConversations.rejected, (state) => { state.conversationLoading = false; })
       .addCase(sendMessages.fulfilled,(state, action) => {
-    //   // Check for duplicates to prevent double-rendering
-    //   const exists = state.messages.find(m => m._id === action.payload._id);
          state.messages.push(action.payload);
-    
-});
+    });
   }
 });
-export const { setReceiver,addMessage, setTyping, setOnlineStatus ,setSenderId} = MessageSlice.actions;
+export const { setReceiver, addMessage, setTyping, setOnlineStatus ,setSenderId} = MessageSlice.actions;
 export default MessageSlice.reducer;

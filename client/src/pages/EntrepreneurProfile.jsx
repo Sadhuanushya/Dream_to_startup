@@ -4,112 +4,112 @@ import Joi from 'joi';
 import { submitEntrepreneurProfile, resetEntrepreneurError, resetEntrepreneurSuccess } from '../Slice/Entreprenuer-Slice';
 
 // Joi Validation Schema
-const entrepreneurSchema = Joi.object({
-  fullname: Joi.string()
-    .trim()
-    .min(3)
-    .max(50)
-    .required()
-    .messages({
-      'string.empty': 'Full name is required',
-      'string.min': 'Full name must be at least 3 characters',
-      'string.max': 'Full name must not exceed 50 characters'
-    }),
-  email: Joi.string()
-    .email({ tlds: { allow: false } })
-    .required()
-    .messages({
-      'string.empty': 'Email is required',
-      'string.email': 'Please enter a valid email address'
-    }),
-  phone: Joi.string()
-    .pattern(/^[6-9]\d{9}$/)
-    .required()
-    .messages({
-      'string.empty': 'Phone number is required',
-      'string.pattern.base': 'Phone number must be a valid 10-digit number'
-    }),
-  bio: Joi.string()
-    .trim()
-    .min(10)
-    .max(500)
-    .required()
-    .messages({
-      'string.empty': 'Bio is required',
-      'string.min': 'Bio must be at least 10 characters',
-      'string.max': 'Bio must not exceed 500 characters'
-    }),
-  linkedinUrl: Joi.string()
-    .uri()
-    .required()
-    .messages({
-      'string.empty': 'LinkedIn URL is required',
-      'string.uri': 'Please enter a valid URL'
-    }),
-  skills: Joi.array()
-    .items(Joi.string().trim().min(2).max(50))
-    .min(1)
-    .required()
-    .messages({
-      'array.min': 'Please add at least one skill'
-    }),
-  address: Joi.object({
-    address: Joi.string()
-      .trim()
-      .max(200)
-      .required()
-      .messages({ 'string.empty': 'Address is required' }),
-    city: Joi.string()
-      .trim()
-      .max(40)
-      .required()
-      .messages({ 'string.empty': 'City is required' }),
-    state: Joi.string()
-      .trim()
-      .max(40)
-      .required()
-      .messages({ 'string.empty': 'State is required' }),
-    country: Joi.string()
-      .trim()
-      .max(40)
-      .required()
-      .messages({ 'string.empty': 'Country is required' }),
-    pincode: Joi.string()
-      .pattern(/^\d{6}$/)
-      .required()
-      .messages({
-        'string.empty': 'Pincode is required',
-        'string.pattern.base': 'Pincode must be 6 digits'
-      })
-  }).required(),
-  education: Joi.array()
-    .items(Joi.object({
-      institutionName: Joi.string().trim().min(3).max(80).required(),
-      course: Joi.string().trim().min(3).max(50).required(),
-      year: Joi.number().integer().min(1900).max(new Date().getFullYear()).required()
-    }))
-    .min(1)
-    .required()
-    .messages({ 'array.min': 'Please add at least one education record' }),
-  workExperience: Joi.array()
-    .items(Joi.object({
-      company: Joi.string().trim().min(3).max(100).required(),
-      position: Joi.string().trim().min(3).max(60).required(),
-      years: Joi.number().integer().min(0).max(50).required()
-    }))
-    .min(1)
-    .required()
-    .messages({ 'array.min': 'Please add at least one work experience' }),
-  pastProject: Joi.array()
-    .items(Joi.object({
-      projectname: Joi.string().trim().min(3).max(50).required(),
-      websiteUrl: Joi.string().uri().max(100).required(),
-      revenue: Joi.number().min(0).required()
-    }))
-    .min(1)
-    .required()
-    .messages({ 'array.min': 'Please add at least one project' })
-});
+// const entrepreneurSchema = Joi.object({
+//   fullname: Joi.string()
+//     .trim()
+//     .min(3)
+//     .max(50)
+//     .required()
+//     .messages({
+//       'string.empty': 'Full name is required',
+//       'string.min': 'Full name must be at least 3 characters',
+//       'string.max': 'Full name must not exceed 50 characters'
+//     }),
+//   email: Joi.string()
+//     .email({ tlds: { allow: false } })
+//     .required()
+//     .messages({
+//       'string.empty': 'Email is required',
+//       'string.email': 'Please enter a valid email address'
+//     }),
+//   phone: Joi.string()
+//     .pattern(/^[6-9]\d{9}$/)
+//     .required()
+//     .messages({
+//       'string.empty': 'Phone number is required',
+//       'string.pattern.base': 'Phone number must be a valid 10-digit number'
+//     }),
+//   bio: Joi.string()
+//     .trim()
+//     .min(10)
+//     .max(500)
+//     .required()
+//     .messages({
+//       'string.empty': 'Bio is required',
+//       'string.min': 'Bio must be at least 10 characters',
+//       'string.max': 'Bio must not exceed 500 characters'
+//     }),
+//   linkedinUrl: Joi.string()
+//     .uri()
+//     .required()
+//     .messages({
+//       'string.empty': 'LinkedIn URL is required',
+//       'string.uri': 'Please enter a valid URL'
+//     }),
+//   skills: Joi.array()
+//     .items(Joi.string().trim().min(2).max(50))
+//     .min(1)
+//     .required()
+//     .messages({
+//       'array.min': 'Please add at least one skill'
+//     }),
+//   address: Joi.object({
+//     address: Joi.string()
+//       .trim()
+//       .max(200)
+//       .required()
+//       .messages({ 'string.empty': 'Address is required' }),
+//     city: Joi.string()
+//       .trim()
+//       .max(40)
+//       .required()
+//       .messages({ 'string.empty': 'City is required' }),
+//     state: Joi.string()
+//       .trim()
+//       .max(40)
+//       .required()
+//       .messages({ 'string.empty': 'State is required' }),
+//     country: Joi.string()
+//       .trim()
+//       .max(40)
+//       .required()
+//       .messages({ 'string.empty': 'Country is required' }),
+//     pincode: Joi.string()
+//       .pattern(/^\d{6}$/)
+//       .required()
+//       .messages({
+//         'string.empty': 'Pincode is required',
+//         'string.pattern.base': 'Pincode must be 6 digits'
+//       })
+//   }).required(),
+//   education: Joi.array()
+//     .items(Joi.object({
+//       institutionName: Joi.string().trim().min(3).max(80).required(),
+//       course: Joi.string().trim().min(3).max(50).required(),
+//       year: Joi.number().integer().min(1900).max(new Date().getFullYear()).required()
+//     }))
+//     .min(1)
+//     .required()
+//     .messages({ 'array.min': 'Please add at least one education record' }),
+//   workExperience: Joi.array()
+//     .items(Joi.object({
+//       company: Joi.string().trim().min(3).max(100).required(),
+//       position: Joi.string().trim().min(3).max(60).required(),
+//       years: Joi.number().integer().min(0).max(50).required()
+//     }))
+//     .min(1)
+//     .required()
+//     .messages({ 'array.min': 'Please add at least one work experience' }),
+//   pastProject: Joi.array()
+//     .items(Joi.object({
+//       projectname: Joi.string().trim().min(3).max(50).required(),
+//       websiteUrl: Joi.string().uri().max(100).required(),
+//       revenue: Joi.number().min(0).required()
+//     }))
+//     .min(1)
+//     .required()
+//     .messages({ 'array.min': 'Please add at least one project' })
+// });
 
 export default function EntrepreneurProfile() {
   const dispatch = useDispatch();
@@ -181,20 +181,20 @@ export default function EntrepreneurProfile() {
         .filter(s => s.length > 0);
     }
     
-    const fieldSchema = entrepreneurSchema.extract(name);
-    const { error } = fieldSchema.validate(validateValue);
+  //   const fieldSchema = entrepreneurSchema.extract(name);
+  //   const { error } = fieldSchema.validate(validateValue);
     
-    if (error) {
-      setFieldErrors(prev => ({ ...prev, [name]: error.message }));
-      return false;
-    } else {
-      setFieldErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-      return true;
-    }
+  //   if (error) {
+  //     setFieldErrors(prev => ({ ...prev, [name]: error.message }));
+  //     return false;
+  //   } else {
+  //     setFieldErrors(prev => {
+  //       const newErrors = { ...prev };
+  //       delete newErrors[name];
+  //       return newErrors;
+  //     });
+  //     return true;
+  //   }
   };
 
   const handleChange = (e) => {
@@ -236,17 +236,17 @@ export default function EntrepreneurProfile() {
       address: { ...prev.address, [name]: value }
     }));
     // Validate the entire address object
-    const addressSchema = entrepreneurSchema.extract('address');
-    const { error } = addressSchema.validate({ ...formData.address, [name]: value });
-    if (error) {
-      setFieldErrors(prev => ({ ...prev, 'address': error.message }));
-    } else {
-      setFieldErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors['address'];
-        return newErrors;
-      });
-    }
+  //   const addressSchema = entrepreneurSchema.extract('address');
+  //   const { error } = addressSchema.validate({ ...formData.address, [name]: value });
+  //   if (error) {
+  //     setFieldErrors(prev => ({ ...prev, 'address': error.message }));
+  //   } else {
+  //     setFieldErrors(prev => {
+  //       const newErrors = { ...prev };
+  //       delete newErrors['address'];
+  //       return newErrors;
+  //     });
+  //   }
   };
 
   const addArrayItem = (collection) => {
