@@ -17,7 +17,41 @@ export const fetchEntrepreneursList = createAsyncThunk(
         }
     }
 );
+export const fetchEntrepreneur = createAsyncThunk(
+    "entrepreneurs/fetchEntrepreneur",
+    async (id, { rejectWithValue }) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`http://localhost:3080/api/Entrepreneur/${id}`, {
+                headers: {
+                    Authorization: token
+                }
+            });
+            console.log("entrepreneur from entrepreneur slice showed particular entrepreneur", response.data);
+            return response.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.message || err.response?.data || 'Failed to fetch entrepreneur');
+        }
+    }
+);                                                                                                                                      
+export const deleteEntrepreneur = createAsyncThunk(
+    "entrepreneurs/deleteEntrepreneur",
+    async (id, { rejectWithValue }) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.delete(`http://localhost:3080/api/Entrepreneurs/${id}`, {
+                headers: {
+                    Authorization: token
+                }
+            });
+            console.log("entrepreneur deleted successfully",response.data)
+            return response.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.message || err.response?.data || 'Failed to delete entrepreneur');
+        }
+    }
 
+);
 export const submitEntrepreneurProfile = createAsyncThunk(
     "entrepreneurs/submitProfile",
     async (formData, { rejectWithValue }) => {
@@ -67,6 +101,7 @@ const EntrepreneurSlice = createSlice({
     initialState: {
         data: [],
         profiledata: null,
+        EntrepreneurProfile: null,
         listLoading: false,
         listError: null,
         submitLoading: false,
@@ -117,7 +152,13 @@ const EntrepreneurSlice = createSlice({
                 state.submitLoading = false;
                 state.submitError = action.payload;
                 state.submitSuccess = false;
-            });
+            })
+            .addCase(deleteEntrepreneur.fulfilled, (state, action) => {
+                state.data = state.data.filter(entrepreneur => entrepreneur._id !== action.payload._id);
+            })  
+            .addCase(fetchEntrepreneur.fulfilled, (state, action) => {
+                state.EntrepreneurProfile = action.payload;
+            });       
     }
 });
 

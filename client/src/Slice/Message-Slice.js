@@ -1,101 +1,120 @@
-import { createAsyncThunk,createSlice } from "@reduxjs/toolkit";
-import axios from "axios"
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+
+/* ===================== THUNKS ===================== */
 
 export const fetchMessages = createAsyncThunk(
-  'chat/fetchMessages',
+  "chat/fetchMessages",
   async ({ userId, otherUserId }, { rejectWithValue }) => {
     try {
-      // Axios handles the JSON parsing automatically
-      const response = await axios.get(`http://localhost:3080/api/messages/get/${userId}/${otherUserId}`);
-      
-      // Axios stores the actual data in the .data property
-      return response.data;
-    } catch (error) {
-      // If the server returns a 404, 500, etc., it lands here
-      return rejectWithValue(error.response?.data || 'Failed to fetch messages');
+      const res = await axios.get(
+        `http://localhost:3080/api/messages/get/${userId}/${otherUserId}`
+      );
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Failed to fetch messages");
     }
   }
 );
 
 export const fetchConversations = createAsyncThunk(
-  'chat/fetchConversations',
+  "chat/fetchConversations",
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`http://localhost:3080/api/messages/conversations/${userId}`);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Failed to fetch conversations');
+      const res = await axios.get(
+        `http://localhost:3080/api/messages/conversations/${userId}`
+      );
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Failed to fetch conversations");
     }
   }
 );
 
 export const sendMessages = createAsyncThunk(
-  'chat/sendMessages',
+  "chat/sendMessages",
   async (msgData, { rejectWithValue }) => {
     try {
-        console.log("api call working")
-      // Axios handles the JSON parsing automatically
-      const response = await axios.post('http://localhost:3080/api/messages/send',msgData);
-      
-      // Axios stores the actual data in the .data property
-      console.log('response message',response.data)
-      return response.data;
-    } catch (error) {
-      // If the server returns a 404, 500, etc., it lands here
-      return rejectWithValue(error.response?.data || 'Failed to fetch messages');
+      const res = await axios.post(
+        "http://localhost:3080/api/messages/send",
+        msgData
+      );
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Failed to send message");
     }
   }
 );
 
+/* ===================== SLICE ===================== */
 
 const MessageSlice = createSlice({
-  name: 'Message',
+  name: "Message",
   initialState: {
     messages: [],
     conversations: [],
-    setReceiver:localStorage.getItem("receiverId")||null,
     loading: false,
     conversationLoading: false,
     typingStatus: false,
-    onlineStatus: 'connecting'
+    onlineStatus: "connecting"
   },
   reducers: {
-
-    setTyping: (state, action) => {
+    setTyping(state, action) {
       state.typingStatus = action.payload;
     },
-    setReceiver: (state, action) => {
-      state.setReceiver= action.payload;
-      console.log("receiverId",state.setReceiver,action.payload)
-      localStorage.setItem("receiverId",action.payload);
-    },
 
-    setOnlineStatus: (state, action) => {
+    setOnlineStatus(state, action) {
       state.onlineStatus = action.payload;
     },
 
-    addMessage: (state, action) => {
+    addMessage(state, action) {
       state.messages.push(action.payload);
+    },
+
+
+    clearMessages(state) {
+      state.messages = [];
     }
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchMessages.pending, (state) => { state.loading = true; })
+      /* Messages */
+      .addCase(fetchMessages.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(fetchMessages.fulfilled, (state, action) => {
         state.loading = false;
         state.messages = action.payload;
       })
-      .addCase(fetchMessages.rejected, (state) => { state.loading = false; })
-      .addCase(fetchConversations.pending, (state) => { state.conversationLoading = true; })
+      .addCase(fetchMessages.rejected, (state) => {
+        state.loading = false;
+      })
+
+      /* Conversations */
+      .addCase(fetchConversations.pending, (state) => {
+        state.conversationLoading = true;
+      })
       .addCase(fetchConversations.fulfilled, (state, action) => {
         state.conversationLoading = false;
         state.conversations = action.payload;
       })
-      .addCase(fetchConversations.rejected, (state) => { state.conversationLoading = false; })
-      .addCase(sendMessages.fulfilled,(state, action) => {
-         state.messages.push(action.payload);
-    });
+      .addCase(fetchConversations.rejected, (state) => {
+        state.conversationLoading = false;
+      })
+
+      /* Send message */
+      .addCase(sendMessages.fulfilled, () => {
+        // ❗ Do nothing here
+        // Message already added via socket event
+      });
   }
 });
-export const { setReceiver, addMessage, setTyping, setOnlineStatus ,setSenderId} = MessageSlice.actions;
+
+export const {
+  setTyping,
+  setOnlineStatus,
+  addMessage,
+  clearMessages
+} = MessageSlice.actions;
+
 export default MessageSlice.reducer;

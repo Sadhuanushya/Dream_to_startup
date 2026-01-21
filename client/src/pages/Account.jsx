@@ -4,11 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchUserAccount, updateUserAccount, resetUpdateSuccess } from "../Slice/Users-Slice";
 import { AlertCircle, CheckCircle, User as UserIcon } from "lucide-react";
 
+
 export default function Account(){
   const { user } = useContext(UserContext);
   const dispatch = useDispatch();
   const { account, accountLoading, accountError, updateSuccess } = useSelector(state => state.Users);
-  
+  const {InvestorProfile}=useSelector(state=>(state.investor))
+  const {EntrepreneurProfile}=useSelector(state=>(state.Entrepreneur))
+  console.log("investor profile from account page",InvestorProfile)
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -27,22 +30,34 @@ export default function Account(){
   }, [dispatch]);
 
   useEffect(() => {
-    if (account && Object.keys(account).length > 0) {
+    if (InvestorProfile && Object.keys(InvestorProfile).length > 0) {
       setFormData({
-        username: account.username || '',
-        email: account.email || '',
-        fullname: account.fullname || '',
-        phone: account.phone || '',
-        address: account.address || '',
-        city: account.city || '',
-        state: account.state || '',
-        country: account.country || '',
-        pincode: account.pincode || '',
-        bio: account.bio || ''
+        username: InvestorProfile.username || '',
+        email: InvestorProfile.email || '',
+        fullname: InvestorProfile?.fullName || '',
+        investorType: InvestorProfile.investorType || '',
+        address: InvestorProfile?.officeLocation?.address || '',
+        city: InvestorProfile?.officeLocation?.city || '',
+        state: InvestorProfile?.officeLocation?.state || '',
+        country: InvestorProfile?.officeLocation?.country || '',
+        pincode: InvestorProfile?.officeLocation?.pincode || '',
+        bio: InvestorProfile.bio || ''
       });
     }
-  }, [account]);
-
+    if (EntrepreneurProfile && Object.keys(EntrepreneurProfile).length > 0) {
+      setFormData({
+       
+        email: EntrepreneurProfile.email || '',
+        fullname: EntrepreneurProfile?.fullname || '',
+        address: EntrepreneurProfile?.address?.address || '',
+        city: EntrepreneurProfile?.address?.city || '',
+        state: EntrepreneurProfile?.address?.state || '',
+        country: EntrepreneurProfile?.address?.country || '',
+        pincode: EntrepreneurProfile?.address?.pincode || '',
+        bio: EntrepreneurProfile.bio || ''
+      });
+    }
+  }, [EntrepreneurProfile,InvestorProfile]);
   useEffect(() => {
     if (updateSuccess) {
       const timer = setTimeout(() => {
@@ -121,18 +136,18 @@ export default function Account(){
               {/* Username and Email Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Username
-                  </label>
-                  <input
-                    type="text"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                    placeholder="Enter username"
-                  />
-                </div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="fullname"
+                  value={formData.fullname}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  placeholder="Enter full name"
+                />
+              </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Email
@@ -149,35 +164,9 @@ export default function Account(){
               </div>
 
               {/* Full Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  name="fullname"
-                  value={formData.fullname}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  placeholder="Enter full name"
-                />
-              </div>
+             
 
-              {/* Phone */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  placeholder="Enter phone number"
-                />
-              </div>
-
+              
               {/* Bio */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

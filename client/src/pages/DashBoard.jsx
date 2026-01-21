@@ -1,18 +1,23 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { FiBell, FiSearch, FiUser, FiSettings, FiBriefcase } from "react-icons/fi";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import UserContext from "../Context/UserContext";
+import {fetchUsersList} from "../Slice/Users-Slice"
+import { useDispatch } from "react-redux";
 export default function Dashboard() {
 const {user}=useContext(UserContext);
 console.log("dashboard user",user)
+const dispatch=useDispatch();
   const sections = [
-    { name: "Investors", to: "investors" },
-    { name: "Entrepreneurs", to: "entrepreneurs" },
-    { name: "Pitch", to: "Pitch" },
-    { name: "Messages", to: "message" },
-    { name: "Subscription", to: "subscription" }
+    { name: "Investors", to: "investors" ,allowedRoles: ["admin","entrepreneur"]},
+    { name: "Entrepreneurs", to: "entrepreneurs" ,allowedRoles: ["admin","investor"]},
+    { name: "Pitch", to: "Pitch" ,allowedRoles: ["admin","investor","entrepreneur"]},
+    { name: "Messages", to: "message" ,allowedRoles: ["admin","investor","entrepreneur"]},
+    { name: "Subscription", to: "subscription",allowedRoles: ["admin","investor","entrepreneur"] },
   ];
-
+useEffect(()=>{
+  dispatch(fetchUsersList());
+})
   return (
     <div className="flex flex-col w-screen min-h-screen bg-slate-50 font-sans selection:bg-indigo-100">
       
@@ -59,9 +64,11 @@ console.log("dashboard user",user)
       {/* Horizontal Nav Bar (Pill style) */}
       <section className="bg-white border-b border-slate-100 px-8 py-3 overflow-x-auto no-scrollbar">
         <div className="flex gap-3 max-w-7xl mx-auto">
-          {sections.map((section) => (
+          {sections
+          .filter(section => section.allowedRoles.includes(user?.role))
+          .map((section) => (
             <NavLink
-              key={section.name}
+              key={section.name} 
               to={section.to}
               className={({ isActive }) => 
                 `flex-none px-6 py-2 rounded-xl text-sm font-bold transition-all ${
@@ -80,13 +87,13 @@ console.log("dashboard user",user)
       {/* Main Content Area */}
       <main className="flex-1 px-8 py-8 max-w-7xl mx-auto w-full">
         <div className="flex flex-wrap gap-4 mb-8">
-           <Link to="admin" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
+             {user?.role === "admin" &&<Link to="admin" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
              <FiSettings className="text-indigo-600" /> Admin Panel
-           </Link>
-           {user?.role == "entrepreneur" && <Link to="entrepreneurProfile" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
+           </Link>}
+           {user?.role === "entrepreneur" && <Link to="entrepreneurProfile" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
              <FiBriefcase className="text-indigo-600" /> Entreprenuer Profile
            </Link>}
-          {user?.role == "investor" && <Link to="InvestorProfile" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
+          {user?.role === "investor" && <Link to="InvestorProfile" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
              <FiUser className="text-indigo-600" /> Investor Profile
            </Link>} 
 

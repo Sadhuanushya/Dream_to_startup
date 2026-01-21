@@ -9,16 +9,18 @@ import { useNavigate } from 'react-router-dom';
 export default function Notifications() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { senderId } = useContext(UserContext);
+    
     const { notifications, loading } = useSelector(state => state.notifications);
     const [selectedType, setSelectedType] = useState('all');
     const [actionLoading, setActionLoading] = useState({});
-
+console.log("notifications",notifications)
     useEffect(() => {
-        if (senderId) {
-            dispatch(fetchNotifications(senderId));
+        const receiver=localStorage.getItem("senderId")
+        if(receiver){
+            console.log("notify receiver",receiver)
+            dispatch(fetchNotifications(receiver));
         }
-    }, [dispatch, senderId]);
+    }, [dispatch]);
 
     const handleConfirm = async (notificationId) => {
         setActionLoading(prev => ({ ...prev, [notificationId]: true }));
@@ -38,7 +40,7 @@ export default function Notifications() {
 
     const handleGoToMessage = (senderId) => {
         localStorage.setItem('receiverId', senderId);
-        navigate('/message');
+        navigate('/dashboard/notifications/message');
     };
 
     const filteredNotifications = selectedType === 'all' 

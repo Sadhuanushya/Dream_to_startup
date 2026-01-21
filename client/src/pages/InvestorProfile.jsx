@@ -7,7 +7,7 @@ export default function InvestorProfile() {
   const { submitLoading, submitError, submitSuccess } = useSelector(state => state.investor);
   
   const [formData, setFormData] = useState({
-    username: '',
+  
     fullName: '',
     email: '',
     bio: '',
@@ -124,7 +124,7 @@ export default function InvestorProfile() {
     const formDataToSend = new FormData();
     
     // Add text fields
-    formDataToSend.append('username', formData.username);
+
     formDataToSend.append('fullName', formData.fullName);
     formDataToSend.append('email', formData.email);
     formDataToSend.append('bio', formData.bio);
@@ -205,13 +205,7 @@ export default function InvestorProfile() {
           {/* Personal Identity Section */}
           <SectionHeader emoji="👤" title="Primary Identity" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <InputField
-              label="Username"
-              name="username"
-              placeholder="e.g. angel_investor_99"
-              required
-              error={fieldErrors.username}
-            />
+
             <InputField
               label="Full Legal Name"
               name="fullName"

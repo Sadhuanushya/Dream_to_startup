@@ -754,7 +754,7 @@ export default function EntrepreneurProfile() {
             <button
               type="submit"
               disabled={submitLoading}
-              className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-blue-700 disabled:bg-gray-300 transition-all transform hover:-translate-y-1 active:scale-95 shadow-lg shadow-blue-200"
+              className="w-full bg-blue-600 text-green py-5 rounded-2xl font-black text-xl hover:bg-blue-700 disabled:bg-gray-300 transition-all transform hover:-translate-y-1 active:scale-95 shadow-lg shadow-blue-200"
             >
               {submitLoading ? 'Submitting...' : 'SAVE PROFESSIONAL PROFILE'}
             </button>

@@ -12,7 +12,7 @@ import {
   setTyping, 
   setOnlineStatus,
   sendMessages,
-  setReceiver
+ 
 } from '../Slice/Message-Slice';
 import { useContext } from 'react';
 import UserContext from '../Context/UserContext';
@@ -31,15 +31,20 @@ export default function Message() {
   const safeMessages = Array.isArray(messages) ? messages : [];
   const currentUser = { id: localStorage.getItem("senderId") };
   const receiver = { id: localStorage.getItem("receiverId") };
-
+  console.log("currentUser",currentUser.id);
+  console.log("receiver",receiver.id)
+console.log("conversations",conversations)
   const filteredConversations = conversations.filter(conv => 
     conv.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     conv.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
+console.log(conversations)
   useEffect(() => {
     socket.connect();
-    socket.emit('register', currentUser.id);
+  if (currentUser.id) {
+  socket.connect();
+  socket.emit('register', currentUser.id);
+}
 
     socket.on('connect', () => dispatch(setOnlineStatus('online')));
     
@@ -72,8 +77,8 @@ export default function Message() {
 
   // Fetch messages when a conversation is selected
 // 1. Get the receiver ID sent from the Investors page
-const reduxReceiverId = useSelector(state => state.Message.activeReceiverId);
-const reduxReceivername = useSelector(state => state.Message.activeReceiverName);
+const reduxReceiverId =localStorage.getItem("receiverId")||null;
+const reduxReceivername =localStorage.getItem("receivername")||null ;
   
 
 
@@ -112,11 +117,12 @@ useEffect(() => {
   const handleSend = (e) => {
     e.preventDefault();
     if (!inputText.trim() || !selectedConversation) return;
-
+console.log("selected ",reduxReceivername,reduxReceiverId)
     const msgData = {
       _id: Date.now().toString(),
       senderId: currentUser.id,
-      receiverId: selectedConversation.userId,
+      receiverName: reduxReceivername,
+      receiverId: reduxReceiverId,
       text: inputText,
       createdAt: new Date().toISOString()
     };

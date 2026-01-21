@@ -1,29 +1,8 @@
 import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { fetchEntrepreneursList } from "../Slice/Entreprenuer-Slice";
-import { setReceiver } from "../Slice/Message-Slice"
-
-
-//     return(
-//         <>
-//         <h1>Entrepreneurs page</h1>
-//         <h2>Entreprenuer list</h2>
-//         <div>{data.map(ele=>{
-//             return<><div key={ele._id}>{ele.fullname}</div>
-//             <div>{ele.profilePicture?.DocumentUrl}</div>
-//             <h3>{ele.startup}</h3>
-//             <h3>{ele.verified}</h3>
-//             <p>{ele.bio}</p></>
-//         })}</div>
-//         </>
-
-//     )
-// }
-// //
-// import React, { useState, useEffect } from "react";
-
-// --- Custom UI Components ---
+import { fetchEntrepreneursList,deleteEntrepreneur,fetchEntrepreneur } from "../Slice/Entreprenuer-Slice";
+import { useNavigate } from "react-router-dom";
 const MapPin = () => (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -46,13 +25,27 @@ const RocketIcon = () => (
 export default function Entrepreneurs() {
     const dispatch = useDispatch()
     const { data, listLoading, listError } = useSelector((state) => state.Entrepreneur)
-
+const navigate=useNavigate();
     useEffect(() => {
         dispatch(fetchEntrepreneursList());
     }, [dispatch]);
 
-    const handleReceiver = (id) => {
-        dispatch(setReceiver(id));
+
+    const handleDelete=(id)=>{
+      console.log("delete Entreprenuer with id:",id);
+      const confirm=window.confirm("are you sure delete Entrepreneurr");
+      if(confirm){
+         dispatch(deleteEntrepreneur(id));
+      }
+    
+    };
+    const handleViewProfile=(id)=>{  
+       dispatch(fetchEntrepreneur(id));
+       navigate('/dashboard/Entrepreneur/profile');
+    }
+    const handleMessge=(id)=>{
+      
+      navigate('/dashboard/entrepreneur/message');
     }
 
     const placeholderImg = "https://images.unsplash.com/photo-1551434678-e076c223a692?w=300&h=300&fit=crop";
@@ -128,14 +121,17 @@ export default function Entrepreneurs() {
                   {/* Action Buttons */}
                   <div className="flex flex-row md:flex-col justify-end gap-3 min-w-[140px]">
                     <button 
-                      className="flex-1 md:flex-none bg-slate-900 text-white px-5 py-3 rounded-2xl text-sm font-bold hover:bg-indigo-600 active:scale-95 transition-all" 
-                      onClick={() => handleReceiver(ele._id)}
+                      className="flex-1 md:flex-none bg-slate-900 text-gray-700 px-5 py-3 rounded-2xl text-sm font-bold hover:bg-indigo-600 active:scale-95 transition-all" 
+                      onClick={() => handleMessge(ele._id)}
                     >
-                      Connect
+                      Message
                     </button>
-                    <button className="flex-1 md:flex-none border border-slate-200 text-slate-600 px-5 py-3 rounded-2xl text-sm font-bold hover:bg-slate-50 transition-all">
+                    <button className="flex-1 md:flex-none border border-slate-200 text-slate-600 px-5 py-3 rounded-2xl text-sm font-bold hover:bg-slate-50 transition-all" onClick={()=>{handleViewProfile(ele._id)}}>
                       Profile
                     </button>
+                    <button className="flex-1 md:flex-none border border-slate-200 text-red-600 px-5 py-3 rounded-2xl text-sm font-bold hover:bg-slate-50 transition-all" onClick={()=>{handleDelete(ele._id)}}>
+                      Delete
+                    </button>                    
                   </div>
                 </div>
               </div>

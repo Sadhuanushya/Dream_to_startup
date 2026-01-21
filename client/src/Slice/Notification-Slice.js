@@ -3,12 +3,14 @@ import axios from "axios";
 
 export const fetchNotifications = createAsyncThunk(
     "notifications/fetch",
-    async (userId, { rejectWithValue }) => {
+    async (receiver, { rejectWithValue }) => {
         try {
+            console.log("receiver from fetch api",receiver)
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:3080/api/notifications/${userId}`, {
+            const response = await axios.get(`http://localhost:3080/api/notifications/${receiver}`, {
                 headers: { Authorization: token }
             });
+            console.log("fetch notifications",response.data)
             return response.data;
         } catch (err) {
             return rejectWithValue(err.response?.data || 'Failed to fetch notifications');
@@ -39,6 +41,7 @@ export const createNotification = createAsyncThunk(
             const response = await axios.post("http://localhost:3080/api/notifications", notificationData, {
                 headers: { Authorization: token }
             });
+            console.log("notify response",response.data)
             return response.data;
         } catch (err) {
             return rejectWithValue(err.response?.data || 'Failed to create notification');

@@ -26,10 +26,12 @@ export default function Admin() {
         pitchesLoading,
         pendingVerificationsLoading
     } = useSelector(state => state.admin);
+    const AllUsers=useSelector(state=>state.Users?.data);
+    console.log("AllUsers",AllUsers);
     const [searchQuery, setSearchQuery] = useState('');
     const [roleFilter, setRoleFilter] = useState('all');
     const [activeTab, setActiveTab] = useState('dashboard');
-
+console.log("all use",AllUsers)
     useEffect(() => {
         dispatch(fetchAdminStats());
         dispatch(fetchAllUsers());
@@ -87,7 +89,7 @@ export default function Admin() {
                                 : 'border-transparent text-gray-600 hover:text-gray-800'
                         }`}
                     >
-                        👥 Users ({users.length})
+                        👥 Users ({AllUsers.length})
                     </button>
                     <button
                         onClick={() => setActiveTab('entrepreneurs')}

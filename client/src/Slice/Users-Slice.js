@@ -3,7 +3,8 @@ import axios from "axios";
 
 export const fetchUsersList=createAsyncThunk('Users/list',async(undefined,{rejectWithValue})=>{
     try{
-        const response=await axios.get('http://localhost:3080/api/Entrepreneurs',{headers:{Authorization:localStorage.getItem('token')}})
+        const response=await axios.get('http://localhost:3080/api/users/all',{headers:{Authorization:localStorage.getItem('token')}})
+        console.log("fetch all users from user slice",response.data)
         console.log("response",response.data)
         return response.data;
 
@@ -25,6 +26,7 @@ export const fetchUserAccount=createAsyncThunk('Users/fetchAccount',async(undefi
 export const updateUserAccount=createAsyncThunk('Users/updateAccount',async(userData,{rejectWithValue})=>{
     try{
         const response=await axios.put('http://localhost:3080/api/account',userData,{headers:{Authorization:localStorage.getItem('token')}})
+        console.log("updated account from user slice",response.data)
         return response.data;
     }catch(err){
         return rejectWithValue(err.response?.data?.error || 'Failed to update account');
@@ -34,7 +36,7 @@ export const updateUserAccount=createAsyncThunk('Users/updateAccount',async(user
 const UsersSlice=createSlice({
     name:'Users',
     initialState:{
-        data:[],
+        data:null,
         account:{},
         errors:"",
         loading:false,
@@ -50,7 +52,8 @@ const UsersSlice=createSlice({
     extraReducers:(builder)=>{
         builder
         .addCase(fetchUsersList.fulfilled,(state,action)=>{
-            state.data.push(action.payload)
+            state.data=action.payload;
+            console.log("user list",state.data)
         })
         .addCase(fetchUserAccount.pending,(state)=>{
             state.accountLoading=true;

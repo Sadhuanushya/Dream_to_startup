@@ -16,6 +16,21 @@ export const fetchInvestorsList = createAsyncThunk(
         }
     }
 );
+export const fetchInvestor = createAsyncThunk(
+    "Investor/fetchInvestor",
+    async (id, { rejectWithValue }) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`http://localhost:3080/api/Investor/${id}`, {
+                headers: { Authorization: token }
+            });
+            console.log("investor from investor slice showed particular invester", response.data);
+            return response.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.message || err.response?.data || 'Failed to fetch investors');
+        }
+    }
+);
 
 export const submitInvestorProfile = createAsyncThunk(
     "Investor/submitProfile",
@@ -40,13 +55,38 @@ export const submitInvestorProfile = createAsyncThunk(
     }
 );
 
+export const deleteInvestor = createAsyncThunk(
+    "Investor/deleteProfile",
+    async (id, { rejectWithValue }) => {
+        try {
+            console.log("Investor profile submission started");
+            const token = localStorage.getItem('token');
+            
+            // formData is already FormData object with proper field notation
+            const response = await axios.delete(`http://localhost:3080/api/Investor/${id}`,{
+                headers: {
+                    Authorization: token
+                }
+            });
+            
+            console.log("Investor profile deleted successful", response.data);
+            return response.data;
+        } catch (err) {
+            console.log("Investor profile submission error:", err);
+            return rejectWithValue(err.response?.data?.message || err.response?.data || 'Submission failed');
+        }
+    }
+);
+
 const InvestorSlice = createSlice({
     name: "Investor",
     initialState: {
         data: [],
         profiledata: null,
+        InvestorProfile:null,
         listLoading: false,
         listError: null,
+        pendingRequest:[],
         submitLoading: false,
         submitError: null,
         submitSuccess: false,
@@ -61,6 +101,9 @@ const InvestorSlice = createSlice({
         },
         resetListError: (state) => {
             state.listError = null;
+        },
+        setPendingRequest:(state,action)=>{
+            state.pendingRequest.push(action.payload);
         }
     },
     extraReducers: (builder) => {
@@ -96,10 +139,19 @@ const InvestorSlice = createSlice({
                 state.submitLoading = false;
                 state.submitError = action.payload;
                 state.submitSuccess = false;
-            });
+            })
+            .addCase(deleteInvestor.fulfilled,(state,action)=>{
+                state?.profiledata.filter(ele=>{
+                    return ele._id !== action.payload._id;
+                })
+            })
+             .addCase(fetchInvestor.fulfilled,(state,action)=>{
+                state.InvestorProfile=action.payload;
+                
+            })           
     }
 });
 
-export const { resetInvestorError, resetInvestorSuccess, resetListError } = InvestorSlice.actions;
+export const { resetInvestorError, resetInvestorSuccess, resetListError,setPendingRequest } = InvestorSlice.actions;
 
 export default InvestorSlice.reducer;
