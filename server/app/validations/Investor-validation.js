@@ -22,7 +22,7 @@ const DocumentSchema=joi.object({
     Cloudinary_Id:joi.string().min(3).max(80).trim().required()
 })
 const InvestorValidation=joi.object({
-    username:joi.string().trim().min(3).max(50).required(),
+   
     profilePicture:DocumentSchema.optional(),
     fullName:joi.string().trim().min(3).max(100).required(),
     email:joi.string().email().required(),

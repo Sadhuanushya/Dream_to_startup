@@ -92,6 +92,7 @@ UserCtrl.login=async(req,res)=>{
         valid.clickcount+=1;
         valid.lastLogin=new Date()
         await  valid.save()
+        console.log("from server",token,valid._id)
         res.status(200).json({token:token,userId:valid._id});
 
     }catch(err){
@@ -102,12 +103,107 @@ UserCtrl.login=async(req,res)=>{
 UserCtrl.account=async(req,res)=>{
   try{
     const UserAccount=await User.findById(req.userId);
-    console.log(UserAccount);
-    res.json(UserAccount)
-    console.log(req.userId)
+    
+    if (!UserAccount) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
+    let profileData = { ...UserAccount.toObject() };
+
+    // If user is entrepreneur, fetch their entrepreneur profile
+    if (UserAccount.role === 'entrepreneur') {
+      const Entrepreneur = require('../models/Entrepreneur-model');
+      const entrepreneurProfile = await Entrepreneur.findOne({ userId: req.userId });
+      if (entrepreneurProfile) {
+        profileData.entrepreneurProfile = entrepreneurProfile;
+      }
+    }
+
+    // If user is investor, fetch their investor profile
+    if (UserAccount.role === 'investor') {
+      const Investor = require('../models/Investor-model');
+      const investorProfile = await Investor.findOne({ userId: req.userId });
+      if (investorProfile) {
+        profileData.investorProfile = investorProfile;
+      }
+    }
+
+    res.json(profileData);
   }catch(err){
     console.log(err);
+    res.status(500).json({ error: 'Failed to fetch account' });
+  }
+}
+
+UserCtrl.updateAccount = async(req, res) => {
+  try {
+    const { username, email, fullname, phone, address, city, state, country, pincode, bio } = req.body;
+    
+    // Check if email is already taken by another user
+    if (email) {
+      const existingUser = await User.findOne({ email, _id: { $ne: req.userId } });
+      if (existingUser) {
+        return res.status(400).json({ error: 'Email already in use' });
+      }
+    }
+
+    const updateData = {};
+    if (username) updateData.username = username;
+    if (email) updateData.email = email;
+    if (fullname) updateData.fullname = fullname;
+    if (phone) updateData.phone = phone;
+    if (address) updateData.address = address;
+    if (city) updateData.city = city;
+    if (state) updateData.state = state;
+    if (country) updateData.country = country;
+    if (pincode) updateData.pincode = pincode;
+    if (bio) updateData.bio = bio;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.userId,
+      updateData,
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    res.status(200).json(updatedUser);
+  } catch(err) {
+    console.log(err);
+    res.status(500).json({ error: 'Failed to update account' });
+  }
+}
+
+UserCtrl.getAllUsers = async(req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch(err) {
+    console.log(err);
+    res.status(500).json({error: 'Failed to fetch users'});
+  }
+}
+
+UserCtrl.getStatistics = async(req, res) => {
+  try {
+    const Entrepreneur = require('../models/Entrepreneur-model');
+    const Investor = require('../models/Investor-model');
+    const Pitch = require('../models/Pitch-model');
+
+    const totalUsers = await User.countDocuments();
+    const totalEntrepreneurs = await Entrepreneur.countDocuments();
+    const totalInvestors = await Investor.countDocuments();
+    const totalPitches = await Pitch.countDocuments();
+    const pendingVerifications = await Investor.countDocuments({ isVerified: false });
+
+    res.status(200).json({
+      totalUsers,
+      totalEntrepreneurs,
+      totalInvestors,
+      totalPitches,
+      pendingVerifications
+    });
+  } catch(err) {
+    console.log(err);
+    res.status(500).json({error: 'Failed to fetch statistics'});
   }
 }
 

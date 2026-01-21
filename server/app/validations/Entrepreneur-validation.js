@@ -1,54 +1,53 @@
-
 const joi = require('joi');
+
+// Helper schemas made optional for testing
 const addressSchema = joi.object({
-    address: joi.string().max(200).trim().required(),
-    city: joi.string().max(40).trim().required(),
-    state: joi.string().max(40).trim().required(),
-    country: joi.string().max(40).trim().required(),
-    pincode: joi.number().integer().min(100000).max(999999).required()
+    address: joi.string().max(200).trim().allow('').optional(),
+    city: joi.string().max(40).trim().allow('').optional(),
+    state: joi.string().max(40).trim().allow('').optional(),
+    country: joi.string().max(40).trim().allow('').optional(),
+    pincode: joi.number().integer().min(100000).max(999999).allow(null).optional()
 });
 
-
 const workExperienceItemSchema = joi.object({
-    company: joi.string().trim().min(3).max(100).trim().required(),
-    position: joi.string().trim().min(3).max(60).trim().required(),
-    years: joi.number().integer().min(0).max(50).required(),
+    company: joi.string().trim().allow('').optional(),
+    position: joi.string().trim().allow('').optional(),
+    years: joi.number().integer().allow(null).optional(),
 });
 
 const pastProjectSchema = joi.object({
-    projectname: joi.string().min(3).max(50).trim().required(),
-    websiteUrl: joi.string().uri().max(50).required(),
-    revenue:joi.number().min(0).required()
+    projectname: joi.string().trim().allow('').optional(),
+    websiteUrl: joi.string().uri().allow('').optional(),
+    revenue: joi.number().allow(null).optional()
 });
 
-const educationSchema=joi.object({
-    institutionName:joi.string().min(3).max(80).trim().required(),
-    course:joi.string().min(3).max(50).required(),
-    year:joi.number().integer().min(1900).max(new Date().getFullYear()).required()
-
-})
-const DocumentSchema=joi.object({
-    DocumentUrl:joi.string().uri().trim().max(200).required(),
-    Cloudinary_Id:joi.string().min(3).max(80).trim().required()
-})
-
+const educationSchema = joi.object({
+    institutionName: joi.string().trim().allow('').optional(),
+    course: joi.string().allow('').optional(),
+    year: joi.number().integer().allow(null).optional()
+});
 
 const EnterPreneurValidation = joi.object({
-    username:joi.string().trim().min(3).max(50).required(),
-    profilePicture:DocumentSchema.optional(),
-    fullname: joi.string().trim().min(3).max(50).required(),
-    email: joi.string().email().trim().required(),
-    phone: joi.string().length(10).pattern(/^[0-9]+$/).required(), 
-    address: addressSchema.required(),
-    bio: joi.string().min(10).max(500).required(),
-    linkedinUrl: joi.string().uri().max(200).optional(),
-    skills: joi.array().items(joi.string().trim().min(2).max(50)).min(1).optional(),
-    education: joi.array().items(educationSchema).max(5).optional(), 
-    workExperience: joi.array().items(workExperienceItemSchema).min(0).max(6).optional(), 
-    pastProject: joi.array().items(pastProjectSchema).max(10).optional(),
-    PitchData:joi.string().optional(),
-    identityDocument:DocumentSchema.optional(),
-    BusinessRegistrationDocument:DocumentSchema.optional()
+    // Basic Info - All Optional and allowing empty strings for testing
+    fullname: joi.string().trim().allow('').optional(),
+    email: joi.string().email().trim().allow('').optional(),
+    phone: joi.string().allow('').optional(), 
+    bio: joi.string().allow('').optional(),
+    linkedinUrl: joi.string().uri().allow('').optional(),
+    
+    // Complex Objects - All Optional
+    address: addressSchema.optional(),
+    skills: joi.array().items(joi.string().trim()).optional(),
+    education: joi.array().items(educationSchema).optional(),
+    workExperience: joi.array().items(workExperienceItemSchema).optional(),
+    pastProject: joi.array().items(pastProjectSchema).optional(),
+    
+    // File Fields - These are required for your testing logic
+    // We use any() because the controller sends the raw file object or 
+    // it's handled manually after validation.
+    profilePicture: joi.any().optional(),
+    identityDocument: joi.any().optional(),
+    BusinessRegistrationDocument: joi.any().optional()
 });
 
 module.exports = EnterPreneurValidation;

@@ -37,22 +37,33 @@ const EntrepreneurCtrl = require("./app/controllers/Entrepreneur-Controller")
 const InvestorCtrl = require('./app/controllers/Investor-controller')
 const PaymentCtrl = require("./app/controllers/Payment-Controller");
 const AiReviewCtrl = require('./app/controllers/AiReview-controller')
+const NotificationCtrl = require('./app/controllers/Notification-controller')
+
+
 
 app.post("/get-review", AiReviewCtrl.getResponse);
-app.post("/payment/process", PaymentCtrl.pay)
+app.post("/payment/create-order", AuthenticateUser, PaymentCtrl.createOrder);
+app.post("/payment/verify", AuthenticateUser, PaymentCtrl.verifyPayment);
+app.get("/payment/history/:EntrepreneurId", AuthenticateUser, PaymentCtrl.getPaymentHistory);
+app.get("/payment/:paymentId", AuthenticateUser, PaymentCtrl.getPayment);
+app.put("/payment/:paymentId", AuthenticateUser, PaymentCtrl.updatePaymentStatus);
 app.post('/api/register', UserCtrl.register)
 app.post('/api/login', UserCtrl.login);
 app.get('/api/account', AuthenticateUser, AuthorizeUser(["entrepreneur", "admin", "investor"]), UserCtrl.account)
+app.put('/api/account', AuthenticateUser, AuthorizeUser(["entrepreneur", "admin", "investor"]), UserCtrl.updateAccount)
+app.get('/api/users/all', AuthenticateUser, AuthorizeUser(["admin","investor","entrepreneur"]), UserCtrl.getAllUsers)
+app.get('/api/admin/statistics', AuthenticateUser, AuthorizeUser(["admin","investor","entrepreneur"]), UserCtrl.getStatistics)
 
-app.post('/api/Entrepreneur', AuthenticateUser, AuthorizeUser(["entrepreneur"]), EntrepreneurUploads, EntrepreneurCtrl.create)
+app.post('/api/Entrepreneur', AuthenticateUser, AuthorizeUser(["entrepreneur","investor"]), EntrepreneurUploads, EntrepreneurCtrl.create)
 app.get('/api/Entrepreneurs', AuthenticateUser, AuthorizeUser(["admin", "entrepreneur", "investor"]), EntrepreneurCtrl.list)
 app.get('/api/Entrepreneur/:id', AuthenticateUser, AuthorizeUser(["entrepreneur", "admin", "investor"]), EntrepreneurCtrl.show)
 app.put('/api/Entrepreneur/:id', AuthenticateUser, AuthorizeUser(["admin", "entrepreneur"]), EntrepreneurUploads, EntrepreneurCtrl.update)
-app.delete('/api/Entreprenuer/:id', AuthenticateUser, AuthorizeUser(["admin", "entrepreneur"]), EntrepreneurCtrl.delete)
+app.delete('/api/Entrepreneur/:id', AuthenticateUser, AuthorizeUser(["admin", "entrepreneur"]), EntrepreneurCtrl.delete)
 
 app.post('/api/Investor', AuthenticateUser, AuthorizeUser(["investor", "user"]), InvestorUploads, InvestorCtrl.create)
 app.get('/api/Investors', AuthenticateUser, AuthorizeUser(["admin", "investor", "entrepreneur"]), InvestorCtrl.list)
 app.get('/api/Investor/:id', AuthenticateUser, AuthorizeUser(["entrepreneur", "admin", "investor"]), InvestorCtrl.show)
+app.get('/api/admin/pending-verifications', AuthenticateUser, AuthorizeUser(["admin","investor","entrepreneur"]), InvestorCtrl.getPendingVerifications)
 app.put('/api/Investor/:id', AuthenticateUser, AuthorizeUser(["investor", "admin"]), InvestorUploads, InvestorCtrl.update)
 app.delete('/api/Investor/:id', AuthenticateUser, AuthorizeUser(["admin", "investor"]), InvestorCtrl.delete)
 
@@ -64,6 +75,16 @@ app.delete('/api/Pitch/:id', AuthenticateUser, AuthorizeUser(["entrepreneur", "a
 
 app.post("/api/messages/send", MessageCtrl.sent);
 app.get("/api/messages/get/:userId/:otherUserId", MessageCtrl.getmessage);
+app.get("/api/messages/conversations/:userId", MessageCtrl.getConversations);
+
+app.post("/api/notifications", AuthenticateUser, NotificationCtrl.create);
+app.get("/api/notifications/:receiver", AuthenticateUser, NotificationCtrl.getNotifications);
+app.get("/api/notifications/unread/:receiver", AuthenticateUser, NotificationCtrl.getUnreadCount);
+app.put("/api/notifications/:notificationId/status", AuthenticateUser, NotificationCtrl.updateStatus);
+app.put("/api/notifications/:notificationId/confirm", AuthenticateUser, NotificationCtrl.confirmConnection);
+app.put("/api/notifications/:notificationId/reject", AuthenticateUser, NotificationCtrl.rejectConnection);
+app.put("/api/notifications/:notificationId/read", AuthenticateUser, NotificationCtrl.markAsRead);
+app.delete("/api/notifications/:notificationId", AuthenticateUser, NotificationCtrl.delete);
 
 app.get('/api/Aireview/:id', AuthenticateUser, AuthorizeUser(["entrepreneur", "admin", "investor"]), AiReviewCtrl.getResponse);
 

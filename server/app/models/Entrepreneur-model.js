@@ -44,7 +44,7 @@ const EntrepreneurSchema=new mongoose.Schema({
         default:{}
     },
     bio:String,
-    linkdinUrl:String,
+    linkedinUrl:String,
     skills:{
         type:[String],
         default:[]

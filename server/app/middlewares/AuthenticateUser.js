@@ -2,7 +2,7 @@ const jwt=require("jsonwebtoken")
 const AthenticateUser=(req,res,next)=>{
     const token=req.headers['authorization']
     if(!token){
-        res.status(401).json({err:"token not provided"})
+        return res.status(401).json({error:"token not provided"})
     }
     try{
         const tokenData=jwt.verify(token,process.env.SECRET_KEY)
@@ -10,10 +10,9 @@ const AthenticateUser=(req,res,next)=>{
 
         req.userId=tokenData.userId
         req.role=tokenData.role
-        // req.user = { userId: req.userId, role: req.role };
         next()
     }catch(err){
-        res.status(401).json({error:err})
+        res.status(401).json({error:"Invalid or expired token"})
     }
 }
 module.exports=AthenticateUser;

@@ -11,10 +11,10 @@ console.log(req.body)
     if(error){
         return res.status(400).json(error)
     }
-    const ExistUsername=await Investor.findOne({username:value.username})
-    if(ExistUsername){
-        return res.status(400).json("username not available")
-    }
+    // const ExistUsername=await Investor.findOne({username:value.username})
+    // if(ExistUsername){
+    //     return res.status(400).json("username not available")
+    // }
     const Existemail=await Investor.findOne({email:value.email})
         if(Existemail){
            return  res.status(400).json({error:"An account with this email address already exists"})
@@ -244,5 +244,17 @@ InvestorCtrl.delete=async(req,res)=>{
     }
 }
 
+
+InvestorCtrl.getPendingVerifications = async(req, res) => {
+    try {
+        const pendingInvestors = await Investor.find({ isVerified: false })
+            .select('username fullName email bio investorType officeLocation verificationDocument isVerified createdAt')
+            .populate('userId', 'username email');
+        res.status(200).json(pendingInvestors);
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({ error: "Failed to fetch pending verifications" });
+    }
+}
 
 module.exports=InvestorCtrl;
