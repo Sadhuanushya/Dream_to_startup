@@ -92,8 +92,10 @@ console.log(req.body)
 }
 InvestorCtrl.list=async(req,res)=>{
     try{
-    const Investors= await Investor.find()
-    res.status(200).json(Investors)
+    console.log("fetching investors")
+        const Investors= await Investor.find().populate('userId', 'username email role')
+        console.log("list of investors",Investors)
+        res.status(200).json(Investors)
     }catch(err){
         res.status(500).json(err)
     }

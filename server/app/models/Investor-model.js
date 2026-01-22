@@ -28,7 +28,6 @@ const InvestorSchema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
     },
-    username:String,
     profilePicture:{
         type:DocumentSchema,
         default:{}
@@ -61,7 +60,7 @@ const InvestorSchema=new mongoose.Schema({
     isVerified:{
         type: Boolean,
         default:false
-    }
+    },
 },{timestamps:true})
 const Investor=mongoose.model('Investor',InvestorSchema)
 module.exports=Investor

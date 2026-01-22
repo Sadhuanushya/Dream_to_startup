@@ -45,7 +45,17 @@ NotificationCtrl.getNotifications = async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch notifications' });
     }
 };
+NotificationCtrl.getAllNotifications=async(req,res)=>{
+    try{
+        const notifications = await Notification.find();
+        console.log(notifications);
+        return res.status(200).json(notifications)
 
+    }catch(err){
+        console.log(err);
+        return res.status(500).json({error:err})
+    }
+}
 // Get unread notification count
 NotificationCtrl.getUnreadCount = async (req, res) => {
     try {

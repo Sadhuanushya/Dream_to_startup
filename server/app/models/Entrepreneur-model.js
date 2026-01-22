@@ -31,7 +31,6 @@ const EntrepreneurSchema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
     },
-    username:String,
     profilePicture:{
         type:DocumentSchema,
         default:{}
