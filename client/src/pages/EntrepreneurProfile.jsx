@@ -114,6 +114,8 @@ import { submitEntrepreneurProfile, resetEntrepreneurError, resetEntrepreneurSuc
 export default function EntrepreneurProfile() {
   const dispatch = useDispatch();
   const { submitLoading, submitError, submitSuccess } = useSelector(state => state.Entrepreneur);
+  const { EntrepreneurProfile } = useSelector(state => state.Entrepreneur);
+  const [isReadOnly, setIsReadOnly] = useState(false);
   
   const [formData, setFormData] = useState({
     fullname: '',
@@ -140,6 +142,29 @@ export default function EntrepreneurProfile() {
     BusinessRegistrationDocument: false
   });
   const [uploadSuccess, setUploadSuccess] = useState({});
+
+  // Load entrepreneur data when fetched
+  useEffect(() => {
+    if (EntrepreneurProfile && EntrepreneurProfile._id) {
+      setIsReadOnly(true);
+      // Populate form with fetched entrepreneur data
+      setFormData({
+        fullname: EntrepreneurProfile.fullname || '',
+        email: EntrepreneurProfile.email || '',
+        phone: EntrepreneurProfile.phone || '',
+        bio: EntrepreneurProfile.bio || '',
+        linkedinUrl: EntrepreneurProfile.linkedinUrl || '',
+        address: EntrepreneurProfile.address || { address: '', city: '', state: '', country: '', pincode: '' },
+        skills: Array.isArray(EntrepreneurProfile.skills) ? EntrepreneurProfile.skills.join(', ') : EntrepreneurProfile.skills || '',
+        profilePicture: EntrepreneurProfile.profilePicture || null,
+        identityDocument: EntrepreneurProfile.identityDocument || null,
+        BusinessRegistrationDocument: EntrepreneurProfile.BusinessRegistrationDocument || null,
+        education: EntrepreneurProfile.education || [{ institutionName: '', course: '', year: '' }],
+        workExperience: EntrepreneurProfile.workExperience || [{ company: '', position: '', years: '' }],
+        pastProject: EntrepreneurProfile.pastProject || [{ projectname: '', websiteUrl: '', revenue: '' }],
+      });
+    }
+  }, [EntrepreneurProfile]);
 
   // Reset status message after submission
   useEffect(() => {
@@ -338,7 +363,10 @@ export default function EntrepreneurProfile() {
         placeholder={placeholder}
         value={formData[name]}
         onChange={handleChange}
+        disabled={isReadOnly}
         className={`w-full bg-gray-50 border rounded-lg p-3 focus:ring-2 focus:outline-none transition ${
+          isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+        } ${
           error ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
         }`}
       />
@@ -350,12 +378,24 @@ export default function EntrepreneurProfile() {
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
         <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-10 text-white">
-          <h1 className="text-4xl font-black mb-2">Build Your Profile</h1>
-          <p className="text-slate-300">Complete your entrepreneur dossier to connect with investors.</p>
+          <h1 className="text-4xl font-black mb-2">{isReadOnly ? 'Entrepreneur Profile' : 'Build Your Profile'}</h1>
+          <p className="text-slate-300">{isReadOnly ? 'View your entrepreneur profile and project details.' : 'Complete your entrepreneur dossier to connect with investors.'}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 md:p-12 space-y-8">
           
+          {/* Profile Picture Display for Read-Only Mode */}
+           {isReadOnly && formData.profilePicture && (
+            <div className="flex justify-center mb-8">
+              <div className="relative">
+                <img 
+                  src={typeof formData.profilePicture?.DocumentUrl === 'string' ? formData.profilePicture?.DocumentUrl: 'picture'} 
+                  alt="Profile" 
+                  className="w-40 h-40 rounded-full object-cover border-4 border-indigo-900 shadow-lg"
+                />
+              </div>
+            </div>
+          )}
           <SectionHeader emoji="👤" title="Basic Profile" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <InputField
@@ -397,7 +437,10 @@ export default function EntrepreneurProfile() {
                 placeholder="Tell us about your entrepreneurial journey..."
                 value={formData.bio}
                 onChange={handleChange}
+                disabled={isReadOnly}
                 className={`w-full bg-gray-50 border rounded-lg p-3 focus:ring-2 focus:outline-none transition ${
+                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                } ${
                   fieldErrors.bio ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
                 }`}
               />
@@ -413,7 +456,10 @@ export default function EntrepreneurProfile() {
                 placeholder="Fintech, SaaS, React, Team Building"
                 value={formData.skills}
                 onChange={handleChange}
+                disabled={isReadOnly}
                 className={`w-full bg-gray-50 border rounded-lg p-3 focus:ring-2 focus:outline-none transition ${
+                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                } ${
                   fieldErrors.skills ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
                 }`}
               />
@@ -432,7 +478,10 @@ export default function EntrepreneurProfile() {
                 type="text"
                 value={formData.address.address}
                 onChange={handleAddressChange}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                disabled={isReadOnly}
+                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
+                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                }`}
               />
             </div>
             <div className="space-y-1">
@@ -442,7 +491,10 @@ export default function EntrepreneurProfile() {
                 type="text"
                 value={formData.address.city}
                 onChange={handleAddressChange}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                disabled={isReadOnly}
+                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
+                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                }`}
               />
             </div>
             <div className="space-y-1">
@@ -452,7 +504,10 @@ export default function EntrepreneurProfile() {
                 type="text"
                 value={formData.address.state}
                 onChange={handleAddressChange}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                disabled={isReadOnly}
+                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
+                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                }`}
               />
             </div>
             <div className="space-y-1">
@@ -462,7 +517,10 @@ export default function EntrepreneurProfile() {
                 type="text"
                 value={formData.address.country}
                 onChange={handleAddressChange}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                disabled={isReadOnly}
+                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
+                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                }`}
               />
             </div>
             <div className="space-y-1">
@@ -472,7 +530,10 @@ export default function EntrepreneurProfile() {
                 type="text"
                 value={formData.address.pincode}
                 onChange={handleAddressChange}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                disabled={isReadOnly}
+                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
+                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                }`}
               />
             </div>
           </div>
@@ -613,6 +674,8 @@ export default function EntrepreneurProfile() {
           </div>
 
           <SectionHeader emoji="📄" title="Documents & Verification" />
+          {!isReadOnly && (
+            <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Profile Picture Upload */}
             <div className="space-y-2">
@@ -743,6 +806,8 @@ export default function EntrepreneurProfile() {
               </div>
             </div>
           </div>
+            </>
+          )}
 
           {statusMessage && (
             <div className={`p-4 rounded-xl text-center font-bold animate-bounce ${statusMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
@@ -751,14 +816,24 @@ export default function EntrepreneurProfile() {
           )}
 
           <div className="pt-8">
-            <button
-              type="submit"
-              disabled={submitLoading}
-              className="w-full bg-blue-600 text-green py-5 rounded-2xl font-black text-xl hover:bg-blue-700 disabled:bg-gray-300 transition-all transform hover:-translate-y-1 active:scale-95 shadow-lg shadow-blue-200"
-            >
-              {submitLoading ? 'Submitting...' : 'SAVE PROFESSIONAL PROFILE'}
-            </button>
+            {!isReadOnly && (
+              <>
+                <button
+                  type="submit"
+                  disabled={submitLoading}
+                  className="w-full bg-green-600 text-black py-5 rounded-2xl text-xl hover:bg-green-700 disabled:bg-gray-300 transition-all transform hover:-translate-y-1 active:scale-95 shadow-lg"
+                >
+                  {submitLoading ? 'Submitting...' : 'SAVE PROFESSIONAL PROFILE'}
+                </button>
+              </>
+            )}
+            {isReadOnly && (
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-center">
+                <p className="text-blue-700 font-semibold">📋 Profile View Mode - Read Only</p>
+              </div>
+            )}
           </div>
+          
         </form>
       </div>
     </div>

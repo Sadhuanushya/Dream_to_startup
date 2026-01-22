@@ -67,7 +67,7 @@ const handleDelete=(id)=>{
 };
 const handleViewProfile=(id)=>{  
    dispatch(fetchInvestor(id));
-   navigate('/dashboard/investors/profile');
+   navigate('/dashboard/InvestorProfile');
 }
   return (
     <div className="min-h-screen bg-gray-50 p-6 md:p-12 font-sans antialiased text-slate-900">

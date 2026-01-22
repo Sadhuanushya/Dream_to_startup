@@ -5,7 +5,9 @@ import { submitInvestorProfile, resetInvestorError, resetInvestorSuccess } from 
 export default function InvestorProfile() {
   const dispatch = useDispatch();
   const { submitLoading, submitError, submitSuccess } = useSelector(state => state.investor);
-  
+  const {InvestorProfile}=useSelector((state)=>state.investor);
+  console.log(InvestorProfile);
+  const [isReadOnly, setIsReadOnly] = useState(false);
   const [formData, setFormData] = useState({
   
     fullName: '',
@@ -28,6 +30,27 @@ export default function InvestorProfile() {
     verificationDocument: false
   });
   const [uploadSuccess, setUploadSuccess] = useState({});
+
+  // Reset status message after submission
+  useEffect(() => {
+    if (InvestorProfile && InvestorProfile._id) {
+      setIsReadOnly(true);
+      // Populate form with fetched investor data
+      setFormData({
+        fullName: InvestorProfile.fullName || '',
+        email: InvestorProfile.email || '',
+        bio: InvestorProfile.bio || '',
+        linkedinUrl: InvestorProfile.linkedinUrl || '',
+        investorType: InvestorProfile.investorType || 'Angel Investor',
+        customInvestorType: InvestorProfile.customInvestorType || '',
+        officeLocation: InvestorProfile.officeLocation || { address: '', city: '', state: '', country: '', pincode: '' },
+        prefferedSector: InvestorProfile.prefferedSector || [{ sector: '', description: '', targetInvestment: '' }],
+        pastInvestment: InvestorProfile.pastInvestment || { projectName: '', investment: '', investmentDocument: '' },
+        profilePicture: InvestorProfile.profilePicture || null,
+        verificationDocument: InvestorProfile.verificationDocument || null
+      });
+    }
+  }, [InvestorProfile]);
 
   // Reset status message after submission
   useEffect(() => {
@@ -184,7 +207,10 @@ export default function InvestorProfile() {
         placeholder={placeholder}
         value={formData[name]}
         onChange={handleChange}
+        disabled={isReadOnly}
         className={`w-full bg-gray-50 border rounded-lg p-3 focus:ring-2 focus:outline-none transition ${
+          isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+        } ${
           error ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
         }`}
       />
@@ -196,11 +222,24 @@ export default function InvestorProfile() {
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
         <div className="bg-gradient-to-r from-indigo-800 to-indigo-900 p-10 text-white">
-          <h1 className="text-4xl font-black mb-2">Investor Onboarding</h1>
-          <p className="text-indigo-200">Build your investment portfolio and define your thesis.</p>
+          <h1 className="text-4xl font-black mb-2">{isReadOnly ? 'Investor Profile' : 'Investor Onboarding'}</h1>
+          <p className="text-indigo-200">{isReadOnly ? 'View investor information and investment details.' : 'Build your investment portfolio and define your thesis.'}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 md:p-12 space-y-8">
+          
+          {/* Profile Picture Display for Read-Only Mode */}
+          {isReadOnly && formData.profilePicture && (
+            <div className="flex justify-center mb-8">
+              <div className="relative">
+                <img 
+                  src={typeof formData.profilePicture?.DocumentUrl === 'string' ? formData.profilePicture?.DocumentUrl: ''} 
+                  alt="Profile" 
+                  className="w-40 h-40 rounded-full object-cover border-4 border-indigo-900 shadow-lg"
+                />
+              </div>
+            </div>
+          )}
           
           {/* Personal Identity Section */}
           <SectionHeader emoji="👤" title="Primary Identity" />
@@ -237,7 +276,10 @@ export default function InvestorProfile() {
                 name="investorType"
                 value={formData.investorType}
                 onChange={handleChange}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                disabled={isReadOnly}
+                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
+                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                }`}
               >
                 <option value="Angel Investor">Angel Investor</option>
                 <option value="Accelerator Investor">Accelerator Investor</option>
@@ -263,7 +305,10 @@ export default function InvestorProfile() {
                 placeholder="Describe your investment background and value-add..."
                 value={formData.bio}
                 onChange={handleChange}
+                disabled={isReadOnly}
                 className={`w-full bg-gray-50 border rounded-lg p-3 focus:ring-2 focus:outline-none transition ${
+                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                } ${
                   fieldErrors.bio ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
                 }`}
               />
@@ -280,7 +325,10 @@ export default function InvestorProfile() {
                 type="text"
                 value={formData.officeLocation.address}
                 onChange={(e) => handleNestedChange('officeLocation', 'address', e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                disabled={isReadOnly}
+                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
+                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                }`}
                 placeholder="Enter street address"
               />
             </div>
@@ -290,7 +338,10 @@ export default function InvestorProfile() {
                 type="text"
                 value={formData.officeLocation.city}
                 onChange={(e) => handleNestedChange('officeLocation', 'city', e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                disabled={isReadOnly}
+                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
+                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                }`}
                 placeholder="City"
               />
             </div>
@@ -300,7 +351,10 @@ export default function InvestorProfile() {
                 type="text"
                 value={formData.officeLocation.state}
                 onChange={(e) => handleNestedChange('officeLocation', 'state', e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                disabled={isReadOnly}
+                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
+                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                }`}
                 placeholder="State"
               />
             </div>
@@ -310,7 +364,10 @@ export default function InvestorProfile() {
                 type="text"
                 value={formData.officeLocation.country}
                 onChange={(e) => handleNestedChange('officeLocation', 'country', e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                disabled={isReadOnly}
+                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
+                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                }`}
                 placeholder="Country"
               />
             </div>
@@ -320,7 +377,10 @@ export default function InvestorProfile() {
                 type="text"
                 value={formData.officeLocation.pincode}
                 onChange={(e) => handleNestedChange('officeLocation', 'pincode', e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                disabled={isReadOnly}
+                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
+                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                }`}
                 placeholder="Pincode"
               />
             </div>
@@ -338,7 +398,10 @@ export default function InvestorProfile() {
                       placeholder="e.g. FinTech, SaaS"
                       value={sec.sector}
                       onChange={(e) => updateSector(idx, 'sector', e.target.value)}
-                      className="w-full border-b border-gray-300 py-2 outline-none focus:border-blue-500"
+                      disabled={isReadOnly}
+                      className={`w-full border-b border-gray-300 py-2 outline-none focus:border-blue-500 ${
+                        isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                      }`}
                     />
                   </div>
                   <div className="space-y-1">
@@ -348,7 +411,10 @@ export default function InvestorProfile() {
                       placeholder="50000"
                       value={sec.targetInvestment}
                       onChange={(e) => updateSector(idx, 'targetInvestment', e.target.value)}
-                      className="w-full border-b border-gray-300 py-2 outline-none focus:border-blue-500"
+                      disabled={isReadOnly}
+                      className={`w-full border-b border-gray-300 py-2 outline-none focus:border-blue-500 ${
+                        isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                      }`}
                     />
                   </div>
                   <div className="md:col-span-2 space-y-1">
@@ -357,7 +423,10 @@ export default function InvestorProfile() {
                       placeholder="Why are you interested in this sector?"
                       value={sec.description}
                       onChange={(e) => updateSector(idx, 'description', e.target.value)}
-                      className="w-full border-b border-gray-300 py-2 outline-none focus:border-blue-500 resize-none"
+                      disabled={isReadOnly}
+                      className={`w-full border-b border-gray-300 py-2 outline-none focus:border-blue-500 resize-none ${
+                        isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                      }`}
                       rows="2"
                     />
                   </div>
@@ -366,7 +435,10 @@ export default function InvestorProfile() {
                   <button
                     type="button"
                     onClick={() => removeSector(idx)}
-                    className="mt-3 text-xs font-bold text-red-500 hover:text-red-700 uppercase"
+                    disabled={isReadOnly}
+                    className={`mt-3 text-xs font-bold text-red-500 hover:text-red-700 uppercase ${
+                      isReadOnly ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                   >
                     ✕ Remove Sector
                   </button>
@@ -376,7 +448,10 @@ export default function InvestorProfile() {
             <button
               type="button"
               onClick={addSector}
-              className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 font-bold hover:bg-gray-50 transition"
+              disabled={isReadOnly}
+              className={`w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 font-bold hover:bg-gray-50 transition ${
+                isReadOnly ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
               + Add Another Sector
             </button>
@@ -392,7 +467,10 @@ export default function InvestorProfile() {
                   type="text"
                   value={formData.pastInvestment.projectName}
                   onChange={(e) => updatePastInvestment('projectName', e.target.value)}
-                  className="w-full bg-white border border-indigo-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500"
+                  disabled={isReadOnly}
+                  className={`w-full bg-white border border-indigo-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500 ${
+                    isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                  }`}
                   placeholder="Exit or Current Portfolio"
                 />
               </div>
@@ -402,7 +480,10 @@ export default function InvestorProfile() {
                   type="number"
                   value={formData.pastInvestment.investment}
                   onChange={(e) => updatePastInvestment('investment', e.target.value)}
-                  className="w-full bg-white border border-indigo-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500"
+                  disabled={isReadOnly}
+                  className={`w-full bg-white border border-indigo-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500 ${
+                    isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                  }`}
                   placeholder="Total Capital Deployed"
                 />
               </div>
@@ -410,8 +491,10 @@ export default function InvestorProfile() {
           </div>
 
           {/* Documents & Verification Section */}
-          <SectionHeader emoji="📄" title="Documents & Verification" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {!isReadOnly && (
+            <>
+              <SectionHeader emoji="📄" title="Documents & Verification" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Profile Picture Upload */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-gray-500 uppercase">
@@ -428,7 +511,7 @@ export default function InvestorProfile() {
                   accept="image/*"
                   onChange={(e) => handleFileUpload(e, 'profilePicture')}
                   className="hidden"
-                  disabled={uploadingFields.profilePicture}
+                  disabled={uploadingFields.profilePicture || isReadOnly}
                 />
                 <label htmlFor="profilePicture" className="cursor-pointer block">
                   {uploadingFields.profilePicture ? (
@@ -471,7 +554,7 @@ export default function InvestorProfile() {
                   accept=".pdf,.jpg,.jpeg,.png"
                   onChange={(e) => handleFileUpload(e, 'verificationDocument')}
                   className="hidden"
-                  disabled={uploadingFields.verificationDocument}
+                  disabled={uploadingFields.verificationDocument || isReadOnly}
                 />
                 <label htmlFor="verificationDocument" className="cursor-pointer block">
                   {uploadingFields.verificationDocument ? (
@@ -498,6 +581,8 @@ export default function InvestorProfile() {
               </div>
             </div>
           </div>
+            </>
+          )}
 
           {/* Status Message */}
           {statusMessage && (
@@ -508,14 +593,24 @@ export default function InvestorProfile() {
 
           {/* Submit Button */}
           <div className="pt-8">
-            <button
-              type="submit"
-              disabled={submitLoading}
-              className="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-indigo-700 disabled:bg-gray-300 transition-all transform hover:-translate-y-1 active:scale-95 shadow-lg shadow-indigo-200"
-            >
-              {submitLoading ? 'Submitting...' : 'COMPLETE INVESTOR REGISTRATION'}
-            </button>
-            <p className="text-center text-gray-400 text-xs mt-4">By submitting, you agree to our Investor Verification Terms.</p>
+            {!isReadOnly && (
+              <>
+                <button
+                  type="submit"
+                  disabled={submitLoading}
+                  className="w-full bg-green-800 text-black py-5 rounded-2xl text-xl hover:bg-green-900 disabled:bg-gray-300 transition-all transform hover:-translate-y-1 active:scale-95 shadow-lg"
+
+                >
+                  {submitLoading ? 'Submitting...' : 'COMPLETE INVESTOR REGISTRATION'}
+                </button>
+                <p className="text-center text-gray-400 text-xs mt-4">By submitting, you agree to our Investor Verification Terms.</p>
+              </>
+            )}
+            {isReadOnly && (
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-center">
+                <p className="text-blue-700 font-semibold">📋 Profile View Mode - Read Only</p>
+              </div>
+            )}
           </div>
         </form>
       </div>

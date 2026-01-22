@@ -8,6 +8,7 @@ import Account from "./pages/Account"
 import Investors from "./pages/Investors"
 import Entrepreneurs from "./pages/Entrepreneurs"
 import Pitch from "./pages/Pitch"
+import UploadPitch from "./pages/UploadPitch"
 import EntrepreneurProfile from './pages/EntrepreneurProfile';
 import InvestorProfile from './pages/InvestorProfile';
 import Message from './pages/Message';
@@ -25,13 +26,19 @@ export default function App() {
         <Route path="/dashboard" element={<DashBoard/>}>
 
         <Route path="account" element={<Account/>}/>
+        {/* <Route path="/dashboard/account" element={<Account/>}/> */}
+        
         <Route path="investors" element={<Investors/>}/>
         <Route path ="entrepreneurs" element={<Entrepreneurs/>}/>
         <Route path="Pitch" element={<Pitch/>}/>
-         <Route path="message" element={<Message/>}/>
+        <Route path="upload-pitch" element={<UploadPitch/>}/>
+        <Route path="message" element={<Message/>}/>
         <Route path="notifications" element={<Notifications/>}/>
         <Route path="entrepreneurProfile" element={<EntrepreneurProfile/>}/>
+        
+         <Route path="/dashboard/entrepreneurProfile" element={<EntrepreneurProfile/>}/>
         <Route path="InvestorProfile" element={<InvestorProfile/>}/>
+        <Route path="/dashboard/InvestorProfile" element={<InvestorProfile/>}/>
         <Route path="/dashboard/investors/message" element={<Message/>}/>  
         <Route path="/dashboard/investors/profile" element={<Account/>}/>
         <Route path="/dashboard/notifications/message" element={<Message/>}/>
@@ -39,6 +46,7 @@ export default function App() {
         <Route path="/dashboard/entrepreneur/message" element={<Message/>}/>
         <Route path="Subscription" element={<Subscription/>}/>
         <Route path="admin" element={<Admin/>}/>
+        <Route path="/dashboard/admin" element={<Admin/>}/>
        
 
      </Route>

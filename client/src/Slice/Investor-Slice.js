@@ -6,10 +6,11 @@ export const fetchInvestorsList = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const token = localStorage.getItem('token');
+            console.log("fetching from investorSlice");
             const response = await axios.get("http://localhost:3080/api/Investors", {
                 headers: { Authorization: token }
             });
-            console.log(response.data, "investorList");
+            console.log("investorList",response.data);
             return response.data;
         } catch (err) {
             return rejectWithValue(err.response?.data?.message || err.response?.data || 'Failed to fetch investors');

@@ -66,12 +66,22 @@ useEffect(() => {
 const handleLogin=async(loginData,resetForm)=>{   
 try{
     const response=await axios.post('http://localhost:3080/api/login',loginData);
+    localStorage.clear();
     localStorage.setItem('token',response.data.token);
-    localStorage.setItem('senderId',response.data.userId);
+    localStorage.setItem('userId',response.data.userId);
+    localStorage.setItem('role',response.data.role);
     if(response.data){
         userDispatch({type:"userId",payload:response.data.userId})
-        console.log("user id from login",response.data.userId)  
-        navigate('/dashboard')
+        console.log("user id from login",response.data.userId)
+        if(response.data.role == "entrepreneur"){
+            navigate("/dashboard/entrepreneurProfile")
+        }else if(response.data.role == "investor"){
+            navigate("/dashboard/InvestorProfile")
+        }else if(response.data.role == "admin"){
+            navigate("/dashboard/admin")
+        }else{
+            navigate("/")
+        }
         resetForm()
     }
     
