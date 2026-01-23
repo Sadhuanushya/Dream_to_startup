@@ -41,7 +41,7 @@ const navigate=useNavigate();
     };
     const handleViewProfile=(id)=>{  
        dispatch(fetchEntrepreneur(id));
-       navigate('/dashboard/EntrepreneurProfile');
+
     }
     const handleMessge=(id)=>{
       

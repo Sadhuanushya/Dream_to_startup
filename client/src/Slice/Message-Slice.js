@@ -7,8 +7,10 @@ export const fetchMessages = createAsyncThunk(
   "chat/fetchMessages",
   async ({ userId, otherUserId }, { rejectWithValue }) => {
     try {
+      const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:3080/api/messages/get/${userId}/${otherUserId}`
+        `http://localhost:3080/api/messages/get/${userId}/${otherUserId}`,
+        { headers: { Authorization: token } }
       );
       return res.data;
     } catch (err) {
@@ -21,8 +23,10 @@ export const fetchConversations = createAsyncThunk(
   "chat/fetchConversations",
   async (userId, { rejectWithValue }) => {
     try {
+      const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:3080/api/messages/conversations/${userId}`
+        `http://localhost:3080/api/messages/conversations/${userId}`,
+        { headers: { Authorization: token } }
       );
       return res.data;
     } catch (err) {
@@ -35,9 +39,11 @@ export const sendMessages = createAsyncThunk(
   "chat/sendMessages",
   async (msgData, { rejectWithValue }) => {
     try {
+      const token = localStorage.getItem('token');
       const res = await axios.post(
         "http://localhost:3080/api/messages/send",
-        msgData
+        msgData,
+        { headers: { Authorization: token } }
       );
       return res.data;
     } catch (err) {

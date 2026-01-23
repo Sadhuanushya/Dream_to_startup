@@ -4,7 +4,7 @@ import Login from './pages/Login';
 import DashBoard from './pages/DashBoard';
 import Home from "../src/pages/Home";
 import Notifications from './pages/Notifications';
-import Account from "./pages/Account"
+// import Account from "./pages/Account"
 import Investors from "./pages/Investors"
 import Entrepreneurs from "./pages/Entrepreneurs"
 import Pitch from "./pages/Pitch"
@@ -15,6 +15,8 @@ import Message from './pages/Message';
 import Subscription from './pages/Subscription';
 import Admin from "./pages/Admin"
 import AiReview from "./pages/AiReview"
+
+import Account from "./pages/Account"
 export default function App() {
   return (
   
@@ -25,8 +27,7 @@ export default function App() {
         <Route path="/aireview" element={<AiReview/>}/>
         <Route path="/dashboard" element={<DashBoard/>}>
 
-        <Route path="account" element={<Account/>}/>
-        {/* <Route path="/dashboard/account" element={<Account/>}/> */}
+ 
         
         <Route path="investors" element={<Investors/>}/>
         <Route path ="entrepreneurs" element={<Entrepreneurs/>}/>
@@ -34,15 +35,15 @@ export default function App() {
         <Route path="upload-pitch" element={<UploadPitch/>}/>
         <Route path="message" element={<Message/>}/>
         <Route path="notifications" element={<Notifications/>}/>
+        <Route path="account" element={<Account/>}/>
         <Route path="entrepreneurProfile" element={<EntrepreneurProfile/>}/>
         
          <Route path="/dashboard/entrepreneurProfile" element={<EntrepreneurProfile/>}/>
         <Route path="InvestorProfile" element={<InvestorProfile/>}/>
         <Route path="/dashboard/InvestorProfile" element={<InvestorProfile/>}/>
         <Route path="/dashboard/investors/message" element={<Message/>}/>  
-        <Route path="/dashboard/investors/profile" element={<Account/>}/>
+        
         <Route path="/dashboard/notifications/message" element={<Message/>}/>
-        <Route path="/dashboard/entrepreneur/profile" element={<Account/>}/>
         <Route path="/dashboard/entrepreneur/message" element={<Message/>}/>
         <Route path="Subscription" element={<Subscription/>}/>
         <Route path="admin" element={<Admin/>}/>

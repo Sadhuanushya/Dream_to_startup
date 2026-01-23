@@ -17,6 +17,8 @@ import {
 import { useContext } from 'react';
 import UserContext from '../Context/UserContext';
 import { fetchUserAccount } from '../Slice/Users-Slice';
+import {fetchInvestor} from "../Slice/Investor-Slice"
+import {fetchEntrepreneur} from "../Slice/Entreprenuer-Slice"
 
 export default function Message() {
 
@@ -29,7 +31,8 @@ export default function Message() {
   const scrollRef = useRef(null);
 
   const safeMessages = Array.isArray(messages) ? messages : [];
-  const currentUser = { id: localStorage.getItem("senderId") };
+  
+  const currentUser = { id: localStorage.getItem("userId") };
   const receiver = { id: localStorage.getItem("receiverId") };
   console.log("currentUser",currentUser.id);
   console.log("receiver",receiver.id)
@@ -53,10 +56,8 @@ console.log(conversations)
     });
 
     socket.on('user_typing', ({ senderId }) => {
-      if (senderId === receiver.id) {
-        dispatch(setTyping(true));
-        setTimeout(() => dispatch(setTyping(false)), 3000);
-      }
+      dispatch(setTyping(true));
+      setTimeout(() => dispatch(setTyping(false)), 3000);
     });
 
     socket.on('disconnect', () => dispatch(setOnlineStatus('offline')));
@@ -76,39 +77,85 @@ console.log(conversations)
   }, [currentUser.id, dispatch]);
 
   // Fetch messages when a conversation is selected
-// 1. Get the receiver ID sent from the Investors page
-const reduxReceiverId =localStorage.getItem("receiverId")||null;
-const reduxReceivername =localStorage.getItem("receivername")||null ;
-  
+  // 1. Get the receiver profile ID sent from the Investors/Entrepreneurs page
+  const reduxReceiverProfileId = localStorage.getItem("receiverId") || null;
+  const reduxReceivername = localStorage.getItem("receivername") || null;
+  const [actualReceiverId, setActualReceiverId] = useState(null);
 
+  useEffect(() => {
+    // 2. If we have a receiver profile ID, we need to get the actual user ID
+    if (reduxReceiverProfileId) {
+      const fetchActualReceiverId = async () => {
+        try {
+          const token = localStorage.getItem('token');
+          
+          // Try to fetch as entrepreneur first
+          try {
+            const entrepreneurResponse = await fetch(`http://localhost:3080/api/Entrepreneur/${reduxReceiverProfileId}`, {
+              headers: { Authorization: token }
+            });
+            
+            if (entrepreneurResponse.ok) {
+              const entrepreneurData = await entrepreneurResponse.json();
+              // The userId field in entrepreneur profile is the actual user ID
+              setActualReceiverId(entrepreneurData.userId);
+              return;
+            }
+          } catch (err) {
+            console.log('Not an entrepreneur profile');
+          }
 
-useEffect(() => {
-  // 2. If we have a receiver ID (from 'Connect' button)
-  if (reduxReceiverId) {
-    // Check if they are already in our conversation list
-    dispatch(fetchUserAccount(reduxReceiverId));
+          // Try to fetch as investor
+          try {
+            const investorResponse = await fetch(`http://localhost:3080/api/Investor/${reduxReceiverProfileId}`, {
+              headers: { Authorization: token }
+            });
+            
+            if (investorResponse.ok) {
+              const investorData = await investorResponse.json();
+              // The userId field in investor profile is the actual user ID
+              setActualReceiverId(investorData.userId);
+              return;
+            }
+          } catch (err) {
+            console.log('Not an investor profile');
+          }
 
-    const existingConv = conversations.find(c => c.userId === reduxReceiverId);
+          console.error('Could not find user for profile ID:', reduxReceiverProfileId);
+        } catch (error) {
+          console.error('Error fetching receiver ID:', error);
+        }
+      };
 
-
-    if (existingConv) {
-      setSelectedConversation(existingConv);
-    } else {
-      // 3. Create a temporary conversation object for the UI to render the chat box
-      setSelectedConversation({
-        userId: reduxReceiverId,
-        username: reduxReceivername, // You can pass the actual name via state if preferred
-        lastMessage: ""
-      });
+      fetchActualReceiverId();
     }
-    
-    // 4. Trigger the message fetch for this specific ID
-    dispatch(fetchMessages({ 
-      userId: currentUser.id, 
-      otherUserId: reduxReceiverId 
-    }));
-  }
-}, [reduxReceiverId, conversations, dispatch, currentUser.id]);
+  }, [reduxReceiverProfileId]);
+
+  useEffect(() => {
+    // 3. Once we have the actual receiver user ID, proceed with messaging
+    if (actualReceiverId) {
+      dispatch(fetchUserAccount(actualReceiverId));
+
+      const existingConv = conversations.find(c => c.userId === actualReceiverId);
+
+      if (existingConv) {
+        setSelectedConversation(existingConv);
+      } else {
+        // 4. Create a temporary conversation object for the UI to render the chat box
+        setSelectedConversation({
+          userId: actualReceiverId,
+          username: reduxReceivername,
+          lastMessage: ""
+        });
+      }
+      
+      // 5. Trigger the message fetch for this specific user ID
+      dispatch(fetchMessages({ 
+        userId: currentUser.id, 
+        otherUserId: actualReceiverId 
+      }));
+    }
+  }, [actualReceiverId, conversations, dispatch, currentUser.id]);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -116,13 +163,13 @@ useEffect(() => {
 
   const handleSend = (e) => {
     e.preventDefault();
-    if (!inputText.trim() || !selectedConversation) return;
-console.log("selected ",reduxReceivername,reduxReceiverId)
+    if (!inputText.trim() || !selectedConversation || !actualReceiverId) return;
+
     const msgData = {
       _id: Date.now().toString(),
       senderId: currentUser.id,
       receiverName: reduxReceivername,
-      receiverId: reduxReceiverId,
+      receiverId: actualReceiverId,
       text: inputText,
       createdAt: new Date().toISOString()
     };

@@ -74,9 +74,9 @@ try{
         userDispatch({type:"userId",payload:response.data.userId})
         console.log("user id from login",response.data.userId)
         if(response.data.role == "entrepreneur"){
-            navigate("/dashboard/entrepreneurProfile")
+            navigate("/dashboard")
         }else if(response.data.role == "investor"){
-            navigate("/dashboard/InvestorProfile")
+            navigate("/dashboard")
         }else if(response.data.role == "admin"){
             navigate("/dashboard/admin")
         }else{

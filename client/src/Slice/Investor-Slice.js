@@ -78,6 +78,35 @@ export const deleteInvestor = createAsyncThunk(
         }
     }
 );
+export const updateInvestorProfile = createAsyncThunk(
+  "Investor/updateProfile",
+  async ({ id, formData }, { rejectWithValue }) => {
+    try {
+      console.log("Updating investor profile...");
+      const token = localStorage.getItem("token");
+
+      // `formData` should be a FormData instance with all fields
+      const response = await axios.put(
+        `http://localhost:3080/api/Investor/${id}`,
+        formData,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+
+      console.log("Investor profile update success:", response.data);
+      return response.data;
+    } catch (err) {
+      console.log("Investor profile update error:", err);
+      return rejectWithValue(
+        err.response?.data?.message || err.response?.data || "Update failed"
+      );
+    }
+  }
+);
+
 
 const InvestorSlice = createSlice({
     name: "Investor",
@@ -149,7 +178,18 @@ const InvestorSlice = createSlice({
              .addCase(fetchInvestor.fulfilled,(state,action)=>{
                 state.InvestorProfile=action.payload;
                 
-            })           
+            })  
+            .addCase(updateInvestorProfile.fulfilled, (state, action) => {
+    // Save updated profile in both places
+    state.profiledata = action.payload;
+    state.InvestorProfile = action.payload;
+    state.submitSuccess = true;
+
+    // Update in master list if exists
+    state.data = state.data.map((investor) =>
+      investor._id === action.payload._id ? action.payload : investor
+    );
+})         
     }
 });
 

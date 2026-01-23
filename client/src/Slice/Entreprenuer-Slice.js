@@ -52,6 +52,73 @@ export const deleteEntrepreneur = createAsyncThunk(
     }
 
 );
+export const updateEntrepreneurProfile = createAsyncThunk(
+  "entrepreneurs/updateProfile",
+  async ({ id, formData }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      let multipartFormData = formData;
+      if (!(formData instanceof FormData)) {
+        multipartFormData = new FormData();
+
+        multipartFormData.append("fullname", formData.fullname);
+        multipartFormData.append("email", formData.email);
+        multipartFormData.append("phone", formData.phone);
+        multipartFormData.append("bio", formData.bio);
+        multipartFormData.append("linkedinUrl", formData.linkedinUrl);
+        multipartFormData.append(
+          "skills",
+          JSON.stringify(
+            Array.isArray(formData.skills)
+              ? formData.skills
+              : formData.skills.split(",")
+          )
+        );
+        multipartFormData.append("address", JSON.stringify(formData.address));
+        multipartFormData.append("education", JSON.stringify(formData.education));
+        multipartFormData.append(
+          "workExperience",
+          JSON.stringify(formData.workExperience)
+        );
+        multipartFormData.append(
+          "pastProject",
+          JSON.stringify(formData.pastProject)
+        );
+
+        if (formData.profilePicture)
+          multipartFormData.append("profilePicture", formData.profilePicture);
+        if (formData.identityDocument)
+          multipartFormData.append(
+            "identityDocument",
+            formData.identityDocument
+          );
+        if (formData.BusinessRegistrationDocument)
+          multipartFormData.append(
+            "BusinessRegistrationDocument",
+            formData.BusinessRegistrationDocument
+          );
+      }
+
+      const response = await axios.put(
+        `http://localhost:3080/api/Entrepreneur/${id}`,
+        multipartFormData,
+        {
+          headers: { Authorization: token },
+        }
+      );
+
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message ||
+          err.response?.data ||
+          "Update failed"
+      );
+    }
+  }
+);
+
 export const submitEntrepreneurProfile = createAsyncThunk(
     "entrepreneurs/submitProfile",
     async (formData, { rejectWithValue }) => {
@@ -81,6 +148,7 @@ export const submitEntrepreneurProfile = createAsyncThunk(
                 if (formData.BusinessRegistrationDocument) multipartFormData.append('BusinessRegistrationDocument', formData.BusinessRegistrationDocument);
             }
              console.log("its came to before api call")
+             console.log("body",multipartFormData)
             const response = await axios.post("http://localhost:3080/api/Entrepreneur", multipartFormData, {
                 headers: {
                     Authorization: token
@@ -158,7 +226,19 @@ const EntrepreneurSlice = createSlice({
             })  
             .addCase(fetchEntrepreneur.fulfilled, (state, action) => {
                 state.EntrepreneurProfile = action.payload;
-            });       
+            })
+            .addCase(updateEntrepreneurProfile.fulfilled, (state, action) => {
+  state.profiledata = action.payload;
+  state.EntrepreneurProfile = action.payload;
+  state.submitSuccess = true;
+
+  // Update entrepreneur in list (if list already loaded)
+  state.data = state.data.map((entrepreneur) =>
+    entrepreneur._id === action.payload._id
+      ? action.payload
+      : entrepreneur
+  );
+})       
     }
 });
 

@@ -1,61 +1,89 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { submitInvestorProfile, resetInvestorError, resetInvestorSuccess } from '../Slice/Investor-Slice';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  submitInvestorProfile,
+  resetInvestorError,
+  resetInvestorSuccess,
+} from "../Slice/Investor-Slice";
 
 export default function InvestorProfile() {
   const dispatch = useDispatch();
-  const { submitLoading, submitError, submitSuccess } = useSelector(state => state.investor);
-  const {InvestorProfile}=useSelector((state)=>state.investor);
-  console.log(InvestorProfile);
+  const { submitLoading, submitError, submitSuccess, InvestorProfile } =
+    useSelector((state) => state.investor);
+
   const [isReadOnly, setIsReadOnly] = useState(false);
+  const [hasLoadedProfile, setHasLoadedProfile] = useState(false);
+
   const [formData, setFormData] = useState({
-  
-    fullName: '',
-    email: '',
-    bio: '',
-    linkedinUrl: '',
-    investorType: 'Angel Investor',
-    customInvestorType: '',
-    officeLocation: { address: '', city: '', state: '', country: '', pincode: '' },
-    prefferedSector: [{ sector: '', description: '', targetInvestment: '' }],
-    pastInvestment: { projectName: '', investment: '', investmentDocument: '' },
+    fullName: "",
+    email: "",
+    bio: "",
+    linkedinUrl: "",
+    investorType: "Angel Investor",
+    customInvestorType: "",
+    officeLocation: {
+      address: "",
+      city: "",
+      state: "",
+      country: "",
+      pincode: "",
+    },
+    prefferedSector: [{ sector: "", description: "", targetInvestment: "" }],
+    pastInvestment: { projectName: "", investment: "", investmentDocument: "" },
     profilePicture: null,
-    verificationDocument: null
+    verificationDocument: null,
   });
 
   const [statusMessage, setStatusMessage] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [uploadingFields, setUploadingFields] = useState({
     profilePicture: false,
-    verificationDocument: false
+    verificationDocument: false,
   });
   const [uploadSuccess, setUploadSuccess] = useState({});
 
-  // Reset status message after submission
+  // Populate form only once from Redux
   useEffect(() => {
-    if (InvestorProfile && InvestorProfile._id) {
+    if (InvestorProfile && InvestorProfile._id && !hasLoadedProfile) {
       setIsReadOnly(true);
-      // Populate form with fetched investor data
+      setHasLoadedProfile(true);
       setFormData({
-        fullName: InvestorProfile.fullName || '',
-        email: InvestorProfile.email || '',
-        bio: InvestorProfile.bio || '',
-        linkedinUrl: InvestorProfile.linkedinUrl || '',
-        investorType: InvestorProfile.investorType || 'Angel Investor',
-        customInvestorType: InvestorProfile.customInvestorType || '',
-        officeLocation: InvestorProfile.officeLocation || { address: '', city: '', state: '', country: '', pincode: '' },
-        prefferedSector: InvestorProfile.prefferedSector || [{ sector: '', description: '', targetInvestment: '' }],
-        pastInvestment: InvestorProfile.pastInvestment || { projectName: '', investment: '', investmentDocument: '' },
-        profilePicture: InvestorProfile.profilePicture || null,
-        verificationDocument: InvestorProfile.verificationDocument || null
+        fullName: InvestorProfile.fullName || "",
+        email: InvestorProfile.email || "",
+        bio: InvestorProfile.bio || "",
+        linkedinUrl: InvestorProfile.linkedinUrl || "",
+        investorType: InvestorProfile.investorType || "Angel Investor",
+        customInvestorType: InvestorProfile.customInvestorType || "",
+        officeLocation:
+          InvestorProfile.officeLocation || {
+            address: "",
+            city: "",
+            state: "",
+            country: "",
+            pincode: "",
+          },
+        prefferedSector:
+          InvestorProfile.prefferedSector || [
+            { sector: "", description: "", targetInvestment: "" },
+          ],
+        pastInvestment:
+          InvestorProfile.pastInvestment || {
+            projectName: "",
+            investment: "",
+            investmentDocument: "",
+          },
+        profilePicture: InvestorProfile.profilePicture?.DocumentUrl || null,
+        verificationDocument: InvestorProfile.verificationDocument || null,
       });
     }
-  }, [InvestorProfile]);
+  }, [InvestorProfile, hasLoadedProfile]);
 
-  // Reset status message after submission
   useEffect(() => {
     if (submitSuccess) {
-      setStatusMessage({ type: 'success', text: 'Investor profile submitted successfully!' });
+      setStatusMessage({
+        type: "success",
+        text: "Investor profile submitted successfully!",
+      });
       setTimeout(() => {
         dispatch(resetInvestorSuccess());
         setStatusMessage(null);
@@ -65,15 +93,12 @@ export default function InvestorProfile() {
 
   useEffect(() => {
     if (submitError) {
-      let errorText = 'An error occurred during submission';
-      if (typeof submitError === 'string') {
-        errorText = submitError;
-      } else if (submitError?.message) {
-        errorText = submitError.message;
-      } else if (submitError?.error) {
-        errorText = submitError.error;
-      }
-      setStatusMessage({ type: 'error', text: errorText });
+      let errorText = "An error occurred during submission";
+      if (typeof submitError === "string") errorText = submitError;
+      else if (submitError.message) errorText = submitError.message;
+      else if (submitError.error) errorText = submitError.error;
+
+      setStatusMessage({ type: "error", text: errorText });
       setTimeout(() => {
         dispatch(resetInvestorError());
       }, 3000);
@@ -82,139 +107,125 @@ export default function InvestorProfile() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileUpload = async (e, fieldName) => {
+  const handleFileUpload = (e, fieldName) => {
     const file = e.target.files[0];
     if (file) {
-      setUploadingFields(prev => ({ ...prev, [fieldName]: true }));
-      
+      setUploadingFields((prev) => ({ ...prev, [fieldName]: true }));
       setTimeout(() => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          [fieldName]: file
+          [fieldName]: file,
         }));
-        
-        setUploadingFields(prev => ({ ...prev, [fieldName]: false }));
-        setUploadSuccess(prev => ({ ...prev, [fieldName]: true }));
-        
+        setUploadingFields((prev) => ({ ...prev, [fieldName]: false }));
+        setUploadSuccess((prev) => ({ ...prev, [fieldName]: true }));
         setTimeout(() => {
-          setUploadSuccess(prev => ({ ...prev, [fieldName]: false }));
+          setUploadSuccess((prev) => ({ ...prev, [fieldName]: false }));
         }, 2000);
       }, 800);
     }
   };
 
   const handleNestedChange = (parent, field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [parent]: { ...prev[parent], [field]: value }
+      [parent]: { ...prev[parent], [field]: value },
     }));
   };
 
   const updateSector = (index, field, value) => {
     const sectors = [...formData.prefferedSector];
-    sectors[index][field] = field === 'targetInvestment' ? (value ? Number(value) : '') : value;
-    setFormData(prev => ({ ...prev, prefferedSector: sectors }));
+    sectors[index][field] =
+      field === "targetInvestment" ? (value ? Number(value) : "") : value;
+    setFormData((prev) => ({ ...prev, prefferedSector: sectors }));
   };
 
   const addSector = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      prefferedSector: [...prev.prefferedSector, { sector: '', description: '', targetInvestment: '' }]
+      prefferedSector: [
+        ...prev.prefferedSector,
+        { sector: "", description: "", targetInvestment: "" },
+      ],
     }));
   };
 
   const removeSector = (index) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      prefferedSector: prev.prefferedSector.filter((_, i) => i !== index)
+      prefferedSector: prev.prefferedSector.filter((_, i) => i !== index),
     }));
   };
 
   const updatePastInvestment = (field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      pastInvestment: { ...prev.pastInvestment, [field]: field === 'investment' ? (value ? Number(value) : '') : value }
+      pastInvestment: {
+        ...prev.pastInvestment,
+        [field]:
+          field === "investment" ? (value ? Number(value) : "") : value,
+      },
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Create FormData for multipart file upload
-    const formDataToSend = new FormData();
-    
-    // Add text fields
+    const toSend = new FormData();
 
-    formDataToSend.append('fullName', formData.fullName);
-    formDataToSend.append('email', formData.email);
-    formDataToSend.append('bio', formData.bio);
-    formDataToSend.append('linkedinUrl', formData.linkedinUrl);
-    formDataToSend.append('investorType', formData.investorType);
-    if (formData.customInvestorType) {
-      formDataToSend.append('customInvestorType', formData.customInvestorType);
-    }
-    
-    // Add office location fields individually
-    formDataToSend.append('officeLocation[address]', formData.officeLocation.address);
-    formDataToSend.append('officeLocation[city]', formData.officeLocation.city);
-    formDataToSend.append('officeLocation[state]', formData.officeLocation.state);
-    formDataToSend.append('officeLocation[country]', formData.officeLocation.country);
-    formDataToSend.append('officeLocation[pincode]', formData.officeLocation.pincode);
-    
-    // Add sectors with array notation
-    formData.prefferedSector.forEach((sector, index) => {
-      formDataToSend.append(`prefferedSector[${index}][sector]`, sector.sector);
-      formDataToSend.append(`prefferedSector[${index}][description]`, sector.description);
-      formDataToSend.append(`prefferedSector[${index}][targetInvestment]`, sector.targetInvestment);
+    toSend.append("fullName", formData.fullName);
+    toSend.append("email", formData.email);
+    toSend.append("bio", formData.bio);
+    toSend.append("linkedinUrl", formData.linkedinUrl);
+    toSend.append("investorType", formData.investorType);
+    if (formData.customInvestorType)
+      toSend.append("customInvestorType", formData.customInvestorType);
+
+    Object.entries(formData.officeLocation).forEach(([key, val]) => {
+      toSend.append(`officeLocation[${key}]`, val);
     });
-    
-    // Add past investment fields
-    if (formData.pastInvestment.projectName || formData.pastInvestment.investment) {
-      formDataToSend.append('pastInvestment[projectName]', formData.pastInvestment.projectName);
-      formDataToSend.append('pastInvestment[investment]', formData.pastInvestment.investment);
-    }
-    
-    // Add files if they exist
-    if (formData.profilePicture instanceof File) {
-      formDataToSend.append('profilePicture', formData.profilePicture);
-    }
-    if (formData.verificationDocument instanceof File) {
-      formDataToSend.append('verificationDocument', formData.verificationDocument);
-    }
 
-    console.log('Submitting investor profile...');
-    dispatch(submitInvestorProfile(formDataToSend));
+    formData.prefferedSector.forEach((sec, i) => {
+      toSend.append(`prefferedSector[${i}][sector]`, sec.sector);
+      toSend.append(
+        `prefferedSector[${i}][description]`,
+        sec.description
+      );
+      toSend.append(
+        `prefferedSector[${i}][targetInvestment]`,
+        sec.targetInvestment
+      );
+    });
+
+    if (formData.pastInvestment.projectName)
+      toSend.append(
+        "pastInvestment[projectName]",
+        formData.pastInvestment.projectName
+      );
+    if (formData.pastInvestment.investment)
+      toSend.append(
+        "pastInvestment[investment]",
+        formData.pastInvestment.investment
+      );
+
+    if (formData.profilePicture instanceof File)
+      toSend.append("profilePicture", formData.profilePicture);
+    if (formData.verificationDocument instanceof File)
+      toSend.append(
+        "verificationDocument",
+        formData.verificationDocument
+      );
+
+    dispatch(submitInvestorProfile(toSend));
   };
 
   const SectionHeader = ({ emoji, title }) => (
     <div className="flex items-center gap-2 border-b-2 border-gray-100 pb-2 mb-6 mt-10">
       <span className="text-2xl">{emoji}</span>
-      <h3 className="text-xl font-bold text-gray-700 tracking-tight">{title}</h3>
-    </div>
-  );
-
-  const InputField = ({ label, name, type = 'text', placeholder, required = false, error = null }) => (
-    <div className="space-y-1">
-      <label className="text-xs font-bold text-gray-500 uppercase">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <input
-        name={name}
-        type={type}
-        placeholder={placeholder}
-        value={formData[name]}
-        onChange={handleChange}
-        disabled={isReadOnly}
-        className={`w-full bg-gray-50 border rounded-lg p-3 focus:ring-2 focus:outline-none transition ${
-          isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
-        } ${
-          error ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
-        }`}
-      />
-      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+      <h3 className="text-xl font-bold text-gray-700 tracking-tight">
+        {title}
+      </h3>
     </div>
   );
 
@@ -222,399 +233,292 @@ export default function InvestorProfile() {
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
         <div className="bg-gradient-to-r from-indigo-800 to-indigo-900 p-10 text-white">
-          <h1 className="text-4xl font-black mb-2">{isReadOnly ? 'Investor Profile' : 'Investor Onboarding'}</h1>
-          <p className="text-indigo-200">{isReadOnly ? 'View investor information and investment details.' : 'Build your investment portfolio and define your thesis.'}</p>
+          <h1 className="text-4xl font-black mb-2">
+            {isReadOnly ? "Investor Profile" : "Investor Onboarding"}
+          </h1>
+          <p className="text-indigo-200">
+            {isReadOnly
+              ? "View investor information and investment details."
+              : "Build your investment portfolio and define your thesis."}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 md:p-12 space-y-8">
-          
-          {/* Profile Picture Display for Read-Only Mode */}
-          {isReadOnly && formData.profilePicture && (
-            <div className="flex justify-center mb-8">
-              <div className="relative">
-                <img 
-                  src={typeof formData.profilePicture?.DocumentUrl === 'string' ? formData.profilePicture?.DocumentUrl: ''} 
-                  alt="Profile" 
-                  className="w-40 h-40 rounded-full object-cover border-4 border-indigo-900 shadow-lg"
-                />
-              </div>
-            </div>
-          )}
-          
-          {/* Personal Identity Section */}
-          <SectionHeader emoji="👤" title="Primary Identity" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            <InputField
-              label="Full Legal Name"
-              name="fullName"
-              placeholder="Enter full name"
-              required
-              error={fieldErrors.fullName}
-            />
-            <InputField
-              label="Business Email"
-              name="email"
-              type="email"
-              placeholder="investor@firm.com"
-              required
-              error={fieldErrors.email}
-            />
-            <InputField
-              label="LinkedIn URL"
-              name="linkedinUrl"
-              type="url"
-              placeholder="https://linkedin.com/in/..."
-              required
-              error={fieldErrors.linkedinUrl}
-            />
+          {/* — PRIMARY IDENTITY — */}
+          <SectionHeader emoji="👤" title="Primary Identity" />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Full Name */}
             <div className="space-y-1">
               <label className="text-xs font-bold text-gray-500 uppercase">
-                Investor Type <span className="text-red-500">*</span>
+                Full Legal Name<span className="text-red-500">*</span>
+              </label>
+              <input
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+                disabled={isReadOnly}
+                className="w-full bg-gray-50 border rounded-lg p-3"
+              />
+            </div>
+
+            {/* Email */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-500 uppercase">
+                Business Email<span className="text-red-500">*</span>
+              </label>
+              <input
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                disabled={isReadOnly}
+                className="w-full bg-gray-50 border rounded-lg p-3"
+              />
+            </div>
+
+            {/* LinkedIn */}
+            <div className="md:col-span-2 space-y-1">
+              <label className="text-xs font-bold text-gray-500 uppercase">
+                LinkedIn URL
+              </label>
+              <input
+                name="linkedinUrl"
+                type="url"
+                value={formData.linkedinUrl}
+                onChange={handleChange}
+                disabled={isReadOnly}
+                className="w-full bg-gray-50 border rounded-lg p-3"
+              />
+            </div>
+
+            {/* Investor Type */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-500 uppercase">
+                Investor Type
               </label>
               <select
                 name="investorType"
                 value={formData.investorType}
                 onChange={handleChange}
                 disabled={isReadOnly}
-                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
-                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
-                }`}
+                className="w-full bg-gray-50 border rounded-lg p-3"
               >
-                <option value="Angel Investor">Angel Investor</option>
-                <option value="Accelerator Investor">Accelerator Investor</option>
-                <option value="Seed Investor">Seed Investor</option>
-                <option value="Other">Other</option>
+                <option>Angel Investor</option>
+                <option>Accelerator Investor</option>
+                <option>Seed Investor</option>
+                <option>Other</option>
               </select>
             </div>
-            {formData.investorType === 'Other' && (
-              <InputField
-                label="Please specify investor type"
-                name="customInvestorType"
-                placeholder="Enter your investor type"
-                error={fieldErrors.customInvestorType}
-              />
+
+            {/* Custom Investor Type */}
+            {formData.investorType === "Other" && (
+              <div className="md:col-span-2 space-y-1">
+                <label className="text-xs font-bold text-gray-500 uppercase">
+                  Please specify investor type
+                </label>
+                <input
+                  name="customInvestorType"
+                  value={formData.customInvestorType}
+                  onChange={handleChange}
+                  disabled={isReadOnly}
+                  className="w-full bg-gray-50 border rounded-lg p-3"
+                />
+              </div>
             )}
+
+            {/* Bio */}
             <div className="md:col-span-2 space-y-1">
               <label className="text-xs font-bold text-gray-500 uppercase">
-                Investor Bio <span className="text-red-500">*</span>
+                Investor Bio
               </label>
               <textarea
                 name="bio"
-                rows="3"
-                placeholder="Describe your investment background and value-add..."
                 value={formData.bio}
                 onChange={handleChange}
                 disabled={isReadOnly}
-                className={`w-full bg-gray-50 border rounded-lg p-3 focus:ring-2 focus:outline-none transition ${
-                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
-                } ${
-                  fieldErrors.bio ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
-                }`}
+                className="w-full bg-gray-50 border rounded-lg p-3"
               />
-              {fieldErrors.bio && <p className="text-xs text-red-500 mt-1">{fieldErrors.bio}</p>}
             </div>
           </div>
 
-          {/* Office Location Section */}
+          {/* — OFFICE LOCATION — */}
           <SectionHeader emoji="🏢" title="Office Location" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-3 space-y-1">
-              <label className="text-xs font-bold text-gray-500 uppercase">Street Address</label>
-              <input
-                type="text"
-                value={formData.officeLocation.address}
-                onChange={(e) => handleNestedChange('officeLocation', 'address', e.target.value)}
-                disabled={isReadOnly}
-                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
-                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
-                }`}
-                placeholder="Enter street address"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-gray-500 uppercase">City</label>
-              <input
-                type="text"
-                value={formData.officeLocation.city}
-                onChange={(e) => handleNestedChange('officeLocation', 'city', e.target.value)}
-                disabled={isReadOnly}
-                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
-                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
-                }`}
-                placeholder="City"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-gray-500 uppercase">State</label>
-              <input
-                type="text"
-                value={formData.officeLocation.state}
-                onChange={(e) => handleNestedChange('officeLocation', 'state', e.target.value)}
-                disabled={isReadOnly}
-                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
-                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
-                }`}
-                placeholder="State"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-gray-500 uppercase">Country</label>
-              <input
-                type="text"
-                value={formData.officeLocation.country}
-                onChange={(e) => handleNestedChange('officeLocation', 'country', e.target.value)}
-                disabled={isReadOnly}
-                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
-                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
-                }`}
-                placeholder="Country"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-gray-500 uppercase">Pincode</label>
-              <input
-                type="text"
-                value={formData.officeLocation.pincode}
-                onChange={(e) => handleNestedChange('officeLocation', 'pincode', e.target.value)}
-                disabled={isReadOnly}
-                className={`w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition ${
-                  isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
-                }`}
-                placeholder="Pincode"
-              />
-            </div>
-          </div>
 
-          {/* Preferred Sectors Section */}
-          <SectionHeader emoji="🎯" title="Preferred Sectors" />
-          <div className="space-y-4">
-            {formData.prefferedSector.map((sec, idx) => (
-              <div key={idx} className="p-6 bg-white border border-gray-200 rounded-xl hover:border-blue-200 transition">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black text-blue-600 uppercase">Sector Name</label>
-                    <input
-                      placeholder="e.g. FinTech, SaaS"
-                      value={sec.sector}
-                      onChange={(e) => updateSector(idx, 'sector', e.target.value)}
-                      disabled={isReadOnly}
-                      className={`w-full border-b border-gray-300 py-2 outline-none focus:border-blue-500 ${
-                        isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
-                      }`}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black text-blue-600 uppercase">Target Ticket Size ($)</label>
-                    <input
-                      type="number"
-                      placeholder="50000"
-                      value={sec.targetInvestment}
-                      onChange={(e) => updateSector(idx, 'targetInvestment', e.target.value)}
-                      disabled={isReadOnly}
-                      className={`w-full border-b border-gray-300 py-2 outline-none focus:border-blue-500 ${
-                        isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
-                      }`}
-                    />
-                  </div>
-                  <div className="md:col-span-2 space-y-1">
-                    <label className="text-[10px] font-black text-blue-600 uppercase">Thesis/Description</label>
-                    <textarea
-                      placeholder="Why are you interested in this sector?"
-                      value={sec.description}
-                      onChange={(e) => updateSector(idx, 'description', e.target.value)}
-                      disabled={isReadOnly}
-                      className={`w-full border-b border-gray-300 py-2 outline-none focus:border-blue-500 resize-none ${
-                        isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
-                      }`}
-                      rows="2"
-                    />
-                  </div>
-                </div>
-                {formData.prefferedSector.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeSector(idx)}
-                    disabled={isReadOnly}
-                    className={`mt-3 text-xs font-bold text-red-500 hover:text-red-700 uppercase ${
-                      isReadOnly ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                  >
-                    ✕ Remove Sector
-                  </button>
-                )}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {["address", "city", "state", "country", "pincode"].map((field) => (
+              <div key={field} className="space-y-1 md:col-span-3">
+                <label className="text-xs font-bold text-gray-500 uppercase">
+                  {field.charAt(0).toUpperCase() + field.slice(1)}
+                </label>
+                <input
+                  type="text"
+                  value={formData.officeLocation[field]}
+                  onChange={(e) =>
+                    handleNestedChange("officeLocation", field, e.target.value)
+                  }
+                  disabled={isReadOnly}
+                  className="w-full bg-gray-50 border rounded-lg p-3"
+                />
               </div>
             ))}
+          </div>
+
+          {/* — PREFERRED SECTORS — */}
+          <SectionHeader emoji="🎯" title="Preferred Sectors" />
+
+          {formData.prefferedSector.map((sec, idx) => (
+            <div key={idx} className="border p-6 rounded-xl bg-white">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  placeholder="Sector Name"
+                  value={sec.sector}
+                  onChange={(e) => updateSector(idx, "sector", e.target.value)}
+                  disabled={isReadOnly}
+                  className="border-b py-2"
+                />
+                <input
+                  placeholder="Target Ticket Size ($)"
+                  type="number"
+                  value={sec.targetInvestment}
+                  onChange={(e) =>
+                    updateSector(idx, "targetInvestment", e.target.value)
+                  }
+                  disabled={isReadOnly}
+                  className="border-b py-2"
+                />
+                <textarea
+                  placeholder="Thesis/Description"
+                  value={sec.description}
+                  onChange={(e) =>
+                    updateSector(idx, "description", e.target.value)
+                  }
+                  disabled={isReadOnly}
+                  className="border-b py-2 md:col-span-2"
+                />
+              </div>
+              {!isReadOnly && (
+                <button
+                  type="button"
+                  onClick={() => removeSector(idx)}
+                  className="text-red-500 mt-2"
+                >
+                  Remove Sector
+                </button>
+              )}
+            </div>
+          ))}
+
+          {!isReadOnly && (
             <button
               type="button"
               onClick={addSector}
-              disabled={isReadOnly}
-              className={`w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 font-bold hover:bg-gray-50 transition ${
-                isReadOnly ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className="w-full border-2 border-dashed p-3 rounded-xl"
             >
               + Add Another Sector
             </button>
-          </div>
+          )}
 
-          {/* Featured Past Investment Section */}
+          {/* — PAST INVESTMENT — */}
           <SectionHeader emoji="📈" title="Featured Past Investment" />
-          <div className="p-6 bg-indigo-50 border border-indigo-100 rounded-xl space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-indigo-900 uppercase">Project Name</label>
-                <input
-                  type="text"
-                  value={formData.pastInvestment.projectName}
-                  onChange={(e) => updatePastInvestment('projectName', e.target.value)}
-                  disabled={isReadOnly}
-                  className={`w-full bg-white border border-indigo-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500 ${
-                    isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
-                  }`}
-                  placeholder="Exit or Current Portfolio"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-indigo-900 uppercase">Investment Amount ($)</label>
-                <input
-                  type="number"
-                  value={formData.pastInvestment.investment}
-                  onChange={(e) => updatePastInvestment('investment', e.target.value)}
-                  disabled={isReadOnly}
-                  className={`w-full bg-white border border-indigo-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500 ${
-                    isReadOnly ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
-                  }`}
-                  placeholder="Total Capital Deployed"
-                />
-              </div>
-            </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <input
+              placeholder="Project Name"
+              value={formData.pastInvestment.projectName}
+              onChange={(e) =>
+                updatePastInvestment("projectName", e.target.value)
+              }
+              disabled={isReadOnly}
+              className="bg-indigo-50 border rounded-lg p-3"
+            />
+            <input
+              placeholder="Investment Amount ($)"
+              type="number"
+              value={formData.pastInvestment.investment}
+              onChange={(e) =>
+                updatePastInvestment("investment", e.target.value)
+              }
+              disabled={isReadOnly}
+              className="bg-indigo-50 border rounded-lg p-3"
+            />
           </div>
 
-          {/* Documents & Verification Section */}
+          {/* — DOCUMENT UPLOADS — */}
           {!isReadOnly && (
             <>
               <SectionHeader emoji="📄" title="Documents & Verification" />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Profile Picture Upload */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-500 uppercase">
-                Profile Picture <span className="text-red-500">*</span>
-              </label>
-              <div className={`border-2 border-dashed rounded-xl p-6 text-center transition cursor-pointer ${
-                uploadingFields.profilePicture ? 'border-yellow-400 bg-yellow-50' : 
-                uploadSuccess.profilePicture ? 'border-green-400 bg-green-50' :
-                'border-gray-300 hover:border-blue-400'
-              }`}>
-                <input
-                  type="file"
-                  id="profilePicture"
-                  accept="image/*"
-                  onChange={(e) => handleFileUpload(e, 'profilePicture')}
-                  className="hidden"
-                  disabled={uploadingFields.profilePicture || isReadOnly}
-                />
-                <label htmlFor="profilePicture" className="cursor-pointer block">
-                  {uploadingFields.profilePicture ? (
-                    <>
-                      <div className="text-3xl mb-2 animate-spin">⏳</div>
-                      <p className="text-sm font-semibold text-yellow-600">Uploading...</p>
-                    </>
-                  ) : uploadSuccess.profilePicture ? (
-                    <>
-                      <div className="text-3xl mb-2">✅</div>
-                      <p className="text-sm font-semibold text-green-600">Upload successful!</p>
-                    </>
-                  ) : (
-                    <>
-                      <div className="text-3xl mb-2">🖼️</div>
-                      <p className="text-sm font-semibold text-gray-600">Click to upload profile picture</p>
-                      <p className="text-xs text-gray-400">PNG, JPG up to 5MB</p>
-                    </>
-                  )}
-                </label>
-                {formData.profilePicture && !uploadSuccess.profilePicture && !uploadingFields.profilePicture && (
-                  <p className="text-xs text-blue-600 mt-2 font-semibold">📄 {formData.profilePicture.name}</p>
-                )}
-              </div>
-            </div>
 
-            {/* Verification Document Upload */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-500 uppercase">
-                Verification Document <span className="text-red-500">*</span>
-              </label>
-              <div className={`border-2 border-dashed rounded-xl p-6 text-center transition cursor-pointer ${
-                uploadingFields.verificationDocument ? 'border-yellow-400 bg-yellow-50' : 
-                uploadSuccess.verificationDocument ? 'border-green-400 bg-green-50' :
-                'border-gray-300 hover:border-blue-400'
-              }`}>
-                <input
-                  type="file"
-                  id="verificationDocument"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={(e) => handleFileUpload(e, 'verificationDocument')}
-                  className="hidden"
-                  disabled={uploadingFields.verificationDocument || isReadOnly}
-                />
-                <label htmlFor="verificationDocument" className="cursor-pointer block">
-                  {uploadingFields.verificationDocument ? (
-                    <>
-                      <div className="text-3xl mb-2 animate-spin">⏳</div>
-                      <p className="text-sm font-semibold text-yellow-600">Uploading...</p>
-                    </>
-                  ) : uploadSuccess.verificationDocument ? (
-                    <>
-                      <div className="text-3xl mb-2">✅</div>
-                      <p className="text-sm font-semibold text-green-600">Upload successful!</p>
-                    </>
-                  ) : (
-                    <>
-                      <div className="text-3xl mb-2">📜</div>
-                      <p className="text-sm font-semibold text-gray-600">Click to upload verification proof</p>
-                      <p className="text-xs text-gray-400">PDF, JPG, PNG up to 10MB</p>
-                    </>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                {/* Profile Picture */}
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase">
+                    Profile Picture
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileUpload(e, "profilePicture")}
+                  />
+                  {formData.profilePicture && (
+                    <p className="mt-2 text-sm">{formData.profilePicture.name}</p>
                   )}
-                </label>
-                {formData.verificationDocument && !uploadSuccess.verificationDocument && !uploadingFields.verificationDocument && (
-                  <p className="text-xs text-blue-600 mt-2 font-semibold">📄 {formData.verificationDocument.name}</p>
-                )}
+                </div>
+
+                {/* Verification Document */}
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase">
+                    Verification Document
+                  </label>
+                  <input
+                    type="file"
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    onChange={(e) =>
+                      handleFileUpload(e, "verificationDocument")
+                    }
+                  />
+                  {formData.verificationDocument && (
+                    <p className="mt-2 text-sm">
+                      {formData.verificationDocument.name}
+                    </p>
+                  )}
+                </div>
+
               </div>
-            </div>
-          </div>
             </>
           )}
 
-          {/* Status Message */}
           {statusMessage && (
-            <div className={`p-4 rounded-xl text-center font-bold animate-bounce ${statusMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+            <div
+              className={`p-3 rounded ${
+                statusMessage.type === "success"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
               {statusMessage.text}
             </div>
           )}
 
-          {/* Submit Button */}
-          <div className="pt-8">
-            {!isReadOnly && (
-              <>
-                <button
-                  type="submit"
-                  disabled={submitLoading}
-                  className="w-full bg-green-800 text-black py-5 rounded-2xl text-xl hover:bg-green-900 disabled:bg-gray-300 transition-all transform hover:-translate-y-1 active:scale-95 shadow-lg"
+          {!isReadOnly && (
+            <button
+              type="submit"
+              disabled={submitLoading}
+              className="w-full bg-green-800 text-white py-4 rounded-xl"
+            >
+              {submitLoading ? "Submitting..." : "COMPLETE INVESTOR REGISTRATION"}
+            </button>
+          )}
 
-                >
-                  {submitLoading ? 'Submitting...' : 'COMPLETE INVESTOR REGISTRATION'}
-                </button>
-                <p className="text-center text-gray-400 text-xs mt-4">By submitting, you agree to our Investor Verification Terms.</p>
-              </>
-            )}
-            {isReadOnly && (
-              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-center">
-                <p className="text-blue-700 font-semibold">📋 Profile View Mode - Read Only</p>
-              </div>
-            )}
-          </div>
+          {isReadOnly && (
+            <div className="text-center p-4 bg-blue-50 rounded-xl text-blue-700">
+              📋 Profile View Mode — Read Only
+            </div>
+          )}
         </form>
       </div>
     </div>
   );
-};
-
+}
