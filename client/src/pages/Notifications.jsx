@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchNotifications, confirmConnection, rejectConnection, deleteNotification, markAsRead } from '../Slice/Notification-Slice';
+import { fetchReceiverNotifications, confirmConnection, rejectConnection, deleteNotification, markAsRead } from '../Slice/Notification-Slice';
 import { Bell, Check, X, Trash2, MessageCircle, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { useContext } from 'react';
 import UserContext from '../Context/UserContext';
@@ -10,17 +10,27 @@ export default function Notifications() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     
-    const { notifications, loading } = useSelector(state => state.notifications);
+    const { showNotifications, loading } = useSelector(state => state.notifications);
     const [selectedType, setSelectedType] = useState('all');
     const [actionLoading, setActionLoading] = useState({});
-console.log("notifications",notifications)
+console.log("notifications",showNotifications)
+    // useEffect(() => {
+    //     const receiver=localStorage.getItem("userId")
+    //     if(receiver){
+    //         console.log("notify receiver",receiver)
+    //         dispatch(fetchReceiverNotifications(receiver));
+    //     }
+    // }, [dispatch]);
     useEffect(() => {
-        const receiver=localStorage.getItem("senderId")
-        if(receiver){
-            console.log("notify receiver",receiver)
-            dispatch(fetchNotifications(receiver));
+        const receiver = localStorage.getItem("userId");
+        if (receiver) {
+            console.log("receiver id form notification page", receiver);
+            console.log("before dispatching fetch notifications");
+            dispatch(fetchReceiverNotifications(receiver));
+            console.log("after dispatching fetch notifications");
+            console.log("notifications after fetch", showNotifications);
         }
-    }, [dispatch]);
+    },[dispatch]);
 
     const handleConfirm = async (notificationId) => {
         setActionLoading(prev => ({ ...prev, [notificationId]: true }));
@@ -44,9 +54,9 @@ console.log("notifications",notifications)
     };
 
     const filteredNotifications = selectedType === 'all' 
-        ? notifications 
-        : notifications.filter(n => n.type === selectedType);
-
+        ? showNotifications 
+        : showNotifications.filter(n => n.type === selectedType);
+console.log("filteredNotifications",filteredNotifications)
     const getNotificationIcon = (type) => {
         switch(type) {
             case 'connection_request':
@@ -135,7 +145,7 @@ console.log("notifications",notifications)
                     <div className="flex items-center justify-center h-64">
                         <Loader2 className="animate-spin text-indigo-600" size={48} />
                     </div>
-                ) : filteredNotifications.length === 0 ? (
+                ) : filteredNotifications?.length === 0 ? (
                     <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
                         <Bell size={64} className="mx-auto text-gray-300 mb-4" />
                         <p className="text-xl font-semibold text-gray-600">No notifications yet</p>
@@ -143,7 +153,7 @@ console.log("notifications",notifications)
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {filteredNotifications.map((notification) => {
+                        {filteredNotifications?.map((notification) => {
                             const statusBadge = getStatusBadge(notification.type, notification.status);
                             const isConnectionRequest = notification.type === 'connection_request' && notification.status === 'pending';
 

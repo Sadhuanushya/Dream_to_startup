@@ -3,14 +3,32 @@ import axios from "axios";
 
 export const fetchNotifications = createAsyncThunk(
     "notifications/fetch",
-    async (receiver, { rejectWithValue }) => {
+    async (sender, { rejectWithValue }) => {
+        console.log("fetchNotifications called with sender:", sender);
         try {
-            console.log("receiver from fetch api",receiver)
+            console.log("receiver from fetch api",sender)
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:3080/api/notifications/${receiver}`, {
+            const response = await axios.get(`http://localhost:3080/api/notifications/${sender}`, {
                 headers: { Authorization: token }
             });
             console.log("fetch notifications",response.data)
+            return response.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data || 'Failed to fetch notifications');
+        }
+    }
+);
+export const fetchReceiverNotifications = createAsyncThunk(
+    "notifications/receiverFetch",
+    async (receiver, { rejectWithValue }) => {
+        try {
+            console.log("comes to fetch receiver notifications")
+            console.log("1  receiver from fetch api",receiver)
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`http://localhost:3080/api/notification/${receiver}`, {
+                headers: { Authorization: token }
+            });
+            console.log("2  fetch notifications in slice",response.data)
             return response.data;
         } catch (err) {
             return rejectWithValue(err.response?.data || 'Failed to fetch notifications');
@@ -119,6 +137,8 @@ const NotificationSlice = createSlice({
     name: "notifications",
     initialState: {
         notifications: [],
+        showNotifications:null,
+        pending: [],
         unreadCount: 0,
         loading: false,
         error: null,
@@ -129,6 +149,10 @@ const NotificationSlice = createSlice({
             state.notifications.unshift(action.payload);
             state.unreadCount += 1;
         }
+        ,
+        setPending: (state, action) => {
+            state.pending = action.payload;
+        }   
     },
     extraReducers: (builder) => {
         // Fetch notifications
@@ -196,9 +220,11 @@ const NotificationSlice = createSlice({
         builder
             .addCase(deleteNotification.fulfilled, (state, action) => {
                 state.notifications = state.notifications.filter(n => n._id !== action.payload);
+            })
+            .addCase(fetchReceiverNotifications.fulfilled, (state, action) => {
+                state.showNotifications= action.payload;
             });
-    }
-});
-
-export const { addNotificationOptimistic } = NotificationSlice.actions;
+   } })
+    ;
+        export const { addNotificationOptimistic ,setPending} = NotificationSlice.actions;
 export default NotificationSlice.reducer;

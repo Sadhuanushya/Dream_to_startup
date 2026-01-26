@@ -2,8 +2,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect ,useState} from "react";
 import { fetchInvestorsList } from "../Slice/Investor-Slice";
 import {useNavigate} from "react-router-dom";
-import {setPendingRequest,deleteInvestor,fetchInvestor} from "../Slice/Investor-Slice"
-import { createNotification } from "../Slice/Notification-Slice";
+
+import {deleteInvestor,fetchInvestor} from "../Slice/Investor-Slice"
+import { createNotification, fetchNotifications,setPending } from "../Slice/Notification-Slice";
 const MapPin = () => (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -20,42 +21,50 @@ const VerifiedIcon = () => (
 
 export default function Investors(){
   const dispatch = useDispatch();
-  const { data, pendingRequest} = useSelector((state) => state.investor);
+  const { data} = useSelector((state) => state.investor);
+  const { notifications,pending} = useSelector((state) => state.notifications);
 const AllUsers=useSelector(state=>state.Users?.data);
+const [localPending, setLocalPending] = useState({});
+
   const navigate=useNavigate();
 console.log(data,"profiledata")
-console.log("pendingrequest",pendingRequest)
+
+  ;
   useEffect(() => {
-    dispatch(fetchInvestorsList());
-    console.log("allusers",AllUsers);
-  }, [dispatch]);
+  dispatch(fetchInvestorsList());
+  dispatch(fetchNotifications(localStorage.getItem("userId")));
+}, [dispatch]);
 
 
-const handleRequest = (id, name,email) => {
-  console.log("email",email)
-  console.log("message receiver",id,name,email)
-  const findReceiverId=AllUsers.find(user=>user.email===email);
-  console.log("found receiver",findReceiverId._id)
-  const notifyData={
-    senderId:localStorage.getItem("senderId"),
-    receiverId:findReceiverId._id,
-    type:"connection_request",
-    title:"connection Request",
-    message:"Entreprenuer want to connect with u",
-    senderRole:findReceiverId.role,
-    profileId:id,
-    status:"pending"
+
+const handleRequest = (id, name, email, profileID) => {
+  console.log("ele._id", id);
+  
+  console.log("message receiver", id, name, email, profileID, "userID", id)
+  console.log("passing id from front end", id)
+  const notifyData = {
+    senderId: localStorage.getItem("userId"),
+    receiverId: id,
+    type: "connection_request",
+    title: "connection Request",
+    message: ` ${localStorage.getItem("name")} want to connect with u`,
+    senderRole: localStorage.getItem("role"),
+    profileId: profileID,
+    status: "pending"
   }
-  console.log("notifyData",notifyData)
-  dispatch(createNotification(notifyData))
-  dispatch(setPendingRequest(id));
-  if(!pendingRequest.includes(id)){
-    console.log("entreprenuer allow message to investor");
-  // localStorage.setItem("receiverId",findReceiverId._id);
-  // localStorage.setItem("receivername",name)
-  // navigate("/dashboard/investors/message");
-  }
-
+  console.log("notifyData", notifyData)
+  
+  // Set local state for immediate UI feedback
+  setLocalPending(prev => ({...prev, [id]: true}));
+  
+  dispatch(createNotification(notifyData)).then(() => {
+    console.log("notification created successfully");
+    dispatch(fetchNotifications(localStorage.getItem("userId")));
+    console.log("notifications fetched", notifications);
+  }).catch((error) => {
+    console.error("Error creating notification:", error);
+    setLocalPending(prev => ({...prev, [id]: false}));
+  });
 };
 const handleDelete=(id)=>{
   console.log("delete investor with id:",id);
@@ -68,7 +77,60 @@ const handleDelete=(id)=>{
 const handleViewProfile=(id)=>{  
    dispatch(fetchInvestor(id));
    navigate('/dashboard/InvestorProfile');
+
 }
+
+const handleMessage=(receiverId,name)=>{
+  localStorage.setItem("receiverId",receiverId);
+  localStorage.setItem("receivername",name);
+  navigate("/dashboard/message");
+}
+
+const isConnectionConfirmed = (investorId) => {
+  return notifications?.some(
+    notif =>
+      notif.type === "connection_request" &&
+      notif.status === "confirmed" &&
+      notif.senderId?._id === localStorage.getItem("userId") &&
+      notif.receiverId?._id === investorId
+  );
+}
+
+const isPendingRequest = (investorId) => {
+  return notifications?.some(
+    notif =>
+      notif.type === "connection_request" &&
+      notif.status === "pending" &&
+      notif.senderId?._id === localStorage.getItem("userId") &&
+      notif.receiverId?._id === investorId
+  ) || localPending[investorId];
+}
+useEffect(() => {
+  // Clear local pending state when notifications update
+  // This keeps local state in sync with server state
+  if (notifications && notifications.length > 0) {
+    const confirmedIds = new Set();
+    const pendingIds = new Set();
+    
+    notifications.forEach(notif => {
+      if (notif.type === "connection_request" && notif.senderId?._id === localStorage.getItem("userId")) {
+        if (notif.status === "confirmed") {
+          confirmedIds.add(notif.receiverId?._id);
+        } else if (notif.status === "pending") {
+          pendingIds.add(notif.receiverId?._id);
+        }
+      }
+    });
+    
+    // Update local state based on server notifications
+    setLocalPending(prev => {
+      const updated = {...prev};
+      confirmedIds.forEach(id => delete updated[id]);
+      return updated;
+    });
+  }
+}, [notifications]);
+
   return (
     <div className="min-h-screen bg-gray-50 p-6 md:p-12 font-sans antialiased text-slate-900">
       <div className="max-w-5xl mx-auto">
@@ -126,17 +188,37 @@ const handleViewProfile=(id)=>{
                 </div>
 
                 <div className="flex flex-row md:flex-col justify-end gap-3 mt-4 md:mt-0 min-w-[140px]">
-                {pendingRequest.includes(ele._id) ?<button className="flex-1 md:flex-none bg-black text-grey-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors" onClick={()=>{handleRequest(ele._id,ele.fullName)}}>
-                    Pending
-                  </button> :<button className="flex-1 md:flex-none bg-black text-grey-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors" onClick={()=>{handleRequest(ele._id,ele.fullName,ele.email)}}>
-                    request
-                  </button>}  
-                  <button className="flex-1 md:flex-none border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors" onClick={()=>{handleViewProfile(ele._id)}}>
+{isConnectionConfirmed(ele.userId._id) ? (
+  <button
+    className="flex-1 md:flex-none bg-green-600 text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition-colors"
+    onClick={() => handleMessage(ele.userId._id, ele.fullName)}
+  >
+    Message
+  </button>
+) : isPendingRequest(ele.userId._id) ? (
+  <button
+    disabled={true}
+    className="flex-1 md:flex-none bg-gray-400 text-gray-200 px-4 py-2 rounded-lg text-sm font-semibold cursor-not-allowed"
+  >
+    Pending
+  </button>
+) : (
+  <button
+    className="flex-1 md:flex-none bg-black text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors"
+    onClick={() => handleRequest(ele.userId._id, ele.fullName, ele.email, ele._id)}
+  >
+    Request
+  </button>
+)}
+
+                  <button className="flex-1 md:flex-none border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors" onClick={()=>{handleViewProfile(ele.userId._id)}}>
                     View Profile
                   </button>
-                   <button className="flex-1 md:flex-none border border-gray-200 text-red-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors"onClick={()=>{handleDelete(ele._id)}}>
+           {localStorage.getItem('role')==="admin" && (
+            <button className="flex-1 md:flex-none border border-gray-200 text-red-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors"onClick={()=>{handleDelete(ele._id)}}>
                     Delete
                   </button>
+           )}
                 </div>
               </div>
             </div>

@@ -28,6 +28,7 @@ export const fetchInvestor = createAsyncThunk(
             console.log("investor from investor slice showed particular invester", response.data);
             return response.data;
         } catch (err) {
+            console.log("error in fetching particular investor",err);
             return rejectWithValue(err.response?.data?.message || err.response?.data || 'Failed to fetch investors');
         }
     }
@@ -133,7 +134,7 @@ const InvestorSlice = createSlice({
             state.listError = null;
         },
         setPendingRequest:(state,action)=>{
-            state.pendingRequest.push(action.payload);
+            state.pendingRequest=action.payload;
         }
     },
     extraReducers: (builder) => {

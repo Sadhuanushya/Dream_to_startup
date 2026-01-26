@@ -4,10 +4,11 @@ import {
   fetchEntrepreneur,
   updateEntrepreneurProfile,
 } from "../../Slice/Entreprenuer-Slice";
-
+import EntrepreneurProfile from "../EntrepreneurProfile";
+import { useNavigate } from "react-router-dom";
 export default function EntrepreneurAccount() {
   const dispatch = useDispatch();
-
+const navigate=useNavigate();
   const entrepreneurProfile = useSelector(
     (state) => state.Entrepreneur.EntrepreneurProfile
   );
@@ -20,6 +21,12 @@ export default function EntrepreneurAccount() {
     const userId = localStorage.getItem("userId");
     if (userId) dispatch(fetchEntrepreneur(userId));
   }, [dispatch]);
+  useEffect(()=>{
+    if(localStorage.getItem('userId') == EntrepreneurProfile?.userId){
+      console.log("userId",localStorage.getItem("userId"),entrepreneurProfile?.userId)
+      navigate("/dashboard/account/EntrepreneurProfile")
+    }
+  },[dispatch])
 
   /* ================= SYNC STORE → FORM ================= */
   useEffect(() => {

@@ -41,6 +41,8 @@ export default function App() {
          <Route path="/dashboard/entrepreneurProfile" element={<EntrepreneurProfile/>}/>
         <Route path="InvestorProfile" element={<InvestorProfile/>}/>
         <Route path="/dashboard/InvestorProfile" element={<InvestorProfile/>}/>
+        <Route path="/dashboard/account/InvestorProfile" element={<InvestorProfile/>}/>
+        <Route path="/dashboard/account/entrepreneurProfile" element={<EntrepreneurProfile/>}/>
         <Route path="/dashboard/investors/message" element={<Message/>}/>  
         
         <Route path="/dashboard/notifications/message" element={<Message/>}/>

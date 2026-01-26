@@ -30,7 +30,7 @@ export default function InvestorProfile() {
     },
     prefferedSector: [{ sector: "", description: "", targetInvestment: "" }],
     pastInvestment: { projectName: "", investment: "", investmentDocument: "" },
-    profilePicture: null,
+    profilePicture: {DocumentUrl: null},
     verificationDocument: null,
   });
 
@@ -41,7 +41,10 @@ export default function InvestorProfile() {
     verificationDocument: false,
   });
   const [uploadSuccess, setUploadSuccess] = useState({});
-
+useEffect(() => {  
+   setFormData(InvestorProfile);
+   console.log("InvestorProfile",InvestorProfile)
+},[])
   // Populate form only once from Redux
   useEffect(() => {
     if (InvestorProfile && InvestorProfile._id && !hasLoadedProfile) {
@@ -62,10 +65,11 @@ export default function InvestorProfile() {
             country: "",
             pincode: "",
           },
-        prefferedSector:
-          InvestorProfile.prefferedSector || [
-            { sector: "", description: "", targetInvestment: "" },
-          ],
+       prefferedSector: Array.isArray(InvestorProfile.prefferedSector)
+  ? InvestorProfile.prefferedSector
+  : [
+      { sector: "", description: "", targetInvestment: "" },
+    ],
         pastInvestment:
           InvestorProfile.pastInvestment || {
             projectName: "",
@@ -73,7 +77,7 @@ export default function InvestorProfile() {
             investmentDocument: "",
           },
         profilePicture: InvestorProfile.profilePicture?.DocumentUrl || null,
-        verificationDocument: InvestorProfile.verificationDocument || null,
+        verificationDocument: InvestorProfile.verificationDocument?.DocumentUrl || null,
       });
     }
   }, [InvestorProfile, hasLoadedProfile]);
@@ -145,10 +149,11 @@ export default function InvestorProfile() {
   const addSector = () => {
     setFormData((prev) => ({
       ...prev,
-      prefferedSector: [
-        ...prev.prefferedSector,
-        { sector: "", description: "", targetInvestment: "" },
-      ],
+     prefferedSector: Array.isArray(InvestorProfile?.prefferedSector)
+  ? InvestorProfile?.prefferedSector
+  : [
+      { sector: "", description: "", targetInvestment: "" },
+    ],
     }));
   };
 
@@ -186,7 +191,7 @@ export default function InvestorProfile() {
       toSend.append(`officeLocation[${key}]`, val);
     });
 
-    formData.prefferedSector.forEach((sec, i) => {
+    formData.prefferedSector?.forEach((sec, i) => {
       toSend.append(`prefferedSector[${i}][sector]`, sec.sector);
       toSend.append(
         `prefferedSector[${i}][description]`,
@@ -234,7 +239,7 @@ export default function InvestorProfile() {
       <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
         <div className="bg-gradient-to-r from-indigo-800 to-indigo-900 p-10 text-white">
           <h1 className="text-4xl font-black mb-2">
-            {isReadOnly ? "Investor Profile" : "Investor Onboarding"}
+            {isReadOnly ? "Investor Profile" : "create profile"}
           </h1>
           <p className="text-indigo-200">
             {isReadOnly
@@ -256,7 +261,7 @@ export default function InvestorProfile() {
               </label>
               <input
                 name="fullName"
-                value={formData.fullName}
+                value={formData?.fullName}
                 onChange={handleChange}
                 disabled={isReadOnly}
                 className="w-full bg-gray-50 border rounded-lg p-3"
@@ -271,7 +276,7 @@ export default function InvestorProfile() {
               <input
                 name="email"
                 type="email"
-                value={formData.email}
+                value={formData?.email}
                 onChange={handleChange}
                 disabled={isReadOnly}
                 className="w-full bg-gray-50 border rounded-lg p-3"
@@ -286,7 +291,7 @@ export default function InvestorProfile() {
               <input
                 name="linkedinUrl"
                 type="url"
-                value={formData.linkedinUrl}
+                value={formData?.linkedinUrl}
                 onChange={handleChange}
                 disabled={isReadOnly}
                 className="w-full bg-gray-50 border rounded-lg p-3"
@@ -300,7 +305,7 @@ export default function InvestorProfile() {
               </label>
               <select
                 name="investorType"
-                value={formData.investorType}
+                value={formData?.investorType}
                 onChange={handleChange}
                 disabled={isReadOnly}
                 className="w-full bg-gray-50 border rounded-lg p-3"
@@ -313,14 +318,14 @@ export default function InvestorProfile() {
             </div>
 
             {/* Custom Investor Type */}
-            {formData.investorType === "Other" && (
+            {formData?.investorType === "Other" && (
               <div className="md:col-span-2 space-y-1">
                 <label className="text-xs font-bold text-gray-500 uppercase">
                   Please specify investor type
                 </label>
                 <input
                   name="customInvestorType"
-                  value={formData.customInvestorType}
+                  value={formData?.customInvestorType}
                   onChange={handleChange}
                   disabled={isReadOnly}
                   className="w-full bg-gray-50 border rounded-lg p-3"
@@ -335,7 +340,7 @@ export default function InvestorProfile() {
               </label>
               <textarea
                 name="bio"
-                value={formData.bio}
+                value={formData?.bio}
                 onChange={handleChange}
                 disabled={isReadOnly}
                 className="w-full bg-gray-50 border rounded-lg p-3"
@@ -354,7 +359,7 @@ export default function InvestorProfile() {
                 </label>
                 <input
                   type="text"
-                  value={formData.officeLocation[field]}
+                  value={formData?.officeLocation?.[field]}
                   onChange={(e) =>
                     handleNestedChange("officeLocation", field, e.target.value)
                   }
@@ -368,7 +373,7 @@ export default function InvestorProfile() {
           {/* — PREFERRED SECTORS — */}
           <SectionHeader emoji="🎯" title="Preferred Sectors" />
 
-          {formData.prefferedSector.map((sec, idx) => (
+          {formData?.prefferedSector?.map((sec, idx) => (
             <div key={idx} className="border p-6 rounded-xl bg-white">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input
@@ -426,7 +431,7 @@ export default function InvestorProfile() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <input
               placeholder="Project Name"
-              value={formData.pastInvestment.projectName}
+              value={formData?.pastInvestment?.projectName}
               onChange={(e) =>
                 updatePastInvestment("projectName", e.target.value)
               }
@@ -436,7 +441,7 @@ export default function InvestorProfile() {
             <input
               placeholder="Investment Amount ($)"
               type="number"
-              value={formData.pastInvestment.investment}
+              value={formData?.pastInvestment?.investment}
               onChange={(e) =>
                 updatePastInvestment("investment", e.target.value)
               }
@@ -462,8 +467,8 @@ export default function InvestorProfile() {
                     accept="image/*"
                     onChange={(e) => handleFileUpload(e, "profilePicture")}
                   />
-                  {formData.profilePicture && (
-                    <p className="mt-2 text-sm">{formData.profilePicture.name}</p>
+                  {formData?.profilePicture && (
+                    <p className="mt-2 text-sm">{formData?.profilePicture?.DocumentUrl}</p>
                   )}
                 </div>
 
@@ -479,9 +484,9 @@ export default function InvestorProfile() {
                       handleFileUpload(e, "verificationDocument")
                     }
                   />
-                  {formData.verificationDocument && (
+                  {formData?.verificationDocument && (
                     <p className="mt-2 text-sm">
-                      {formData.verificationDocument.name}
+                      {formData.verificationDocument.DocumentUrl}
                     </p>
                   )}
                 </div>
@@ -506,17 +511,17 @@ export default function InvestorProfile() {
             <button
               type="submit"
               disabled={submitLoading}
-              className="w-full bg-green-800 text-white py-4 rounded-xl"
+              className="w-full bg-green-800 text-black py-4 rounded-xl"
             >
               {submitLoading ? "Submitting..." : "COMPLETE INVESTOR REGISTRATION"}
             </button>
           )}
 
-          {isReadOnly && (
+          {/* {isReadOnly && (
             <div className="text-center p-4 bg-blue-50 rounded-xl text-blue-700">
               📋 Profile View Mode — Read Only
             </div>
-          )}
+          )} */}
         </form>
       </div>
     </div>

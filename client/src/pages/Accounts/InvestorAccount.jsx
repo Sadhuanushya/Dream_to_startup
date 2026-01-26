@@ -4,10 +4,10 @@ import {
   fetchInvestor,
   updateInvestorProfile,
 } from "../../Slice/Investor-Slice";
-
+import { useNavigate } from "react-router-dom";
 export default function InvestorAccount() {
   const dispatch = useDispatch();
-
+const navigate =useNavigate()
   const investorProfile = useSelector(
     (state) => state.investor.InvestorProfile
   );
@@ -20,7 +20,13 @@ export default function InvestorAccount() {
     const userId = localStorage.getItem("userId");
     if (userId) dispatch(fetchInvestor(userId));
   }, [dispatch]);
+console.log("investorProfile",investorProfile)
 
+useEffect(() => {
+   if(localStorage.getItem("userId") !== investorProfile?.userId){
+    navigate("/dashboard/account/InvestorProfile")
+   }
+    })
   /* ================= SYNC STORE → FORM ================= */
   useEffect(() => {
     if (investorProfile) {
@@ -46,6 +52,7 @@ export default function InvestorAccount() {
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">

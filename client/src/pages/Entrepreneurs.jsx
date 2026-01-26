@@ -30,7 +30,7 @@ const navigate=useNavigate();
         dispatch(fetchEntrepreneursList());
     }, [dispatch]);
 
-
+const role=localStorage.getItem('role');
     const handleDelete=(id)=>{
       console.log("delete Entreprenuer with id:",id);
       const confirm=window.confirm("are you sure delete Entrepreneurr");
@@ -41,7 +41,7 @@ const navigate=useNavigate();
     };
     const handleViewProfile=(id)=>{  
        dispatch(fetchEntrepreneur(id));
-
+      navigate("/dashboard/entrepreneurProfile");
     }
     const handleMessge=(id)=>{
       
@@ -126,12 +126,14 @@ const navigate=useNavigate();
                     >
                       Message
                     </button>
-                    <button className="flex-1 md:flex-none border border-slate-200 text-slate-600 px-5 py-3 rounded-2xl text-sm font-bold hover:bg-slate-50 transition-all" onClick={()=>{handleViewProfile(ele._id)}}>
+                    <button className="flex-1 md:flex-none border border-slate-200 text-slate-600 px-5 py-3 rounded-2xl text-sm font-bold hover:bg-slate-50 transition-all" onClick={()=>{handleViewProfile(ele.userId._id)}}>
                       Profile
                     </button>
+                     {role === "admin" && (
                     <button className="flex-1 md:flex-none border border-slate-200 text-red-600 px-5 py-3 rounded-2xl text-sm font-bold hover:bg-slate-50 transition-all" onClick={()=>{handleDelete(ele._id)}}>
                       Delete
-                    </button>                    
+                    </button> 
+                    )}                   
                   </div>
                 </div>
               </div>

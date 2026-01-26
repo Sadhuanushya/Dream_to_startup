@@ -293,7 +293,7 @@ export default function EntrepreneurProfile() {
       <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
         <div className="bg-gradient-to-r from-indigo-800 to-indigo-900 p-10 text-white">
           <h1 className="text-4xl font-black mb-2">
-            {isReadOnly ? "Entrepreneur Profile" : "Entrepreneur Onboarding"}
+            {isReadOnly ? "Entrepreneur Profile" : "Create your Profile"}
           </h1>
           <p className="text-indigo-200">
             {isReadOnly
@@ -690,7 +690,7 @@ export default function EntrepreneurProfile() {
             <button
               type="submit"
               disabled={submitLoading}
-              className="w-full bg-green-800 text-white py-4 rounded-xl"
+              className="w-full bg-green-800 text-black py-4 rounded-xl"
             >
               {submitLoading ? "Submitting..." : "COMPLETE ENTREPRENEUR REGISTRATION"}
             </button>
