@@ -110,8 +110,8 @@ const MessageSlice = createSlice({
 
       /* Send message */
       .addCase(sendMessages.fulfilled, () => {
-        // ❗ Do nothing here
-        // Message already added via socket event
+        // Message is handled via socket event (message_delivered)
+        // Do nothing here to avoid duplicates
       });
   }
 });

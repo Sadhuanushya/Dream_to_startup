@@ -55,6 +55,11 @@ console.log(conversations)
       dispatch(addMessage(message));
     });
 
+    socket.on('message_delivered', (message) => {
+      // Message was sent successfully, add it to state
+      dispatch(addMessage(message));
+    });
+
     socket.on('user_typing', ({ senderId }) => {
       dispatch(setTyping(true));
       setTimeout(() => dispatch(setTyping(false)), 3000);
@@ -70,6 +75,7 @@ console.log(conversations)
     return () => {
       socket.off('connect');
       socket.off('receive_message');
+      socket.off('message_delivered');
       socket.off('user_typing');
       socket.off('disconnect');
       socket.disconnect();
@@ -163,19 +169,19 @@ console.log(conversations)
 
   const handleSend = (e) => {
     e.preventDefault();
-    if (!inputText.trim() || !selectedConversation || !actualReceiverId) return;
+    if (!inputText.trim() || !selectedConversation) return;
 
     const msgData = {
       _id: Date.now().toString(),
       senderId: currentUser.id,
       receiverName: reduxReceivername,
-      receiverId: actualReceiverId,
+      receiverId: selectedConversation.userId || actualReceiverId,
       text: inputText,
       createdAt: new Date().toISOString()
     };
 
+    // Only emit via socket - let socket event handle adding to Redux
     socket.emit('send_message', msgData);
-    dispatch(sendMessages(msgData));
     setInputText('');
   };
 
