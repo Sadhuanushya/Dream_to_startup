@@ -78,7 +78,8 @@ app.get("/api/messages/get/:userId/:otherUserId", MessageCtrl.getmessage);
 app.get("/api/messages/conversations/:userId", MessageCtrl.getConversations);
 
 app.post("/api/notifications", AuthenticateUser, NotificationCtrl.create);
-app.get("/api/notifications/:receiver", AuthenticateUser, NotificationCtrl.getNotifications);
+app.get("/api/notifications/:sender", AuthenticateUser, NotificationCtrl.getNotifications);
+app.get("/api/notifications/:receiver", AuthenticateUser, NotificationCtrl.getAllNotifications);
 app.get("/api/notifications/unread/:receiver", AuthenticateUser, NotificationCtrl.getUnreadCount);
 app.put("/api/notifications/:notificationId/status", AuthenticateUser, NotificationCtrl.updateStatus);
 app.put("/api/notifications/:notificationId/confirm", AuthenticateUser, NotificationCtrl.confirmConnection);

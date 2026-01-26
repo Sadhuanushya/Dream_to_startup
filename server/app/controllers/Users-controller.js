@@ -93,7 +93,7 @@ UserCtrl.login=async(req,res)=>{
         valid.lastLogin=new Date()
         await  valid.save()
         console.log("from server",token,valid._id)
-        res.status(200).json({token:token,userId:valid._id,role:valid.role});
+        res.status(200).json({token:token,userId:valid._id,role:valid.role,username:valid.username});
 
     }catch(err){
         console.log(err)

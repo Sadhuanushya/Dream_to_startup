@@ -5,26 +5,7 @@ const fs =require("fs")
 const EntrepreneurCtrl={}
 EntrepreneurCtrl.create=async(req,res)=>{
     try{
-    // Parse JSON fields from FormData
-    let parsedBody = { ...req.body };
-    
-    if (req.body.address) {
-      parsedBody.address = JSON.parse(req.body.address);
-    }
-    if (req.body.skills) {
-      parsedBody.skills = JSON.parse(req.body.skills);
-    }
-    if (req.body.education) {
-      parsedBody.education = JSON.parse(req.body.education);
-    }
-    if (req.body.workExperience) {
-      parsedBody.workExperience = JSON.parse(req.body.workExperience);
-    }
-    if (req.body.pastProject) {
-      parsedBody.pastProject = JSON.parse(req.body.pastProject);
-    }
-
-    const {error,value}=EnterPreneurValidation.validate(parsedBody)
+    const {error,value}=EnterPreneurValidation.validate(req.body)
     if(error){
         return res.status(400).json(error)
     }
@@ -125,7 +106,7 @@ EntrepreneurCtrl.list=async(req,res)=>{
 EntrepreneurCtrl.show=async(req,res)=>{
     const id=req.params.id
     try{
-        const EntrepreneurProfile=await Entrepreneur.findOne({_id:id}).populate('PitchData',['_id','pitchUrl'])
+        const EntrepreneurProfile=await Entrepreneur.findOne({userId:id}).populate('PitchData',['_id','pitchUrl'])
         if(!EntrepreneurProfile){
             return res.status(404).json("record not found")
         }

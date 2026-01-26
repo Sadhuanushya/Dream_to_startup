@@ -103,7 +103,7 @@ InvestorCtrl.list=async(req,res)=>{
 InvestorCtrl.show=async(req,res)=>{
     const id=req.params.id
     try{
-        const InvestorProfile=await Investor.findById({_id:id})
+        const InvestorProfile=await Investor.findOne({userId:id})
         if(!InvestorProfile){
            return res.status(404).json("record not found")
         }
