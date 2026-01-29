@@ -42,6 +42,7 @@ export const verifyPayment = createAsyncThunk(
             );
             return response.data;
         } catch (error) {
+            console.log("error in verify payment slice",error)
             return rejectWithValue(error.response?.data || error.message);
         }
     }
@@ -61,6 +62,7 @@ export const getPaymentHistory = createAsyncThunk(
                     }
                 }
             );
+            console.log("payment history response",response.data)
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);

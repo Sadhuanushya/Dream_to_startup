@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createOrder, verifyPayment, getPaymentHistory, resetPaymentState } from "../Slice/Payment-Slice";
 import axios from "axios";
-
+import { useContext } from "react";
+import UserContext from "../Context/UserContext";
 export default function Subscription() {
     const dispatch = useDispatch();
     const { loading, error, success, message, currentOrder, razorpayKey, paymentHistory } = useSelector(state => state.payment);
-    const { user } = useSelector(state => state.Users);
-
+    // const { user } = useSelector(state => state.Users);
+    const { user } = useContext(UserContext);   
+console.log(user);
     const [selectedPlan, setSelectedPlan] = useState(null);
     const [formData, setFormData] = useState({
         planName: "",
@@ -20,36 +22,29 @@ export default function Subscription() {
 
     const plans = [
         {
-            name: "Basic",
-            price: 999,
+            name: "Monthly",
+            price: 499,
+            duration: "month",
             features: [
-                "Pitch to 5 investors",
-                "Profile optimization",
-                "Basic analytics",
+                "Upload unlimited pitches",
+                "Send messages to investors",
+                "Request meetings with investors",
+                "View investor profiles",
                 "Email support"
             ]
         },
         {
-            name: "Professional",
-            price: 2999,
+            name: "Yearly",
+            price: 4999,
+            duration: "year",
             features: [
-                "Pitch to 20 investors",
-                "Advanced profile features",
-                "Detailed analytics",
-                "Priority email support",
-                "One mentorship session"
-            ]
-        },
-        {
-            name: "Enterprise",
-            price: 9999,
-            features: [
-                "Unlimited pitches",
-                "All profile features",
+                "Upload unlimited pitches",
+                "Send unlimited messages to investors",
+                "Priority request meetings",
+                "View investor profiles",
                 "Advanced analytics",
-                "24/7 support",
-                "Monthly mentorship sessions",
-                "Custom matchmaking"
+                "24/7 priority support",
+                "Best value - Save 20%"
             ]
         }
     ];
@@ -227,7 +222,7 @@ export default function Subscription() {
 
                 {/* Plans Tab */}
                 {activeTab === "plans" && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {plans.map((plan, index) => (
                             <div
                                 key={index}
@@ -240,7 +235,7 @@ export default function Subscription() {
                                     <span className="text-4xl font-bold text-gray-900">
                                         ₹{plan.price}
                                     </span>
-                                    <span className="text-gray-600 ml-2">/year</span>
+                                    <span className="text-gray-600 ml-2">/{plan.duration}</span>
                                 </div>
                                 <ul className="mb-6 space-y-3">
                                     {plan.features.map((feature, idx) => (
@@ -271,11 +266,23 @@ export default function Subscription() {
                         <form className="space-y-6">
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2">
+                                    Entrepreneur ID
+                                </label>
+                                <input
+                                    type="text"
+                                    value={user?._id || ""}
+                                    disabled
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-gray-700 font-medium mb-2">
                                     Full Name
                                 </label>
                                 <input
                                     type="text"
-                                    value={user?.name || ""}
+                                    value={user?.username || ""}
                                     disabled
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
                                 />
@@ -341,9 +348,6 @@ export default function Subscription() {
                                 </button>
                             </div>
                         </form>
-
-                        {/* Razorpay Script */}
-                        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
                     </div>
                 )}
 

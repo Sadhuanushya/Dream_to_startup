@@ -5,11 +5,10 @@ import { Bell, Check, X, Trash2, MessageCircle, CheckCircle, AlertCircle, Loader
 import { useContext } from 'react';
 import UserContext from '../Context/UserContext';
 import { useNavigate } from 'react-router-dom';
-
 export default function Notifications() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    
+    const { user } = useContext(UserContext);
     const { showNotifications, loading } = useSelector(state => state.notifications);
     const [selectedType, setSelectedType] = useState('all');
     const [actionLoading, setActionLoading] = useState({});
@@ -128,7 +127,7 @@ console.log("filteredNotifications",filteredNotifications)
                     >
                         Connection Requests
                     </button>
-                    <button
+                 {user?.role === "admin" && ( <button
                         onClick={() => setSelectedType('verified')}
                         className={`px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-all ${
                             selectedType === 'verified'
@@ -137,7 +136,7 @@ console.log("filteredNotifications",filteredNotifications)
                         }`}
                     >
                         Verifications
-                    </button>
+                    </button>)}
                 </div>
 
                 {/* Notifications List */}

@@ -13,7 +13,7 @@ const dispatch=useDispatch();
     { name: "Entrepreneurs", to: "entrepreneurs" ,allowedRoles: ["admin","investor"]},
     { name: "Pitch", to: "Pitch" ,allowedRoles: ["admin","investor","entrepreneur"]},
     { name: "Messages", to: "message" ,allowedRoles: ["investor","entrepreneur"]},
-    { name: "Subscription", to: "subscription",allowedRoles: ["investor","entrepreneur"] },
+    { name: "Subscription", to: "subscription",allowedRoles: ["entrepreneur"] },
   ];
 useEffect(()=>{
   dispatch(fetchUsersList());
@@ -101,9 +101,9 @@ useEffect(()=>{
            </Link>
             )} */}
 
-           {/* <Link to="subscription" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
+           {user?.role=="entrepreneur" && (<Link to="subscription" className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 text-xs font-black text-slate-700 uppercase tracking-widest hover:border-indigo-300 hover:shadow-sm transition-all shadow-sm">
              <FiUser className="text-indigo-600" /> Subscription
-           </Link> */}
+           </Link> )}
         </div>
 
         <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 min-h-[60vh]">

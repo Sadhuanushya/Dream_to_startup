@@ -3,12 +3,13 @@ import { useNavigate} from 'react-router-dom';
 import { useDispatch ,useSelector} from 'react-redux';
 import {fetchPitchList,fetchAiReview} from "../Slice/Pitch-Slice"
 import { createNotification } from "../Slice/Notification-Slice";
-
+import { useContext } from 'react';
+import UserContext from '../Context/UserContext';
 export default function Pitch() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { data } = useSelector((state) => state.Pitch);
-  const AllUsers = useSelector(state => state.Users?.data);
+const {user}=useContext(UserContext);
   const [selectedPitch, setSelectedPitch] = useState(null);
 
   useEffect(() => {
@@ -64,7 +65,7 @@ export default function Pitch() {
             </span>
             {data?.length || 0} Pitches Available
           </div>
-          <button 
+          {user?.role === "entrepreneur" && (<button 
             onClick={handleUploadPitch}
             className="bg-indigo-600 text-blue px-6 py-2 rounded-xl font-black hover:bg-indigo-700 shadow-lg shadow-indigo-100 active:scale-95 transition-all uppercase tracking-widest text-xs flex items-center gap-2"
           >
@@ -74,7 +75,7 @@ export default function Pitch() {
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
             Upload Pitch
-          </button>
+          </button>)}
         </div>
       </div>
 
