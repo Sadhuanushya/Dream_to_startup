@@ -8,7 +8,7 @@ const PaymentSchema = mongoose.Schema({
     },
     planName: {
         type: String,
-        enum: ["Basic", "Professional", "Enterprise"],
+        enum: ["Monthly", "Yearly"],
         required: true
     },
     Amount: {

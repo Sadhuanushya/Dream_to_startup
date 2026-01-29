@@ -111,7 +111,7 @@ PaymentCtrl.verifyPayment = async (req, res) => {
             { razorpayOrderId: razorpay_order_id },
             {
                 razorpayPaymentId: razorpay_payment_id,
-                razorpaySignature,
+                razorpaySignature: razorpay_signature,
                 status: "completed",
                 expiredDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year subscription
             },

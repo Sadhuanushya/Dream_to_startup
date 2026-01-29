@@ -6,7 +6,7 @@ const PaymentValidation = {};
 PaymentValidation.createOrder = (data) => {
     const schema = Joi.object({
         EntrepreneurId: Joi.string().required(),
-        planName: Joi.string().valid("Basic", "Professional", "Enterprise").required(),
+        planName: Joi.string().valid("Monthly","Yearly").required(),
         Amount: Joi.number().positive().required(),
         email: Joi.string().email().required(),
         contact: Joi.string().pattern(/^[0-9]{10}$/).required()
