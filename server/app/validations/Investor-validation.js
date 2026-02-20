@@ -26,7 +26,7 @@ const InvestorValidation=joi.object({
     profilePicture:DocumentSchema.optional(),
     fullName:joi.string().trim().min(3).max(100).required(),
     email:joi.string().email().required(),
-    bio:joi.string().trim().min(10).max(300).required(),
+    bio:joi.string().trim().min(10).max(500).required(),
     linkedinUrl:joi.string().uri().max(200).required(),
     investorType:joi.string().valid('Angel Investor','Accelerator Investor','Seed Investor','Other').required(),
 

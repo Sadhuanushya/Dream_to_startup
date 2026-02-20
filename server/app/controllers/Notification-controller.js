@@ -32,10 +32,9 @@ NotificationCtrl.create = async (req, res) => {
 // Get all notifications for user
 NotificationCtrl.getNotifications = async (req, res) => {
     try {
-        const sender = req.params.sender;
-        console.log("sender in backend",sender)
-        const notifications = await Notification.find({ senderId: sender})
-            .populate('receiverId', 'username email fullname fullName')
+
+        const notifications = await Notification.find()
+            .populate('receiverId', 'username email')
             .populate('senderId', 'username email')
             .sort({ createdAt: -1 });
         console.log("notifications fetched",notifications)
@@ -49,11 +48,12 @@ NotificationCtrl.getAllNotifications=async(req,res)=>{
     const receiver=req.params.receiver;
     try{
         console.log("backend receiver notification")
-        const notifications = await Notification.find({ receiverId: receiver})  
+        const notifications = await Notification.find({ 
+receiverId: receiver})  
         .populate('senderId', 'username email fullname fullName')
         .populate('receiverId', 'username email')
         .sort({ createdAt: -1 });   
-        console.log(notifications);
+        console.log("notifications",notifications);
         return res.status(200).json(notifications)
 
     }catch(err){
@@ -82,11 +82,11 @@ NotificationCtrl.getUnreadCount = async (req, res) => {
 NotificationCtrl.updateStatus = async (req, res) => {
     try {
         const { notificationId } = req.params;
-        const { status } = req.body;
+       
         
         const notification = await Notification.findByIdAndUpdate(
             notificationId,
-            { status, updatedAt: new Date() },
+            { status:"confirmed", updatedAt: new Date() },
             { new: true }
         ).populate('senderId', 'username email');
         

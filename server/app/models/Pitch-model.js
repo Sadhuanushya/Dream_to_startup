@@ -9,12 +9,6 @@ const PitchSchema=new mongoose.Schema({
     summary:String,
     pitchUrl:String,
     cloudinaryId:String,
-    investorInterests:{
-        type:[mongoose.Schema.Types.ObjectId],
-        ref:'User',
-        default:[]
-    },
-    viewCount:Number,
 },{timestamps:true})
 const PitchData=mongoose.model("PitchData",PitchSchema)
 module.exports=PitchData;

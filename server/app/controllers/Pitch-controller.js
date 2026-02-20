@@ -55,7 +55,7 @@ await Pitch.save()
 };
 PitchCtrl.list=async(req,res)=>{
   try{
-    const Pitchs=await PitchData.find()
+    const Pitchs=await PitchData.find().populate("EnterprenuerId","username")
     if(!Pitchs){
       return res.status(404).json({error:"record not found"})
     }
@@ -131,24 +131,33 @@ PitchCtrl.update=async(req,res)=>{
     res.status(500).json({error:err})
   }
 }
-PitchCtrl.delete=async(req,res)=>{
-  try{
-    const Pitch=await PitchData.findById(req.params.id);
-    if(!Pitch){
-      return res.status(404).json({error:"record not found"})
+PitchCtrl.delete = async (req, res) => {
+  try {
+    const pitch = await PitchData.findById(req.params.id);
+    if (!pitch) {
+      return res.status(404).json({ error: "Pitch not found" });
     }
-    console.log("before destroy")
-    const RemovePitch=await cloudinary.uploader.destroy(Pitch.cloudinaryId,{resource_type:"Pitch"})
-    console.log("after destroy")
-    const removePitchData=await PitchData.findByIdAndDelete(req.params.id)
-    console.log("after update")
-    res.status(200).json({
-      status:"successfully deleted",
-      RemovePitch,
-      removePitchData
-    })
-  }catch(err){
-    res.status(500).json({error:err})
+
+    const isOwner = pitch.EnterprenuerId.toString() === req.userId.toString();
+    const isAdmin = req.role === "admin";
+
+    if (!isOwner && !isAdmin) {
+      return res
+        .status(403)
+        .json({ error: "You are not authorized to delete this pitch" });
+    }
+
+    await cloudinary.uploader.destroy(pitch.cloudinaryId, {
+      resource_type: "video",
+    });
+
+    await PitchData.findByIdAndDelete(req.params.id);
+
+    return res.status(200).json({ message: "Pitch deleted successfully" });
+  } catch (err) {
+    console.error("DELETE ERROR:", err);
+    return res.status(500).json({ error: "Server error deleting pitch" });
   }
-}
+};
+
 module.exports = PitchCtrl;

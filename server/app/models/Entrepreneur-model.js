@@ -71,10 +71,6 @@ const EntrepreneurSchema=new mongoose.Schema({
     PitchData:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"PitchData"
-    },
-    isVerified:{
-        type:Boolean,
-        default:false
     }
 },{timestamps:true})
 const Entrepreneur=mongoose.model("Entrepreneur",EntrepreneurSchema)

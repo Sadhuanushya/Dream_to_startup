@@ -116,124 +116,189 @@ EntrepreneurCtrl.show=async(req,res)=>{
         res.status(500).json(err)
     }
 }
-EntrepreneurCtrl.update=async(req,res)=>{
-    const id=req.params.id;
-    try{
-    // Parse JSON fields from FormData
-    let parsedBody = { ...req.body };
-    
-    if (req.body.address) {
-      parsedBody.address = JSON.parse(req.body.address);
-    }
-    if (req.body.skills) {
-      parsedBody.skills = JSON.parse(req.body.skills);
-    }
-    if (req.body.education) {
-      parsedBody.education = JSON.parse(req.body.education);
-    }
-    if (req.body.workExperience) {
-      parsedBody.workExperience = JSON.parse(req.body.workExperience);
-    }
-    if (req.body.pastProject) {
-      parsedBody.pastProject = JSON.parse(req.body.pastProject);
+
+
+EntrepreneurCtrl.update = async (req, res) => {
+  const id = req.params.id;
+console.log("its come to update")
+  try {
+    // Find existing profile
+    const existing = await Entrepreneur.findById(id);
+    if (!existing) {
+      return res.status(404).json({ error: "record not found" });
     }
 
-    const {error,value}=EnterPreneurValidation.validate(parsedBody)
-    if(error){
-        return res.status(400).json(error)
-    }
-    
-    const profile=await Entrepreneur.findById(id)
-        if(!profile){
-            return  res.status(404).json("record not found")
-        }
-        console.log("id",profile.userId)
-        
-     const Admin = req.role === "admin" 
-     const Entrepreneurs = req.userId == profile.userId;
-     if (!Admin && !Entrepreneurs) {
+    // Authorization
+    const Admin = req.role === "admin";
+    const Entrepreneurs = req.userId == existing.userId;
+    if (!Admin && !Entrepreneurs) {
       return res.status(403).json({ error: "Unauthorized user" });
-     }
-     let profilePicture={};
-     let identityDocument={};
-     let businessDocument={};
-     if (req.files && req.files.profilePicture) {
-        if(profile.profilePicture?.Cloudinary_Id){
-        await cloudinary.uploader.destroy(profile.profilePicture.Cloudinary_Id,{resource_type:"auto"});
-        console.log("profile picture delete from cloudinary")
+    }
+
+    // Build parsedBody from FormData (direct mapping)
+    const parsedBody = {};
+
+    // Simple fields
+    if (req.body.fullname) parsedBody.fullname = req.body.fullname;
+    if (req.body.email) parsedBody.email = req.body.email;
+    if (req.body.phone) parsedBody.phone = req.body.phone;
+    if (req.body.bio) parsedBody.bio = req.body.bio;
+    if (req.body.linkedinUrl)
+      parsedBody.linkedinUrl = req.body.linkedinUrl;
+
+    // Address
+    parsedBody.address = {
+      address: req.body["address[address]"] ?? existing.address?.address,
+      city: req.body["address[city]"] ?? existing.address?.city,
+      state: req.body["address[state]"] ?? existing.address?.state,
+      country: req.body["address[country]"] ?? existing.address?.country,
+      pincode: req.body["address[pincode]"] ?? existing.address?.pincode,
+    };
+
+    // Skills
+    parsedBody.skills = [];
+    Object.keys(req.body)
+      .filter((key) => key.startsWith("skills["))
+      .forEach((key) => {
+        parsedBody.skills.push(req.body[key]);
+      });
+
+    // Education
+    parsedBody.education = [];
+    Object.keys(req.body)
+      .filter((key) => key.startsWith("education"))
+      .forEach((key) => {
+        const match = key.match(/education\[(\d+)\]\[(.+)\]/);
+        if (match) {
+          const idx = parseInt(match[1]);
+          const field = match[2];
+          if (!parsedBody.education[idx]) {
+            parsedBody.education[idx] = {};
+          }
+          parsedBody.education[idx][field] = req.body[key];
         }
-        const file = req.files.profilePicture[0];
-         const result = await cloudinary.uploader.upload(file.path, {
-             resource_type: "auto",
-             folder: "entrepreneur/profilePictures",
-             public_id: `profile_${Date.now()}`,
-             overwrite: true
-        });
-        fs.unlink(file.path, err => { if (err) console.error(err); });
+      });
 
-         profilePicture = {
-         DocumentUrl: result.secure_url,
-         Cloudinary_Id: result.public_id
-          };
-
-     }
-     if (req.files && req.files.BusinessRegistrationDocument) { 
-        if(profile.BusinessRegistrationDocument?.Cloudinary_Id){
-        await cloudinary.uploader.destroy(profile.BusinessRegistrationDocument.Cloudinary_Id,{resource_type:"auto"});
-        console.log("business document delete from cloudinary")           
-        }    
-
-          const file = req.files.BusinessRegistrationDocument[0];
-            const result = await cloudinary.uploader.upload(file.path, {
-            resource_type: "auto",
-            folder: "entrepreneur/businessDocuments",
-            public_id: `business_${Date.now()}`,
-            overwrite: true
-  });
-  fs.unlink(file.path, err => { if (err) console.error(err); });
-
-    businessDocument = {
-    DocumentUrl: result.secure_url,
-    Cloudinary_Id: result.public_id
-  };
-
-     }
-     if (req.files && req.files.identityDocument) {
-        if(profile.identityDocument?.Cloudinary_Id){
-        await cloudinary.uploader.destroy(profile.identityDocument.Cloudinary_Id,{resource_type:"auto"});
-        console.log("identity delete from cloudinary")
+    // Work Experience
+    parsedBody.workExperience = [];
+    Object.keys(req.body)
+      .filter((key) => key.startsWith("workExperience"))
+      .forEach((key) => {
+        const match = key.match(/workExperience\[(\d+)\]\[(.+)\]/);
+        if (match) {
+          const idx = parseInt(match[1]);
+          const field = match[2];
+          if (!parsedBody.workExperience[idx]) {
+            parsedBody.workExperience[idx] = {};
+          }
+          parsedBody.workExperience[idx][field] = req.body[key];
         }
+      });
 
-        const file = req.files.identityDocument[0];
-        const result = await cloudinary.uploader.upload(file.path, {
+    // Past Projects
+    parsedBody.pastProject = [];
+    Object.keys(req.body)
+      .filter((key) => key.startsWith("pastProject"))
+      .forEach((key) => {
+        const match = key.match(/pastProject\[(\d+)\]\[(.+)\]/);
+        if (match) {
+          const idx = parseInt(match[1]);
+          const field = match[2];
+          if (!parsedBody.pastProject[idx]) {
+            parsedBody.pastProject[idx] = {};
+          }
+          parsedBody.pastProject[idx][field] = req.body[key];
+        }
+      });
+
+    // Validate
+    const { error, value } = EnterPreneurValidation.validate(parsedBody);
+    if (error) {
+      return res.status(400).json(error);
+    }
+
+    // File uploads (Cloudinary)
+    let uploadData = {};
+
+    if (req.files && req.files.profilePicture) {
+      // remove old
+      if (existing.profilePicture?.Cloudinary_Id) {
+        await cloudinary.uploader.destroy(
+          existing.profilePicture.Cloudinary_Id,
+          { resource_type: "auto" }
+        );
+      }
+      const file = req.files.profilePicture[0];
+      const result = await cloudinary.uploader.upload(file.path, {
+        resource_type: "auto",
+        folder: "entrepreneur/profilePictures",
+        public_id: `profile_${Date.now()}`,
+      });
+      fs.unlinkSync(file.path);
+      uploadData.profilePicture = {
+        DocumentUrl: result.secure_url,
+        Cloudinary_Id: result.public_id,
+      };
+    }
+
+    if (req.files && req.files.identityDocument) {
+      if (existing.identityDocument?.Cloudinary_Id) {
+        await cloudinary.uploader.destroy(
+          existing.identityDocument.Cloudinary_Id,
+          { resource_type: "auto" }
+        );
+      }
+      const file = req.files.identityDocument[0];
+      const result = await cloudinary.uploader.upload(file.path, {
         resource_type: "auto",
         folder: "entrepreneur/identityDocuments",
         public_id: `identity_${Date.now()}`,
-        overwrite: true
-     });
-        fs.unlink(file.path, err => { if (err) console.error(err); });
-
-         identityDocument = {
-         DocumentUrl: result.secure_url,
-         Cloudinary_Id: result.public_id
-  };
-     }
-      const updateData={...value}
-      if(Object.keys(profilePicture).length > 0) updateData.profilePicture=profilePicture;
-      if(Object.keys(businessDocument).length > 0) updateData.BusinessRegistrationDocument=businessDocument;
-      if(Object.keys(identityDocument).length > 0) updateData.identityDocument=identityDocument;
-      console.log("data created")
-
-        const EntrepreneurProfile =await Entrepreneur.findOneAndUpdate({_id:id},updateData,{new:true})
-        if(!EntrepreneurProfile){
-            return res.status(404).json("record not found")
-        }
-        res.status(200).json(EntrepreneurProfile)
-    }catch(err){
-        console.log(err);
-        res.status(500).json(err)
+      });
+      fs.unlinkSync(file.path);
+      uploadData.identityDocument = {
+        DocumentUrl: result.secure_url,
+        Cloudinary_Id: result.public_id,
+      };
     }
-}
+
+    if (req.files && req.files.BusinessRegistrationDocument) {
+      if (existing.BusinessRegistrationDocument?.Cloudinary_Id) {
+        await cloudinary.uploader.destroy(
+          existing.BusinessRegistrationDocument.Cloudinary_Id,
+          { resource_type: "auto" }
+        );
+      }
+      const file = req.files.BusinessRegistrationDocument[0];
+      const result = await cloudinary.uploader.upload(file.path, {
+        resource_type: "auto",
+        folder: "entrepreneur/businessDocuments",
+        public_id: `business_${Date.now()}`,
+      });
+      fs.unlinkSync(file.path);
+      uploadData.BusinessRegistrationDocument = {
+        DocumentUrl: result.secure_url,
+        Cloudinary_Id: result.public_id,
+      };
+    }
+
+    // Combine update
+    const finalData = { ...value, ...uploadData };
+
+    const updated = await Entrepreneur.findByIdAndUpdate(id, finalData, {
+      new: true,
+    });
+
+    if (!updated) {
+      return res.status(404).json({ error: "record not found" });
+    }
+
+    res.status(200).json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
+};
+
 EntrepreneurCtrl.delete=async(req,res)=>{
     console.log("before id")
     const id=req.params.id

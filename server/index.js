@@ -38,7 +38,7 @@ const InvestorCtrl = require('./app/controllers/Investor-controller')
 const PaymentCtrl = require("./app/controllers/Payment-Controller");
 const AiReviewCtrl = require('./app/controllers/AiReview-controller')
 const NotificationCtrl = require('./app/controllers/Notification-controller')
-
+const  StoryCtrl = require('./app/controllers/Story-Controller')    
 
 
 app.post("/get-review", AiReviewCtrl.getResponse);
@@ -53,7 +53,7 @@ app.get('/api/account', AuthenticateUser, AuthorizeUser(["entrepreneur", "admin"
 app.put('/api/account', AuthenticateUser, AuthorizeUser(["entrepreneur", "admin", "investor"]), UserCtrl.updateAccount)
 app.get('/api/users/all', AuthenticateUser, AuthorizeUser(["admin","investor","entrepreneur"]), UserCtrl.getAllUsers)
 app.get('/api/admin/statistics', AuthenticateUser, AuthorizeUser(["admin","investor","entrepreneur"]), UserCtrl.getStatistics)
-
+app.delete('/api/user/:id',AuthenticateUser,AuthorizeUser(['admin']),UserCtrl.delete)
 app.post('/api/Entrepreneur', AuthenticateUser, AuthorizeUser(["entrepreneur","investor"]), EntrepreneurUploads, EntrepreneurCtrl.create)
 app.get('/api/Entrepreneurs', AuthenticateUser, AuthorizeUser(["admin", "entrepreneur", "investor"]), EntrepreneurCtrl.list)
 app.get('/api/Entrepreneur/:id', AuthenticateUser, AuthorizeUser(["entrepreneur", "admin", "investor"]), EntrepreneurCtrl.show)
@@ -65,6 +65,7 @@ app.get('/api/Investors', AuthenticateUser, AuthorizeUser(["admin", "investor", 
 app.get('/api/Investor/:id', AuthenticateUser, AuthorizeUser(["entrepreneur", "admin", "investor"]), InvestorCtrl.show)
 app.get('/api/admin/pending-verifications', AuthenticateUser, AuthorizeUser(["admin","investor","entrepreneur"]), InvestorCtrl.getPendingVerifications)
 app.put('/api/Investor/:id', AuthenticateUser, AuthorizeUser(["investor", "admin"]), InvestorUploads, InvestorCtrl.update)
+app.put('/api/admin/:id', AuthenticateUser, AuthorizeUser(["investor", "admin"]), InvestorUploads, InvestorCtrl.verified)
 app.delete('/api/Investor/:id', AuthenticateUser, AuthorizeUser(["admin", "investor"]), InvestorCtrl.delete)
 
 app.post('/api/Pitch', AuthenticateUser, AuthorizeUser(["entrepreneur", "admin", "investor"]), upload.single('Pitch'), PitchCtrl.create);
@@ -78,7 +79,7 @@ app.get("/api/messages/get/:userId/:otherUserId", MessageCtrl.getmessage);
 app.get("/api/messages/conversations/:userId", MessageCtrl.getConversations);
 
 app.post("/api/notifications", AuthenticateUser, NotificationCtrl.create);
-app.get("/api/notifications/:sender", AuthenticateUser, NotificationCtrl.getNotifications);
+app.get("/api/notifications", AuthenticateUser, NotificationCtrl.getNotifications);
 app.get("/api/notifications/:receiver", AuthenticateUser, NotificationCtrl.getAllNotifications);
 app.get("/api/notifications/unread/:receiver", AuthenticateUser, NotificationCtrl.getUnreadCount);
 app.put("/api/notifications/:notificationId/status", AuthenticateUser, NotificationCtrl.updateStatus);
@@ -89,6 +90,10 @@ app.delete("/api/notifications/:notificationId", AuthenticateUser, NotificationC
 
 app.get('/api/Aireview/:id', AuthenticateUser, AuthorizeUser(["entrepreneur", "admin", "investor"]), AiReviewCtrl.getResponse);
 
+
+app.post('/api/story', StoryCtrl.create);
+app.get('/api/story', StoryCtrl.getAll);
+app.delete('/api/story/:id', StoryCtrl.delete);
 server.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });

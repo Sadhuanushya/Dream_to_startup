@@ -4,6 +4,8 @@ const jwt=require('jsonwebtoken')
 const nodemailer = require('nodemailer');
 const {RegisterValidation,LoginValidation}=require('../validations/Users-validation')
 const UserCtrl={};
+const Entrepreneur=require("../models/Entrepreneur-model")
+const Investor=require("../models/Investor-model")
 
 //while user successfully register ,welcome email sent to registered mail id
 const transporter=nodemailer.createTransport({
@@ -93,7 +95,7 @@ UserCtrl.login=async(req,res)=>{
         valid.lastLogin=new Date()
         await  valid.save()
         console.log("from server",token,valid._id)
-        res.status(200).json({token:token,userId:valid._id,role:valid.role,username:valid.username});
+        res.status(200).json({token:token,userId:valid._id,role:valid.role,username:valid.username,email:valid.email});
 
     }catch(err){
         console.log(err)
@@ -181,6 +183,28 @@ UserCtrl.getAllUsers = async(req, res) => {
     res.status(500).json({error: 'Failed to fetch users'});
   }
 }
+UserCtrl.delete = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    // Delete the user
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Delete related entrepreneur/investor docs
+    await Entrepreneur.deleteMany({ userId: id });
+    await Investor.deleteMany({ userId: id });
+
+    return res.status(200).json({ message: "User and related data deleted successfully" });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to delete user and related data" });
+  }
+};
 
 UserCtrl.getStatistics = async(req, res) => {
   try {

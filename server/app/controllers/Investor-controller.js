@@ -103,7 +103,7 @@ InvestorCtrl.list=async(req,res)=>{
 InvestorCtrl.show=async(req,res)=>{
     const id=req.params.id
     try{
-        const InvestorProfile=await Investor.findOne({userId:id})
+        const InvestorProfile=await Investor.findOne({userId:id}).populate('userId', 'username email role')
         if(!InvestorProfile){
            return res.status(404).json("record not found")
         }
@@ -212,6 +212,22 @@ console.log("result",result.secure_url)
         res.status(500).json(err)
     }
 }
+InvestorCtrl.verified = async (req, res) => {
+    try {
+        const investorId = req.params.id;
+        console.log("investorId", investorId);
+        const updatedInvestor = await Investor.findByIdAndUpdate(
+            investorId,
+            { isVerified: true },
+            { new: true }
+        );
+        res.status(200).json(updatedInvestor);
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({ error: 'Failed to verify investor' });
+    }
+};
+
 InvestorCtrl.delete=async(req,res)=>{
     const id=req.params.id
     try{

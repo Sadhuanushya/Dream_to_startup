@@ -10,11 +10,6 @@ AiReviewCtrl.getResponse = async (req, res)=>{
     const id=req.params.id;
     console.log("paramsid",id)
 try{
-    const reviewResponse=await AiReview.findOne({pitchId:new mongoose.Types.ObjectId(id)});
-    console.log("reviewResponse",reviewResponse)
-    if(reviewResponse){
-        return res.status(200).json({response:reviewResponse});
-    }
 
     const Pitch=await PitchData.findById(id)
     console.log('Pitch',Pitch)
