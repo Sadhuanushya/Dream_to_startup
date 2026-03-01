@@ -1,170 +1,305 @@
-import React, { useEffect, useState } from "react";
+import{ useEffect, useState,useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchEntrepreneur,
   updateEntrepreneurProfile,
+  submitEntrepreneurProfile,
 } from "../../Slice/Entreprenuer-Slice";
-import EntrepreneurProfile from "../EntrepreneurProfile";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import "../../style/account-pages.css";
+import UserContext from "../../Context/UserContext";
 export default function EntrepreneurAccount() {
   const dispatch = useDispatch();
-const navigate=useNavigate();
+  const navigate = useNavigate();
+  const location = useLocation();
+const {user}=useContext(UserContext);
+  const { Eid } = location.state || "";
+  const userId = localStorage.getItem("userId");
+
   const entrepreneurProfile = useSelector(
     (state) => state.Entrepreneur.EntrepreneurProfile
   );
-
-  const [editForm, setEditForm] = useState({});
+  const [newAccount, setNewAccount] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+const [submitError,setSubmitError]=useState("")
+  const [editForm, setEditForm] = useState({
+    fullname: "",
+    email: "",
+    phone: "",
+    linkedinUrl: "",
+    bio: "",
+    address: { address: "", city: "", state: "", country: "", pincode: "" },
+    skills: [],
+    education: [],
+    workExperience: [],
+    pastProject: [],
+    identityDocument: { DocumentUrl: "" },
+    BusinessRegistrationDocument: { DocumentUrl: "" },
+    profilePicture: { DocumentUrl: "" },
+    profilePictureFile: null,
+    identityDocumentFile: null,
+    businessDocumentFile: null,
+  });
 
-  /* ================= LOAD ENTREPRENEUR ================= */
+
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (userId) dispatch(fetchEntrepreneur(userId));
-  }, [dispatch]);
-  useEffect(()=>{
-    if(localStorage.getItem('userId') == EntrepreneurProfile?.userId){
-      console.log("userId",localStorage.getItem("userId"),entrepreneurProfile?.userId)
-      navigate("/dashboard/account/EntrepreneurProfile")
+    const idToFetch = Eid || userId;
+    if (idToFetch) {
+      dispatch(fetchEntrepreneur(idToFetch));
     }
-  },[dispatch])
+  }, [dispatch, Eid, userId]);
 
-  /* ================= SYNC STORE → FORM ================= */
   useEffect(() => {
-    if (entrepreneurProfile) {
-      setEditForm({
-        ...entrepreneurProfile,
+    if (entrepreneurProfile && entrepreneurProfile.userId) {
+      setNewAccount(false);
+      setEditForm((prev) => ({
+        ...prev,
+        fullname: entrepreneurProfile.fullname || "",
+        email: entrepreneurProfile.email || "",
+        phone: entrepreneurProfile.phone || "",
+        linkedinUrl: entrepreneurProfile.linkedinUrl || "",
+        bio: entrepreneurProfile.bio || "",
         address: entrepreneurProfile.address || {},
         skills: entrepreneurProfile.skills || [],
         education: entrepreneurProfile.education || [],
         workExperience: entrepreneurProfile.workExperience || [],
         pastProject: entrepreneurProfile.pastProject || [],
-      });
+        identityDocument:
+          entrepreneurProfile.identityDocument || { DocumentUrl: "" },
+        BusinessRegistrationDocument:
+          entrepreneurProfile.BusinessRegistrationDocument || {
+            DocumentUrl: "",
+          },
+        profilePicture:
+          entrepreneurProfile.profilePicture || { DocumentUrl: "" },
+      }));
+      setIsEditing(false);
+    } else {
+
+      setNewAccount(true);
+    setIsEditing(true);
+
+    setEditForm(prev => ({
+      ...prev,
+      fullname: user?.username|| "",
+      email: user?.email || "",
+    }));
+
     }
   }, [entrepreneurProfile]);
+const handleLogout=()=>{
+  localStorage.clear();
+  navigate("/login")
+}
+const handleSave = async (e) => {
+  e.preventDefault();
+  setSubmitError("");
 
-  const handleSave = () => {
-    const userId = localStorage.getItem("userId");
-    dispatch(updateEntrepreneurProfile({ id: userId, formData: editForm }));
-    setIsEditing(false);
-  };
 
-  if (!entrepreneurProfile) {
-    return (
-      <div className="text-center py-20 text-gray-500">
-        Loading Entrepreneur Profile...
-      </div>
+
+  const toSend = new FormData();
+
+  toSend.append("fullname", editForm.fullname);
+  toSend.append("email", editForm.email);
+  toSend.append("phone", editForm.phone);
+  toSend.append("bio", editForm.bio);
+  toSend.append("linkedinUrl", editForm.linkedinUrl);
+
+
+  Object.entries(editForm.address).forEach(([key, val]) => {
+    toSend.append(`address[${key}]`, val);
+  });
+
+ 
+  editForm.skills.forEach((skill, i) => {
+    toSend.append(`skills[${i}]`, skill);
+  });
+
+
+  editForm.education.forEach((edu, i) => {
+    toSend.append(`education[${i}][institutionName]`, edu.institutionName);
+    toSend.append(`education[${i}][course]`, edu.course);
+    toSend.append(`education[${i}][year]`, edu.year);
+  });
+
+
+  editForm.workExperience.forEach((exp, i) => {
+    toSend.append(`workExperience[${i}][company]`, exp.company);
+    toSend.append(`workExperience[${i}][position]`, exp.position);
+    toSend.append(`workExperience[${i}][years]`, exp.years);
+  });
+
+
+  editForm.pastProject.forEach((proj, i) => {
+    toSend.append(`pastProject[${i}][projectname]`, proj.projectname);
+    toSend.append(`pastProject[${i}][websiteUrl]`, proj.websiteUrl);
+    toSend.append(`pastProject[${i}][revenue]`, proj.revenue);
+  });
+
+
+  if (editForm.profilePictureFile instanceof File)
+    toSend.append("profilePicture", editForm.profilePictureFile);
+
+  if (editForm.identityDocumentFile instanceof File)
+    toSend.append("identityDocument", editForm.identityDocumentFile);
+
+  if (editForm.businessDocumentFile instanceof File)
+    toSend.append(
+      "BusinessRegistrationDocument",
+      editForm.businessDocumentFile
     );
+
+  try {
+    if (newAccount) {
+      const result = await dispatch(submitEntrepreneurProfile(toSend));
+
+      if (result.error) {
+      
+        setSubmitError(result.error.message || "Creation failed");
+        return; 
+      }
+
+   
+      setNewAccount(false);
+      setIsEditing(false);
+    } else {
+      const result = await dispatch(
+        updateEntrepreneurProfile({ id: userId, formData: toSend })
+      );
+
+      if (result.error) {
+        setSubmitError(result.error.message || "Update failed");
+        return;
+      }
+
+      setIsEditing(false);
+    }
+  } catch (err) {
+    setSubmitError("Network/server error");
   }
+};
+
+
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <h1 className="text-3xl font-bold mb-6">Entrepreneur Account</h1>
+    <div className="account-wrapper">
+      {newAccount ? (
+        <h1 className="account-title">Create Entrepreneur Account</h1>
+      ) : (
+        <h1 className="account-title">Entrepreneur Account</h1>
+      )}
 
-      {/* ================= BASIC ================= */}
-      <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="font-semibold mb-4">Basic Information</h2>
+  
+      <div className="account-section">
+        <h2>Profile Picture</h2>
+        {editForm.profilePicture?.DocumentUrl && (
+          <img
+            src={editForm.profilePicture.DocumentUrl}
+            alt="Profile"
+            className="profile-image"
+          />
+        )}
+        {isEditing && (
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              setEditForm({
+                ...editForm,
+                profilePictureFile: e.target.files[0],
+              })
+            }
+            className="account-input"
+          />
+        )}
+      </div>
 
+
+      <div className="account-section">
+        <h2>Basic Information</h2>
         <input
-          value={editForm.fullname || ""}
-          disabled={!isEditing}
+          value={editForm.fullname}
+          disabled={!isEditing||newAccount}
           onChange={(e) =>
             setEditForm({ ...editForm, fullname: e.target.value })
           }
-          className="w-full border p-2 rounded mb-2"
+          className="account-input"
           placeholder="Full Name"
         />
-
         <input
-          value={editForm.email || ""}
-          disabled={!isEditing}
+          value={editForm.email}
+          disabled={!isEditing|| newAccount}
           onChange={(e) =>
             setEditForm({ ...editForm, email: e.target.value })
           }
-          className="w-full border p-2 rounded mb-2"
+          className="account-input"
           placeholder="Email"
         />
-
         <input
-          value={editForm.phone || ""}
+          value={editForm.phone}
           disabled={!isEditing}
           onChange={(e) =>
             setEditForm({ ...editForm, phone: e.target.value })
           }
-          className="w-full border p-2 rounded mb-2"
+          className="account-input"
           placeholder="Phone"
         />
-
         <input
-          value={editForm.linkedinUrl || ""}
+          value={editForm.linkedinUrl}
           disabled={!isEditing}
           onChange={(e) =>
             setEditForm({ ...editForm, linkedinUrl: e.target.value })
           }
-          className="w-full border p-2 rounded mb-2"
+          className="account-input"
           placeholder="LinkedIn URL"
         />
-
         <textarea
-          value={editForm.bio || ""}
+          value={editForm.bio}
           disabled={!isEditing}
-          onChange={(e) =>
-            setEditForm({ ...editForm, bio: e.target.value })
-          }
-          className="w-full border p-2 rounded mb-2"
+          onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+          className="account-input"
           placeholder="Bio"
         />
 
-        <div className="mt-3 text-sm">
-          Account Status:{" "}
-          <span
-            className={
-              editForm.isVerified ? "text-green-600" : "text-yellow-600"
-            }
-          >
-            {editForm.isVerified ? "Verified" : "Pending"}
-          </span>
-        </div>
+        {!newAccount && (
+          <div className="account-info">
+            Account Status:{" "}
+            <span
+              className={
+                editForm.isVerified ? "status-verified" : "status-pending"
+              }
+            >
+              {editForm.isVerified ? "Verified" : "Pending"}
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* ================= ADDRESS ================= */}
-      <div className="bg-white p-6 rounded shadow mb-6">
-                <h2 className="font-semibold mb-4">Profile Details</h2>
 
-        {editForm.profilePicture?.DocumentUrl && (
-          <img
-            src={editForm.profilePicture.DocumentUrl}
-            className="w-28 h-28 rounded-full mb-4"
-            alt="profile"
-          />
-        )}
-        <h2 className="font-semibold mb-4">Address</h2>
-
+      <div className="account-section">
+        <h2>Address</h2>
         {["address", "city", "state", "country", "pincode"].map((f) => (
           <input
             key={f}
             disabled={!isEditing}
-            value={editForm.address?.[f] || ""}
+            value={editForm.address[f] || ""}
             onChange={(e) =>
               setEditForm({
                 ...editForm,
-                address: {
-                  ...editForm.address,
-                  [f]: e.target.value,
-                },
+                address: { ...editForm.address, [f]: e.target.value },
               })
             }
-            className="w-full border p-2 rounded mb-2"
+            className="account-input"
             placeholder={f.charAt(0).toUpperCase() + f.slice(1)}
           />
         ))}
       </div>
 
-      {/* ================= SKILLS ================= */}
-      <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="font-semibold mb-4">Skills</h2>
-
-        {editForm.skills?.map((skill, idx) => (
-          <div key={idx} className="flex gap-2 mb-2">
+    
+      <div className="account-section">
+        <h2>Skills</h2>
+        {editForm.skills.map((skill, idx) => (
+          <div key={idx} className="skill-row">
             <input
               disabled={!isEditing}
               value={skill}
@@ -173,7 +308,7 @@ const navigate=useNavigate();
                 updated[idx] = e.target.value;
                 setEditForm({ ...editForm, skills: updated });
               }}
-              className="flex-1 border p-2 rounded"
+              className="account-input"
             />
             {isEditing && (
               <button
@@ -183,72 +318,61 @@ const navigate=useNavigate();
                     skills: editForm.skills.filter((_, i) => i !== idx),
                   })
                 }
-                className="text-red-600 px-2"
               >
                 ✕
               </button>
             )}
           </div>
         ))}
-
         {isEditing && (
           <button
             onClick={() =>
-              setEditForm({
-                ...editForm,
-                skills: [...editForm.skills, ""],
-              })
+              setEditForm({ ...editForm, skills: [...editForm.skills, ""] })
             }
-            className="text-blue-600"
           >
             + Add Skill
           </button>
         )}
       </div>
 
-      {/* ================= EDUCATION ================= */}
-      <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="font-semibold mb-4">Education</h2>
-
-        {editForm.education?.map((edu, idx) => (
-          <div key={idx} className="border p-4 rounded mb-3 bg-gray-50">
+      <div className="account-section">
+        <h2>Education</h2>
+        {editForm.education.map((edu, idx) => (
+          <div key={idx} className="sub-section">
             <input
               disabled={!isEditing}
-              value={edu.institutionName || ""}
+              value={edu.institutionName}
               onChange={(e) => {
                 const arr = [...editForm.education];
                 arr[idx].institutionName = e.target.value;
                 setEditForm({ ...editForm, education: arr });
               }}
-              className="w-full border p-2 rounded mb-2"
+              className="account-input"
               placeholder="Institution Name"
             />
-
             <input
               disabled={!isEditing}
-              value={edu.course || ""}
+              value={edu.course}
               onChange={(e) => {
                 const arr = [...editForm.education];
                 arr[idx].course = e.target.value;
                 setEditForm({ ...editForm, education: arr });
               }}
-              className="w-full border p-2 rounded mb-2"
+              className="account-input"
               placeholder="Course"
             />
-
             <input
               disabled={!isEditing}
               type="number"
-              value={edu.year || ""}
+              value={edu.year}
               onChange={(e) => {
                 const arr = [...editForm.education];
                 arr[idx].year = e.target.value;
                 setEditForm({ ...editForm, education: arr });
               }}
-              className="w-full border p-2 rounded mb-2"
+              className="account-input"
               placeholder="Year"
             />
-
             {isEditing && (
               <button
                 onClick={() =>
@@ -257,14 +381,12 @@ const navigate=useNavigate();
                     education: editForm.education.filter((_, i) => i !== idx),
                   })
                 }
-                className="text-red-600 text-sm"
               >
-                Remove Education
+                Remove
               </button>
             )}
           </div>
         ))}
-
         {isEditing && (
           <button
             onClick={() =>
@@ -276,56 +398,51 @@ const navigate=useNavigate();
                 ],
               })
             }
-            className="text-blue-600"
           >
             + Add Education
           </button>
         )}
       </div>
 
-      {/* ================= WORK EXPERIENCE ================= */}
-      <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="font-semibold mb-4">Work Experience</h2>
-
-        {editForm.workExperience?.map((exp, idx) => (
-          <div key={idx} className="border p-4 rounded mb-3 bg-gray-50">
+  
+      <div className="account-section">
+        <h2>Work Experience</h2>
+        {editForm.workExperience.map((exp, idx) => (
+          <div key={idx} className="sub-section">
             <input
               disabled={!isEditing}
-              value={exp.company || ""}
+              value={exp.company}
               onChange={(e) => {
                 const arr = [...editForm.workExperience];
                 arr[idx].company = e.target.value;
                 setEditForm({ ...editForm, workExperience: arr });
               }}
-              className="w-full border p-2 rounded mb-2"
+              className="account-input"
               placeholder="Company"
             />
-
             <input
               disabled={!isEditing}
-              value={exp.position || ""}
+              value={exp.position}
               onChange={(e) => {
                 const arr = [...editForm.workExperience];
                 arr[idx].position = e.target.value;
                 setEditForm({ ...editForm, workExperience: arr });
               }}
-              className="w-full border p-2 rounded mb-2"
+              className="account-input"
               placeholder="Position"
             />
-
             <input
               disabled={!isEditing}
               type="number"
-              value={exp.years || ""}
+              value={exp.years}
               onChange={(e) => {
                 const arr = [...editForm.workExperience];
                 arr[idx].years = e.target.value;
                 setEditForm({ ...editForm, workExperience: arr });
               }}
-              className="w-full border p-2 rounded mb-2"
+              className="account-input"
               placeholder="Years"
             />
-
             {isEditing && (
               <button
                 onClick={() =>
@@ -336,14 +453,12 @@ const navigate=useNavigate();
                     ),
                   })
                 }
-                className="text-red-600 text-sm"
               >
-                Remove Experience
+                Remove
               </button>
             )}
           </div>
         ))}
-
         {isEditing && (
           <button
             onClick={() =>
@@ -355,56 +470,50 @@ const navigate=useNavigate();
                 ],
               })
             }
-            className="text-blue-600"
           >
             + Add Experience
           </button>
         )}
       </div>
 
-      {/* ================= PAST PROJECTS ================= */}
-      <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="font-semibold mb-4">Past Projects</h2>
-
-        {editForm.pastProject?.map((proj, idx) => (
-          <div key={idx} className="border p-4 rounded mb-3 bg-gray-50">
+      <div className="account-section">
+        <h2>Past Projects</h2>
+        {editForm.pastProject.map((proj, idx) => (
+          <div key={idx} className="sub-section">
             <input
               disabled={!isEditing}
-              value={proj.projectname || ""}
+              value={proj.projectname}
               onChange={(e) => {
                 const arr = [...editForm.pastProject];
                 arr[idx].projectname = e.target.value;
                 setEditForm({ ...editForm, pastProject: arr });
               }}
-              className="w-full border p-2 rounded mb-2"
+              className="account-input"
               placeholder="Project Name"
             />
-
             <input
               disabled={!isEditing}
-              value={proj.websiteUrl || ""}
+              value={proj.websiteUrl}
               onChange={(e) => {
                 const arr = [...editForm.pastProject];
                 arr[idx].websiteUrl = e.target.value;
                 setEditForm({ ...editForm, pastProject: arr });
               }}
-              className="w-full border p-2 rounded mb-2"
+              className="account-input"
               placeholder="Website URL"
             />
-
             <input
               disabled={!isEditing}
               type="number"
-              value={proj.revenue || ""}
+              value={proj.revenue}
               onChange={(e) => {
                 const arr = [...editForm.pastProject];
                 arr[idx].revenue = e.target.value;
                 setEditForm({ ...editForm, pastProject: arr });
               }}
-              className="w-full border p-2 rounded mb-2"
+              className="account-input"
               placeholder="Revenue"
             />
-
             {isEditing && (
               <button
                 onClick={() =>
@@ -415,14 +524,12 @@ const navigate=useNavigate();
                     ),
                   })
                 }
-                className="text-red-600 text-sm"
               >
-                Remove Project
+                Remove
               </button>
             )}
           </div>
         ))}
-
         {isEditing && (
           <button
             onClick={() =>
@@ -434,92 +541,92 @@ const navigate=useNavigate();
                 ],
               })
             }
-            className="text-blue-600"
           >
             + Add Project
           </button>
         )}
       </div>
 
-{/* ================= DOCUMENTS ================= */}
-<div className="bg-white p-6 rounded shadow mb-6">
-  <h2 className="font-semibold mb-4">Documents</h2>
+   
+      <div className="account-section">
+        <h2>Upload Documents</h2>
 
-  {/* Identity Document */}
-  <div className="mb-4">
-    <label className="block mb-1 font-medium">Identity Document</label>
-    {editForm.identityDocument?.DocumentUrl ? (
-      <a
-        href={editForm.identityDocument?.DocumentUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 underline"
-      >
-        View Identity Document
-      </a>
-    ) : (
-      <span className="text-gray-500">No document uploaded</span>
-    )}
-    {isEditing && (
-      <input
-        type="url"
-        value={editForm.identityDocument?.DocumentUrl || ""}
-        onChange={(e) =>
-          setEditForm({ ...editForm, identityDocument: e.target.value })
-        }
-        placeholder="Paste Identity Document URL"
-        className="w-full border p-2 rounded mt-2"
-      />
-    )}
-  </div>
+        <div>
+          {editForm.identityDocument?.DocumentUrl && (
+            <a
+              href={editForm.identityDocument.DocumentUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Identity Document
+            </a>
+          )}
+          {isEditing && (
+            <>
+            <h3>identity Document</h3>
+            <input
+              type="file"
+              onChange={(e) =>
+                setEditForm({
+                  ...editForm,
+                  identityDocumentFile: e.target.files[0],
+                })
+              }
+              className="account-input"
+            />
+            </>
+          )}
+        </div>
 
-  {/* Business Registration Document */}
-  <div className="mb-4">
-    <label className="block mb-1 font-medium">Business Registration Document</label>
-    {editForm.BusinessRegistrationDocument?.DocumentUrl ? (
-      <a
-        href={editForm.BusinessRegistrationDocument?.DocumentUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 underline"
-      >
-        View Business Registration Document
-      </a>
-    ) : (
-      <span className="text-gray-500">No document uploaded</span>
-    )}
-    {isEditing && (
-      <input
-        type="url"
-        value={editForm.businessRegistrationDocument?.DocumentUrl || ""}
-        onChange={(e) =>
-          setEditForm({ ...editForm, businessRegistrationDocument: e.target.value })
-        }
-        placeholder="Paste Business Registration Document URL"
-        className="w-full border p-2 rounded mt-2"
-      />
-    )}
-  </div>
-</div>
+        <div>
+          {editForm.BusinessRegistrationDocument?.DocumentUrl && (
+            <a
+              href={editForm.BusinessRegistrationDocument.DocumentUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Business Registration Doc
+            </a>
+          )}
+          {isEditing && (
+            <>            <h3>businessRegistration documet</h3>
+            <input
+              type="file"
+              onChange={(e) =>
+                setEditForm({
+                  ...editForm,
+                  businessDocumentFile: e.target.files[0],
+                })
+              }
+              className="account-input"
+            />
+            
+            </>
 
-      {/* ================= ACTION ================= */}
-      <div className="text-right mt-6">
+          )}
+        </div>
+      </div>
+
+    {userId===entrepreneurProfile?.userId && (
+      <div style={{ textAlign: "right", marginTop: "1.5rem" }}>
         {isEditing ? (
-          <button
-            onClick={handleSave}
-            className="bg-green-600 text-white px-6 py-2 rounded"
-          >
-            Save Changes
+          <button onClick={handleSave} className="save-btn">
+            {newAccount ? "Create Account" : "Save Changes"}
           </button>
         ) : (
           <button
             onClick={() => setIsEditing(true)}
-            className="bg-indigo-600 text-white px-6 py-2 rounded"
+            className="edit-toggle-btn"
           >
             Edit Profile
           </button>
         )}
+            <button onClick={handleLogout} className="logout-btn">
+            logout
+          </button> 
       </div>
+    )}
+
     </div>
   );
 }

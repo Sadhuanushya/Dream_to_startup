@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import InvestorAccount from "./Accounts/InvestorAccount";
 import EntrepreneurAccount from "./Accounts/EntrepreneurAccount";
+import "../style/account.css";
 
 export default function Account() {
   const [role, setRole] = useState(null);
@@ -15,7 +15,7 @@ export default function Account() {
 
   if (loading) {
     return (
-      <div className="text-center py-20 text-gray-500">
+      <div className="account-loading">
         Loading...
       </div>
     );
@@ -27,7 +27,7 @@ export default function Account() {
     return <InvestorAccount />;
   } else {
     return (
-      <div className="text-center py-20 text-gray-500">
+      <div className="account-error">
         Unable to determine account type. Please log in again.
       </div>
     );

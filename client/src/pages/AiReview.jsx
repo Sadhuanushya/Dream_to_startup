@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiCpu, FiShield, FiTrendingUp, FiFileText } from "react-icons/fi";
+import "../style/aireview.css";
 
 export default function AiReview() {
   const navigate = useNavigate();
@@ -9,65 +10,65 @@ export default function AiReview() {
   const reviewContent = AiReview?.response?.review;
 
   return (
-    // Main background container centered
-    <div className="w-screen min-h-screen w-full flex flex-col items-center justify-center bg-slate-50 p-6 md:p-12 animate-in fade-in duration-700">
+ 
+    <div className="aireview-page">
       
-      <div className="w-full max-w-4xl flex flex-col items-center">
+      <div className="aireview-container">
         
-        {/* Header - Centered */}
-        <div className="flex flex-col items-center text-center space-y-6 mb-12">
+ 
+        <div className="aireview-header">
           <button 
             onClick={() => navigate(-1)}
-            className="group flex items-center gap-2 text-slate-400 hover:text-indigo-600 font-bold text-sm transition-all"
+            className="aireview-back-button"
           >
-            <FiArrowLeft className="group-hover:-translate-x-1 transition-transform" /> 
+            <FiArrowLeft className="aireview-back-icon" /> 
             Back to Dashboard
           </button>
           
-          <div className="bg-indigo-600 p-5 rounded-3xl shadow-2xl shadow-indigo-200">
-            <FiCpu className="text-white text-4xl" />
+          <div className="aireview-icon-wrapper">
+            <FiCpu className="aireview-icon" />
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-black text-slate-800 tracking-tighter">
-            AI <span className="text-indigo-600">Review</span> Result
+          <h1 className="aireview-title">
+            AI <span className="aireview-title-highlight">Review</span> Result
           </h1>
         </div>
 
-        {/* Main Review Card */}
-        <div className="w-full bg-white rounded-[3rem] border border-slate-100 shadow-2xl shadow-indigo-100/30 overflow-hidden">
+ 
+        <div className="aireview-card">
           
-          {/* Status Bar */}
-          <div className="bg-slate-900 px-10 py-5 flex items-center justify-center gap-3">
-             <div className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse"></div>
-             <span className="text-indigo-400 font-mono text-xs uppercase tracking-[0.3em] font-bold">
+   
+          <div className="aireview-card-header">
+             <div className="aireview-header-pulse"></div>
+             <span className="aireview-header-label">
                 Analysis Report Generated
              </span>
           </div>
           
-          {/* Content Body - Forced Center with Flex */}
-          <div className="p-10 md:p-20 flex flex-col items-center justify-center text-center">
+      
+          <div className="aireview-card-content">
             {reviewContent ? (
-              <div className="w-full flex flex-col items-center justify-center">
-                {/* The 'text-center' and 'mx-auto' ensure the text block stays middle */}
-                <div className="text-slate-700 text-lg md:text-2xl leading-relaxed font-medium whitespace-pre-wrap italic text-center mx-auto max-w-3xl">
+              <div className="aireview-content-wrapper">
+           
+                <div className="aireview-content-text">
                   {reviewContent}
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center py-20">
-                <div className="animate-spin w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full mb-6"></div>
-                <p className="text-slate-400 font-black uppercase tracking-widest">Processing Data...</p>
+              <div className="aireview-loading-container">
+                <div className="aireview-spinner"></div>
+                <p className="aireview-loading-text">Processing Data...</p>
               </div>
             )}
           </div>
 
-          {/* Action Footer */}
-          <div className="bg-slate-50 p-8 border-t border-slate-100 flex justify-center gap-8">
-             <div className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest">
-                <FiShield className="text-indigo-500" /> Secure
+      
+          <div className="aireview-card-footer">
+             <div className="aireview-footer-item">
+                <FiShield className="aireview-footer-icon shield" /> Secure
              </div>
-             <div className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest">
-                <FiTrendingUp className="text-green-500" /> High Accuracy
+             <div className="aireview-footer-item">
+                <FiTrendingUp className="aireview-footer-icon trending" /> High Accuracy
              </div>
           </div>
         </div>

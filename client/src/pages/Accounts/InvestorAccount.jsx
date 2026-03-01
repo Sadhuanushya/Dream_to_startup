@@ -1,275 +1,411 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchInvestor,
+  submitInvestorProfile,
   updateInvestorProfile,
 } from "../../Slice/Investor-Slice";
-import { useNavigate } from "react-router-dom";
+import "../../style/account-pages.css";
+import { useNavigate,useLocation } from "react-router-dom";
+import UserContext from "../../Context/UserContext";
+
 export default function InvestorAccount() {
   const dispatch = useDispatch();
-const navigate =useNavigate()
-  const investorProfile = useSelector(
-    (state) => state.investor.InvestorProfile
+ const location = useLocation();
+ const navigate=useNavigate()
+  const InvestorProfile = useSelector(
+    (state) => state.investor?.InvestorProfile
   );
-
-  const [editForm, setEditForm] = useState({});
+  const {user}=useContext(UserContext)
+  console.log("in",InvestorProfile)
+  const { Iid } = location.state || "";
+  
+  const userId = localStorage.getItem("userId");
+  
+  const [newAccount, setNewAccount] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
-  /* ================= LOAD INVESTOR ================= */
-  useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (userId) dispatch(fetchInvestor(userId));
-  }, [dispatch]);
-console.log("investorProfile",investorProfile)
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    bio: "",
+    linkedinUrl: "",
+    investorType: "",
+    customInvestorType: "",
+    officeLocation: { address: "", city: "", state: "", country: "", pincode: "" },
+    prefferedSector: [{ sector: "", description: "", targetInvestment: "" }],
+    profilePicture: null,
+    verificationDocument: null,
+  });
 
-useEffect(() => {
-   if(localStorage.getItem("userId") !== investorProfile?.userId){
-    navigate("/dashboard/account/InvestorProfile")
-   }
-    })
-  /* ================= SYNC STORE → FORM ================= */
-  useEffect(() => {
-    if (investorProfile) {
-      setEditForm({
-        ...investorProfile,
-        officeLocation: investorProfile.officeLocation || {},
-        prefferedSector: investorProfile.prefferedSector || [],
-        pastInvestment: investorProfile.pastInvestment || {},
-      });
+ useEffect(() => {
+    const idToFetch = Iid || userId;
+    if (idToFetch) {
+      dispatch(fetchInvestor(idToFetch));
     }
-  }, [investorProfile]);
+  }, [dispatch, Iid, userId]);
 
-  const handleSave = () => {
-    const userId = localStorage.getItem("userId");
-    dispatch(updateInvestorProfile({ id: userId, formData: editForm }));
-    setIsEditing(false);
-  };
+  useEffect(() => {
+    console.log("profile",InvestorProfile)
+    if (InvestorProfile?.userId) {
+      setNewAccount(false);
+      setForm({
+        fullName: InvestorProfile.fullName || "",
+        email: InvestorProfile.email || "",
+        bio: InvestorProfile.bio || "",
+        linkedinUrl: InvestorProfile.linkedinUrl || "",
+        investorType: InvestorProfile.investorType || "",
+        customInvestorType: InvestorProfile.customInvestorType || "",
+        officeLocation: InvestorProfile.officeLocation || {
+          address: "",
+          city: "",
+          state: "",
+          country: "",
+          pincode: "",
+        },
+        prefferedSector:
+          InvestorProfile.prefferedSector.length > 0
+            ? InvestorProfile.prefferedSector
+            : [{ sector: "", description: "", targetInvestment: "" }],
+        profilePicture: null,
+        verificationDocument: null,
+      });
+      setIsEditing(false);
+    } else {
+      setNewAccount(true);
+      setIsEditing(true);
+          setForm(prev => ({
+      ...prev,
+      fullName: user?.username|| "",
+      email: user?.email || "",
+    }));
+    }
+  }, [InvestorProfile]);
 
-  if (!investorProfile) {
-    return (
-      <div className="text-center py-20 text-gray-500">
-        Loading Investor Profile...
-      </div>
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSubmitError("");
+
+    const toSend = new FormData();
+
+    toSend.append("fullName", form.fullName);
+    toSend.append("email", form.email);
+    toSend.append("bio", form.bio);
+    toSend.append("linkedinUrl", form.linkedinUrl);
+    toSend.append("investorType", form.investorType);
+
+    if (form.investorType === "Other") {
+      toSend.append("customInvestorType", form.customInvestorType);
+    }
+
+    toSend.append("officeLocation[address]", form.officeLocation.address);
+    toSend.append("officeLocation[city]", form.officeLocation.city);
+    toSend.append("officeLocation[state]", form.officeLocation.state);
+    toSend.append("officeLocation[country]", form.officeLocation.country);
+    toSend.append(
+      "officeLocation[pincode]",
+      form.officeLocation.pincode
     );
+
+    form.prefferedSector.forEach((sec, i) => {
+      toSend.append(`prefferedSector[${i}][sector]`, sec.sector);
+      toSend.append(
+        `prefferedSector[${i}][description]`,
+        sec.description
+      );
+      toSend.append(
+        `prefferedSector[${i}][targetInvestment]`,
+        sec.targetInvestment
+      );
+    });
+
+    if (form.profilePicture)
+      toSend.append("profilePicture", form.profilePicture);
+
+    if (form.verificationDocument)
+      toSend.append("verificationDocument", form.verificationDocument);
+
+    try {
+      if (newAccount) {
+        const result = await dispatch(submitInvestorProfile(toSend));
+        if (result.error) {
+          setSubmitError("Failed to create investor account.");
+          return;
+        }
+      
+        setNewAccount(false);
+        setIsEditing(false);
+      } else {
+        const result = await dispatch(
+          updateInvestorProfile({ id: userId, formData: toSend })
+        );
+        if (result.error) {
+          setSubmitError("Failed to update investor account.");
+          return;
+        }
+     
+        setIsEditing(false);
+      }
+    } catch (err) {
+      setSubmitError("Network/server error");
+    }
+  };
+  const handleLogout=()=>{
+    localStorage.clear();
+    navigate("/login");
   }
 
-
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <h1 className="text-3xl font-bold mb-6">Investor Account</h1>
+    <div className="account-wrapper">
+      <h1 className="account-title">
+        {newAccount ? "Create Investor Account" : "Investor Account"}
+      </h1>
 
-      {/* ================= BASIC ================= */}
-      <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="font-semibold mb-4">Basic Information</h2>
+      {InvestorProfile?.profilePicture?.DocumentUrl && (
+        <div className="account-section">
+          <h2>Profile Picture</h2>
+          <img
+            src={InvestorProfile.profilePicture.DocumentUrl}
+            alt="Investor Profile"
+            className="profile-image"
+          />
+        </div>
+      )}
+      {isEditing && (
+        <div className="account-section">
+          <h2>Upload Profile Picture</h2>
+          <input
+            type="file"
+            onChange={(e) =>
+              setForm({ ...form, profilePicture: e.target.files[0] })
+            }
+            className="account-input"
+          />
+        </div>
+      )}
+      <div className="verification-status">
+      <h3 style={{ marginTop: "10px" }}>
+        Investor: {InvestorProfile.isVerified ? (
+          <span style={{ color: "#28a745", fontWeight: "bold" }}>Verified ✅</span>
+        ) : (
+          <span style={{ color: "#ffc107", fontWeight: "bold" }}>Pending Verification </span>
+        )}
+      </h3>
+    </div>
 
+      <div className="account-section">
+        <h2>Basic Info</h2>
         <input
-          value={editForm.fullName || ""}
-          disabled
-          className="w-full border p-2 rounded mb-2 bg-gray-100"
+          disabled={!isEditing}
+          value={form.fullName}
+          onChange={(e) =>
+            setForm({ ...form, fullName: e.target.value })
+          }
+          className="account-input"
           placeholder="Full Name"
         />
 
         <input
-          value={editForm.email || ""}
-          disabled
-          className="w-full border p-2 rounded bg-gray-100"
+          disabled={!isEditing}
+          value={form.email}
+          onChange={(e) =>
+            setForm({ ...form, email: e.target.value })
+          }
+          className="account-input"
           placeholder="Email"
         />
 
-        <div className="mt-3 text-sm">
-          Status:{" "}
-          <span
-            className={
-              editForm.isVerified ? "text-green-600" : "text-yellow-600"
-            }
-          >
-            {editForm.isVerified ? "Verified" : "Pending Verification"}
-          </span>
-        </div>
-      </div>
-
-      {/* ================= PROFILE ================= */}
-      <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="font-semibold mb-4">Profile Details</h2>
-
-        {editForm.profilePicture?.DocumentUrl && (
-          <img
-            src={editForm.profilePicture.DocumentUrl}
-            className="w-28 h-28 rounded-full mb-4"
-            alt="profile"
-          />
-        )}
+        <textarea
+          disabled={!isEditing}
+          value={form.bio}
+          onChange={(e) => setForm({ ...form, bio: e.target.value })}
+          className="account-input"
+          placeholder="Bio"
+        />
 
         <input
           disabled={!isEditing}
-          value={editForm.linkedinUrl || ""}
+          value={form.linkedinUrl}
           onChange={(e) =>
-            setEditForm({ ...editForm, linkedinUrl: e.target.value })
+            setForm({ ...form, linkedinUrl: e.target.value })
           }
-          className="w-full border p-2 rounded mb-3"
+          className="account-input"
           placeholder="LinkedIn URL"
-        />
-
-        <select
-          disabled={!isEditing}
-          value={editForm.investorType || ""}
-          onChange={(e) =>
-            setEditForm({ ...editForm, investorType: e.target.value })
-          }
-          className="w-full border p-2 rounded mb-3"
-        >
-          <option value="">Select Investor Type</option>
-          <option>Angel Investor</option>
-          <option>Accelerator Investor</option>
-          <option>Seed Investor</option>
-          <option>Other</option>
-        </select>
-
-        {editForm.investorType === "Other" && (
-          <input
-            disabled={!isEditing}
-            value={editForm.customInvestorType || ""}
-            onChange={(e) =>
-              setEditForm({ ...editForm, customInvestorType: e.target.value })
-            }
-            className="w-full border p-2 rounded mb-3"
-            placeholder="Custom Investor Type"
-          />
-        )}
-
-        <textarea
-          disabled={!isEditing}
-          value={editForm.bio || ""}
-          onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-          className="w-full border p-2 rounded"
-          placeholder="Bio"
         />
       </div>
 
-      {/* ================= OFFICE LOCATION ================= */}
-      <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="font-semibold mb-4">Office Location</h2>
+      <div className="account-section">
+        <h2>Investor Type</h2>
+        <select
+          disabled={!isEditing}
+          value={form.investorType}
+          onChange={(e) =>
+            setForm({ ...form, investorType: e.target.value })
+          }
+          className="account-input"
+        >
+          <option value="">Select Type</option>
+          <option value="Angel Investor">Angel Investor</option>
+          <option value="Seed Investor">Seed Investor</option>
+          <option value="Accelerator Investor">
+            Accelerator Investor
+          </option>
+          <option value="Other">Other</option>
+        </select>
 
-        {["address", "city", "state", "country", "pincode"].map((f) => (
+        {form.investorType === "Other" && (
           <input
-            key={f}
             disabled={!isEditing}
-            value={editForm.officeLocation?.[f] || ""}
+            value={form.customInvestorType}
             onChange={(e) =>
-              setEditForm({
-                ...editForm,
+              setForm({ ...form, customInvestorType: e.target.value })
+            }
+            className="account-input"
+            placeholder="Custom Investor Type"
+          />
+        )}
+      </div>
+
+      <div className="account-section">
+        <h2>Office Location</h2>
+        {Object.keys(form.officeLocation).map((field) => (
+          <input
+            key={field}
+            disabled={!isEditing}
+            value={form.officeLocation[field]}
+            onChange={(e) =>
+              setForm({
+                ...form,
                 officeLocation: {
-                  ...editForm.officeLocation,
-                  [f]: e.target.value,
+                  ...form.officeLocation,
+                  [field]: e.target.value,
                 },
               })
             }
-            className="w-full border p-2 rounded mb-2"
-            placeholder={f}
+            className="account-input"
+            placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
           />
         ))}
       </div>
 
-      {/* ================= PREFERRED SECTORS ================= */}
-      <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="font-semibold mb-4">Preferred Sectors</h2>
-
-        {editForm.prefferedSector?.map((sec, idx) => (
-          <div key={idx} className="grid md:grid-cols-2 gap-2 mb-3">
+      <div className="account-section">
+        <h2>Preferred Sectors</h2>
+        {form.prefferedSector.map((sec, idx) => (
+          <div key={idx} className="sub-section">
             <input
               disabled={!isEditing}
-              value={sec.sector || ""}
+              value={sec.sector}
               onChange={(e) => {
-                const arr = [...editForm.prefferedSector];
-                arr[idx].sector = e.target.value;
-                setEditForm({ ...editForm, prefferedSector: arr });
+                const newArr = [...form.prefferedSector];
+                newArr[idx].sector = e.target.value;
+                setForm({ ...form, prefferedSector: newArr });
               }}
-              className="border p-2 rounded"
+              className="account-input"
               placeholder="Sector"
             />
 
             <input
               disabled={!isEditing}
-              value={sec.targetInvestment || ""}
+              value={sec.description}
               onChange={(e) => {
-                const arr = [...editForm.prefferedSector];
-                arr[idx].targetInvestment = e.target.value;
-                setEditForm({ ...editForm, prefferedSector: arr });
+                const newArr = [...form.prefferedSector];
+                newArr[idx].description = e.target.value;
+                setForm({ ...form, prefferedSector: newArr });
               }}
-              className="border p-2 rounded"
+              className="account-input"
+              placeholder="Description"
+            />
+
+            <input
+              disabled={!isEditing}
+              value={sec.targetInvestment}
+              onChange={(e) => {
+                const newArr = [...form.prefferedSector];
+                newArr[idx].targetInvestment = e.target.value;
+                setForm({ ...form, prefferedSector: newArr });
+              }}
+              className="account-input"
               placeholder="Target Investment"
             />
+
+            {isEditing && (
+              <button
+                onClick={() =>
+                  setForm({
+                    ...form,
+                    prefferedSector: form.prefferedSector.filter(
+                      (_, i) => i !== idx
+                    ),
+                  })
+                }
+              >
+                Remove
+              </button>
+            )}
           </div>
         ))}
-      </div>
-
-      {/* ================= PAST INVESTMENT ================= */}
-      <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="font-semibold mb-4">Past Investment</h2>
-
-        <input
-          disabled={!isEditing}
-          value={editForm.pastInvestment?.projectName || ""}
-          onChange={(e) =>
-            setEditForm({
-              ...editForm,
-              pastInvestment: {
-                ...editForm.pastInvestment,
-                projectName: e.target.value,
-              },
-            })
-          }
-          className="w-full border p-2 rounded mb-2"
-          placeholder="Project Name"
-        />
-
-        <input
-          disabled={!isEditing}
-          value={editForm.pastInvestment?.investment || ""}
-          onChange={(e) =>
-            setEditForm({
-              ...editForm,
-              pastInvestment: {
-                ...editForm.pastInvestment,
-                investment: e.target.value,
-              },
-            })
-          }
-          className="w-full border p-2 rounded"
-          placeholder="Investment Amount"
-        />
-      </div>
-
-      {/* ================= DOCUMENT ================= */}
-      {editForm.verificationDocument?.DocumentUrl && (
-        <a
-          href={editForm.verificationDocument.DocumentUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="text-indigo-600 underline"
-        >
-          View Verification Document
-        </a>
-      )}
-
-      {/* ================= ACTION ================= */}
-      <div className="text-right mt-6">
-        {isEditing ? (
+        {isEditing && (
           <button
-            onClick={handleSave}
-            className="bg-green-600 text-black px-6 py-2 rounded"
+            onClick={() =>
+              setForm({
+                ...form,
+                prefferedSector: [
+                  ...form.prefferedSector,
+                  { sector: "", description: "", targetInvestment: "" },
+                ],
+              })
+            }
           >
-            Save Changes
+            + Add Sector
+          </button>
+        )}
+      </div>
+
+      <div className="account-section">
+        <h2>Upload Verification Document</h2>
+
+        {InvestorProfile?.verificationDocument?.DocumentUrl && (
+          <a
+            href={InvestorProfile.verificationDocument.DocumentUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View Verification Document
+          </a>
+        )}
+
+        {isEditing && (
+          <input
+            type="file"
+            onChange={(e) =>
+              setForm({ ...form, verificationDocument: e.target.files[0] })
+            }
+            className="account-input"
+          />
+        )}
+      </div>
+
+      {submitError && <p className="error-text">{submitError}</p>}
+  {localStorage.getItem('userId')===InvestorProfile?.userId?._id && (
+      <div style={{ textAlign: "right", marginTop: "1rem" }}>
+        
+        {isEditing ? (
+          <button onClick={handleSave} className="save-btn">
+            {newAccount ? "Create Account" : "Save Changes"}
           </button>
         ) : (
           <button
             onClick={() => setIsEditing(true)}
-            className="bg-indigo-600 text-black px-6 py-2 rounded"
+            className="edit-toggle-btn"
           >
             Edit Profile
           </button>
         )}
-      </div>
+    <button onClick={handleLogout} className="logout-btn">
+            logout
+          </button> 
+      </div>)}
     </div>
   );
 }
