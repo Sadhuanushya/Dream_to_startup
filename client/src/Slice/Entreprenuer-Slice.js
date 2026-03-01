@@ -126,8 +126,7 @@ export const submitEntrepreneurProfile = createAsyncThunk(
             console.log("its came to entreprenuer slice")
             const token = localStorage.getItem('token');
              console.log("token got")
-            // If formData is already FormData object, use it directly
-            // Otherwise, create a new FormData
+         
             let multipartFormData = formData;
             if (!(formData instanceof FormData)) {
                 multipartFormData = new FormData();
@@ -169,7 +168,7 @@ const EntrepreneurSlice = createSlice({
     initialState: {
         data: [],
         profiledata: null,
-        EntrepreneurProfile: null,
+        EntrepreneurProfile:{},
         listLoading: false,
         listError: null,
         submitLoading: false,
@@ -188,8 +187,19 @@ const EntrepreneurSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        // Fetch Entrepreneurs List
-        builder
+       builder
+  .addCase(fetchEntrepreneur.pending, (state) => {
+    state.loading = true;
+    state.EntrepreneurProfile = null;
+  })
+  .addCase(fetchEntrepreneur.fulfilled, (state, action) => {
+    state.loading = false;
+    state.EntrepreneurProfile = action.payload;
+  })
+  .addCase(fetchEntrepreneur.rejected, (state) => {
+    state.loading = false;
+    state.EntrepreneurProfile = null;
+  })
             .addCase(fetchEntrepreneursList.pending, (state) => {
                 state.listLoading = true;
                 state.listError = null;
@@ -204,7 +214,7 @@ const EntrepreneurSlice = createSlice({
                 state.data = [];
             });
 
-        // Submit Profile
+   
         builder
             .addCase(submitEntrepreneurProfile.pending, (state) => {
                 state.submitLoading = true;
@@ -224,15 +234,12 @@ const EntrepreneurSlice = createSlice({
             .addCase(deleteEntrepreneur.fulfilled, (state, action) => {
                 state.data = state.data.filter(entrepreneur => entrepreneur._id !== action.payload._id);
             })  
-            .addCase(fetchEntrepreneur.fulfilled, (state, action) => {
-                state.EntrepreneurProfile = action.payload;
-            })
             .addCase(updateEntrepreneurProfile.fulfilled, (state, action) => {
   state.profiledata = action.payload;
   state.EntrepreneurProfile = action.payload;
   state.submitSuccess = true;
 
-  // Update entrepreneur in list (if list already loaded)
+ 
   state.data = state.data.map((entrepreneur) =>
     entrepreneur._id === action.payload._id
       ? action.payload

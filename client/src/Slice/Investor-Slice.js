@@ -41,7 +41,7 @@ export const submitInvestorProfile = createAsyncThunk(
             console.log("Investor profile submission started");
             const token = localStorage.getItem('token');
             
-            // formData is already FormData object with proper field notation
+           
             const response = await axios.post("http://localhost:3080/api/Investor", formData, {
                 headers: {
                     Authorization: token
@@ -64,7 +64,7 @@ export const deleteInvestor = createAsyncThunk(
             console.log("Investor profile submission started");
             const token = localStorage.getItem('token');
             
-            // formData is already FormData object with proper field notation
+           
             const response = await axios.delete(`http://localhost:3080/api/Investor/${id}`,{
                 headers: {
                     Authorization: token
@@ -86,7 +86,7 @@ export const updateInvestorProfile = createAsyncThunk(
       console.log("Updating investor profile...");
       const token = localStorage.getItem("token");
 
-      // `formData` should be a FormData instance with all fields
+      
       const response = await axios.put(
         `http://localhost:3080/api/Investor/${id}`,
         formData,
@@ -113,10 +113,10 @@ const InvestorSlice = createSlice({
     name: "Investor",
     initialState: {
         data: [],
-        profiledata: null,
-        InvestorProfile:null,
-        listLoading: false,
-        listError: null,
+        profile: null,
+        InvestorProfile:{},
+        loading: false,
+        error: null,
         pendingRequest:[],
         submitLoading: false,
         submitError: null,
@@ -138,7 +138,7 @@ const InvestorSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        // Fetch Investors List
+        
         builder
             .addCase(fetchInvestorsList.pending, (state) => {
                 state.listLoading = true;
@@ -154,7 +154,7 @@ const InvestorSlice = createSlice({
                 state.data = [];
             });
 
-        // Submit Profile
+        
         builder
             .addCase(submitInvestorProfile.pending, (state) => {
                 state.submitLoading = true;
@@ -181,12 +181,12 @@ const InvestorSlice = createSlice({
                 
             })  
             .addCase(updateInvestorProfile.fulfilled, (state, action) => {
-    // Save updated profile in both places
+    
     state.profiledata = action.payload;
     state.InvestorProfile = action.payload;
     state.submitSuccess = true;
 
-    // Update in master list if exists
+   
     state.data = state.data.map((investor) =>
       investor._id === action.payload._id ? action.payload : investor
     );

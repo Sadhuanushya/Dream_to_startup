@@ -4,7 +4,7 @@ import axios from "axios";
 export const fetchPitchList=createAsyncThunk("Pitch/fetchPitchList",async(undefined,{rejectWithValue})=>{
     try{
         const response=await axios.get("http://localhost:3080/api/Pitch",{headers:{Authorization:localStorage.getItem('token')}})
-        console.log(response.data,"PitchList")
+        console.log("PitchList",response.data)
         return response.data
     }catch(err){
         console.log(err)
@@ -38,6 +38,22 @@ export const submitPitch=createAsyncThunk("Pitch/submitPitch",async(formData,{re
     }catch(err){
         console.log(err)
         return rejectWithValue(err.response?.data?.message || 'Failed to upload pitch')
+    }
+})
+export const deletePitch=createAsyncThunk("Pitch/deletePitch",async(id,{rejectWithValue})=>{
+    try{
+        const token=localStorage.getItem('token')
+        const response=await axios.delete(`http://localhost:3080/api/Pitch/${id}`,{
+            headers:{
+                Authorization:token,
+                
+            }
+        })
+        console.log(response.data,"Pitch deleted successfully")
+        return id;
+    }catch(err){
+        console.log(err)
+        return rejectWithValue(err.response?.data?.message || 'Failed to delete pitch')
     }
 })
 const PitchSlice=createSlice({
@@ -81,6 +97,12 @@ const PitchSlice=createSlice({
             state.submitError=action.payload
             state.submitSuccess=false
         })
+        .addCase(deletePitch.fulfilled,(state,action)=>{
+            state.data=state.data.filter(pitch=>pitch._id!==action.payload)
+        })
+         .addCase(deletePitch.rejected,(state,action)=>{
+            state.submitError=action.payload
+        })          
     }
 })
 

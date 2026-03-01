@@ -10,6 +10,7 @@ export const fetchUsersList=createAsyncThunk('Users/list',async(undefined,{rejec
 
     }catch(err){
         console.log(err);
+        return rejectWithValue(err.response?.data || 'Failed to fetch users');
     }
 })
 
@@ -33,10 +34,11 @@ export const updateUserAccount=createAsyncThunk('Users/updateAccount',async(user
     }
 })
 
+
 const UsersSlice=createSlice({
     name:'Users',
     initialState:{
-        data:null,
+        data:[],
         account:{},
         errors:"",
         loading:false,
@@ -82,6 +84,7 @@ const UsersSlice=createSlice({
             state.accountError=action.payload;
             state.updateSuccess=false;
         })
+
     }
 })
 

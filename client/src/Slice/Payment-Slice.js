@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "http://localhost:3080"; // Update with your backend URL
+const API_URL = "http://localhost:3080";
 
-// Create Order
+
 export const createOrder = createAsyncThunk(
     "payment/createOrder",
     async (paymentData, { rejectWithValue }) => {
@@ -25,7 +25,7 @@ export const createOrder = createAsyncThunk(
     }
 );
 
-// Verify Payment
+
 export const verifyPayment = createAsyncThunk(
     "payment/verifyPayment",
     async (verificationData, { rejectWithValue }) => {
@@ -48,7 +48,7 @@ export const verifyPayment = createAsyncThunk(
     }
 );
 
-// Get Payment History
+
 export const getPaymentHistory = createAsyncThunk(
     "payment/getHistory",
     async (EntrepreneurId, { rejectWithValue }) => {
@@ -70,7 +70,7 @@ export const getPaymentHistory = createAsyncThunk(
     }
 );
 
-// Get Single Payment
+
 export const getPayment = createAsyncThunk(
     "payment/getPayment",
     async (paymentId, { rejectWithValue }) => {
@@ -114,7 +114,7 @@ const PaymentSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        // Create Order
+       
         builder
             .addCase(createOrder.pending, (state) => {
                 state.loading = true;
@@ -133,7 +133,7 @@ const PaymentSlice = createSlice({
                 state.success = false;
             });
 
-        // Verify Payment
+      
         builder
             .addCase(verifyPayment.pending, (state) => {
                 state.loading = true;
@@ -151,7 +151,7 @@ const PaymentSlice = createSlice({
                 state.success = false;
             });
 
-        // Get Payment History
+      
         builder
             .addCase(getPaymentHistory.pending, (state) => {
                 state.loading = true;
@@ -167,7 +167,7 @@ const PaymentSlice = createSlice({
                 state.error = action.payload?.message || "Failed to fetch payment history";
             });
 
-        // Get Single Payment
+  
         builder
             .addCase(getPayment.pending, (state) => {
                 state.loading = true;

@@ -30,7 +30,15 @@ export const fetchAllUsers = createAsyncThunk(
         }
     }
 );
-
+export const deleteUser=createAsyncThunk('Users/deleteUser',async(id,{rejectWithValue})=>{
+    try{
+        const response=await axios.delete(`http://localhost:3080/api/user/${id}`,{headers:{Authorization:localStorage.getItem('token')}})
+        console.log("updated account from user slice",response.data)
+        return id;
+    }catch(err){
+        return rejectWithValue(err.response?.data?.error || 'Failed to update account');
+    }
+})
 export const fetchAllEntrepreneurs = createAsyncThunk(
     "admin/fetchAllEntrepreneurs",
     async (_, { rejectWithValue }) => {
@@ -90,7 +98,38 @@ export const fetchPendingVerifications = createAsyncThunk(
         }
     }
 );
+export const ApproveInvestor = createAsyncThunk(
+    "admin/approveInvestor",
+    async (investorId, { rejectWithValue }) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.put(
+                `http://localhost:3080/api/admin/${investorId}`,
+                {},
+                { headers: { Authorization: token } }
+            );
+            return response.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data || 'Failed to approve investor');
+        }
+    }
+);
 
+export const RejectInvestor = createAsyncThunk(
+    "admin/rejectInvestor",
+    async (investorId, { rejectWithValue }) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.put(
+                `http://localhost:3080/api/admin/reject-investor/${investorId}`,                    
+                {},
+                { headers: { Authorization: token } }
+            );
+            return response.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data || 'Failed to reject investor');
+        }           
+})
 const AdminSlice = createSlice({
     name: "admin",
     initialState: {
@@ -121,7 +160,7 @@ const AdminSlice = createSlice({
     },
     reducers: {},
     extraReducers: (builder) => {
-        // Statistics
+      
         builder
             .addCase(fetchAdminStats.pending, (state) => {
                 state.statsLoading = true;
@@ -134,9 +173,14 @@ const AdminSlice = createSlice({
             .addCase(fetchAdminStats.rejected, (state, action) => {
                 state.statsLoading = false;
                 state.statsError = action.payload;
-            });
+            })
+            .addCase(deleteUser.fulfilled,(state,action)=>{
+            state.users=state.users.filter(ele=>{
+                return ele._id!=action.payload
+            })
+        })
 
-        // Users
+       
         builder
             .addCase(fetchAllUsers.pending, (state) => {
                 state.usersLoading = true;
@@ -151,7 +195,7 @@ const AdminSlice = createSlice({
                 state.usersError = action.payload;
             });
 
-        // Entrepreneurs
+
         builder
             .addCase(fetchAllEntrepreneurs.pending, (state) => {
                 state.entrepreneursLoading = true;
@@ -166,7 +210,7 @@ const AdminSlice = createSlice({
                 state.entrepreneursError = action.payload;
             });
 
-        // Investors
+     
         builder
             .addCase(fetchAllInvestors.pending, (state) => {
                 state.investorsLoading = true;
@@ -179,9 +223,21 @@ const AdminSlice = createSlice({
             .addCase(fetchAllInvestors.rejected, (state, action) => {
                 state.investorsLoading = false;
                 state.investorsError = action.payload;
+            })
+            .addCase(ApproveInvestor.fulfilled, (state, action) => {
+                const index = state.investors.findIndex(inv => inv._id === action.payload._id);
+                if (index !== -1) {
+                    state.investors[index] = action.payload;
+                }
+            })
+            .addCase(RejectInvestor.fulfilled, (state, action) => {
+                const index = state.investors.findIndex(inv => inv._id === action.payload._id);
+                if (index !== -1) {
+                    state.investors[index] = action.payload;
+                }
             });
 
-        // Pitches
+      
         builder
             .addCase(fetchAllPitches.pending, (state) => {
                 state.pitchesLoading = true;
@@ -196,7 +252,7 @@ const AdminSlice = createSlice({
                 state.pitchesError = action.payload;
             });
 
-        // Pending Verifications
+      
         builder
             .addCase(fetchPendingVerifications.pending, (state) => {
                 state.pendingVerificationsLoading = true;
@@ -214,3 +270,4 @@ const AdminSlice = createSlice({
 });
 
 export default AdminSlice.reducer;
+
