@@ -1,0 +1,234 @@
+.subscription-page {
+  min-height: 100vh;
+  background: #f9fafb;
+  padding: 40px 20px;
+}
+
+.subscription-container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Header */
+.subscription-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.subscription-header h1 {
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.subscription-header p {
+  color: #6b7280;
+}
+
+/* Alerts */
+.alert {
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.error-alert {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.success-alert {
+  background: #dcfce7;
+  color: #166534;
+}
+
+/* Tabs */
+.subscription-tabs {
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 40px;
+}
+
+.tab {
+  padding: 12px 20px;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.tab.active {
+  color: #2563eb;
+  border-bottom: 3px solid #2563eb;
+}
+
+/* Plans */
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.plan-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  transition: 0.3s;
+}
+
+.plan-card:hover {
+  transform: translateY(-5px);
+}
+
+.plan-price {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 15px 0;
+}
+
+.plan-price span {
+  font-size: 16px;
+  color: #6b7280;
+}
+
+.plan-card ul {
+  margin-bottom: 20px;
+}
+
+.plan-card li {
+  margin-bottom: 8px;
+}
+
+/* Checkout */
+.checkout-card {
+  max-width: 600px;
+  margin: auto;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+}
+
+.summary-box {
+  background: #f3f4f6;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.summary-box div {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.summary-box .total {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* Buttons */
+.primary-btn {
+  background: #2563eb;
+  color: black;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.primary-btn:hover {
+  background: #1d4ed8;
+}
+
+.secondary-btn {
+  background: #e5e7eb;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.checkout-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+/* History */
+.history-section h2 {
+  margin-bottom: 20px;
+}
+
+.history-table {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+.history-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history-table th,
+.history-table td {
+  padding: 12px;
+  text-align: left;
+}
+
+.history-table th {
+  background: #f3f4f6;
+}
+
+.history-table tr:hover {
+  background: #f9fafb;
+}
+
+.status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status.completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status.pending {
+  background: #fef9c3;
+  color: #92400e;
+}
+
+.status.failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.empty-history {
+  text-align: center;
+  padding: 40px;
+}

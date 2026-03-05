@@ -1,0 +1,9 @@
+/* Account.jsx Styles */
+
+.account-loading,
+.account-error {
+  text-align: center;
+  padding-top: 80px;
+  padding-bottom: 80px;
+  color: #6b7280;
+}

@@ -1,0 +1,209 @@
+/* Page background */
+.register-page {
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #f8fafc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+}
+
+/* Card container */
+.register-card {
+  background: white;
+  border-radius: 1.75rem;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.register-card h2 {
+  font-size: 2.25rem;
+  font-weight: 900;
+  color: var(--gray-800);
+  margin-bottom: 0.5rem;
+  color: #1e293b;
+}
+
+.subheading {
+  font-size: 1rem;
+  color: #64748b;
+  margin-bottom: 1.75rem;
+  font-weight: 500;
+}
+
+/* Form fields */
+.form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  color: #334155;
+  margin-bottom: 0.35rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 1rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+  border-color: #4f46e5;
+}
+
+/* Role group container */
+.role-group {
+  background: #f1f5f9;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.role-group label {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #334155;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* Radio list */
+.role-options {
+  display: flex;
+  gap: 1.75rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+/* Custom radio styling */
+.role-options input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #64748b;
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+/* Checked state: inner dot */
+.role-options input[type="radio"]:checked {
+  border-color: #4f46e5;
+  background-color: #4f46e5;
+}
+
+.role-options input[type="radio"]:checked::before {
+  content: "";
+  position: absolute;
+  top: 0.3rem;
+  left: 0.3rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: white;
+  border-radius: 50%;
+}
+
+/* Hover */
+.role-options input[type="radio"]:hover {
+  border-color: #4338ca;
+}
+
+/* Remove focus outline */
+.role-options input[type="radio"]:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Role text label */
+.role-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: bold;
+  color: #334155;
+}
+
+/* Error text */
+.error {
+  color: #e02424;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+/* Submit button */
+.btn-submit {
+  width: 100%;
+  padding: 0.95rem;
+  background-color: #4f46e5;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 1rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  margin-top: 0.5rem;
+}
+
+.btn-submit:hover {
+  background-color: #4338ca;
+  transform: translateY(-2px);
+}
+
+/* Login text */
+.login-text {
+  margin-top: 1.25rem;
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+.login-text .link {
+  color: #4f46e5;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.server-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-size: 13px;
+}
+
+.input-error {
+  border-color: #ef4444 !important;
+}
+
+.error {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.btn-submit:disabled {
+  background: #a5b4fc;
+  cursor: not-allowed;
+}

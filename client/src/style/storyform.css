@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+:root {
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --text-dark: #1e293b;
+  --text-light: #64748b;
+  --bg-light: #f8fafc;
+  --white: #ffffff;
+  --shadow-subtle: 0 4px 6px -1px rgb(0 0 0 / 0.05),
+    0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.08);
+}
+
+/* make sure the app always fills screen */
+html,
+body,
+#root {
+   height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* BACKGROUND FULL SCREEN */
+.story-form-page-bg {
+  position: fixed;
+  inset: 0;
+  background-color: var(--bg-light);
+  z-index: -1;
+}
+
+/* CENTERING CONTAINER */
+.story-form-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+/* FORM CARD */
+.story-form-container {
+  background-color: var(--white);
+  width: 100%;
+  max-width: 600px;
+  padding: 3rem 2.5rem;
+  border-radius: 1rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid #e2e8f0;
+}
+
+.story-form-container h1 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--text-dark);
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.story-form-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.story-form-container input,
+.story-form-container textarea {
+  padding: 0.85rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  color: var(--text-dark);
+  outline: none;
+  transition: border 0.2s;
+}
+
+.story-form-container textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.btn-submit {
+  background-color: var(--primary);
+  color: var(--white);
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn-submit:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+.error-text {
+  text-align: center;
+  color: #e02424;
+}
+
+@media (max-width: 768px) {
+  .story-form-container {
+    padding: 1.75rem 1.5rem;
+  }
+}

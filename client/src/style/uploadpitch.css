@@ -1,0 +1,193 @@
+.upload-page {
+  min-height: 100vh;
+  background: #f9fafb;
+  padding: 60px 20px;
+}
+
+.upload-container {
+  max-width: 750px;
+  margin: auto;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* Header */
+.upload-header {
+  background: linear-gradient(to right, #1e3a8a, #312e81);
+  padding: 50px;
+  color: white;
+}
+
+.upload-header h1 {
+  font-size: 36px;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+.upload-header p {
+  color: #c7d2fe;
+}
+
+/* Body */
+.upload-body {
+  padding: 40px;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Form Group */
+.form-group label {
+  font-weight: 700;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  color: #374151;
+}
+
+.form-group label span {
+  color: red;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  transition: 0.3s;
+}
+
+.input-field:focus {
+  border-color: #4f46e5;
+  outline: none;
+}
+
+.textarea {
+  resize: none;
+}
+
+.input-error {
+  border-color: red;
+}
+
+.error-text {
+  font-size: 13px;
+  color: red;
+  margin-top: 5px;
+}
+
+/* Upload Box */
+.video-upload-box {
+  border: 2px dashed #d1d5db;
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  background: #f3f4f6;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.video-upload-box:hover {
+  border-color: #4f46e5;
+}
+
+.video-upload-box.uploading {
+  border-color: #facc15;
+  background: #fef9c3;
+}
+
+.video-upload-box.uploaded {
+  border-color: #22c55e;
+  background: #dcfce7;
+}
+
+.hidden-input {
+  display: none;
+}
+
+.upload-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+/* Preview */
+.preview-section p {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.video-preview {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  max-height: 300px;
+}
+
+/* Success & Error */
+.success-box {
+  background: #dcfce7;
+  color: #166534;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.error-box {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+/* Buttons */
+.submit-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 800;
+  background: #4f46e5;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.submit-btn:hover {
+  background: #4338ca;
+  transform: scale(0.98);
+}
+
+.submit-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+.cancel-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.cancel-btn:hover {
+  background: #f3f4f6;
+}

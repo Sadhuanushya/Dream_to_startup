@@ -1,0 +1,208 @@
+/* ------------------------------------------ */
+/* VIDEO STYLES */
+/* ------------------------------------------ */
+
+/* Normal card video: centered & responsive */
+.pitch-video-small {
+  width: 80%;
+  max-width: 780px;
+  margin: 10px auto;
+  display: block;
+  cursor: pointer;
+  border-radius: 6px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Expanded inline video: centered & larger */
+.pitch-video-expanded {
+  width: 90%;
+  max-width: 600px;
+  margin: 20px auto;
+  display: block;
+  border-radius: 8px;
+  box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+/* Placeholder when no video */
+.pitch-video-placeholder {
+  width: 80%;
+  max-width: 280px;
+  margin: 10px auto;
+  text-align: center;
+  font-size: 14px;
+  color: #777;
+}
+
+/* ------------------------------------------ */
+/* CARD LAYOUT */
+/* ------------------------------------------ */
+
+.pitch-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 14px;
+  margin: 12px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08);
+  transition: 0.2s ease;
+}
+
+.pitch-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Grid container */
+.pitch-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ------------------------------------------ */
+/* TEXT STYLES */
+/* ------------------------------------------ */
+
+.pitch-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  text-align:left;
+  margin-left: 58px;
+  margin-bottom: 6px;
+  color: #111;
+}
+.pitch-card-title:hover {
+  color: #2563eb; /* blue */
+  cursor: pointer;
+}
+
+/* When the title is clicked or focused */
+.pitch-card-title:active,
+.pitch-card-title:focus {
+  color: #1e40af; /* darker blue */
+}
+.pitch-card-startup {
+  font-size: 14px;
+  font-weight: 600;
+  text-align:left;
+  margin-left: 58px;
+  margin-bottom: 6px;
+  color: #2563eb;
+}
+
+.pitch-card-summary {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+  text-align: center;
+  margin: 8px 0;
+}
+
+.summary-more {
+  color: #2563eb;
+  cursor: pointer;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+/* ------------------------------------------ */
+/* BUTTON STYLES */
+/* ------------------------------------------ */
+
+.pitch-card-buttons {
+  text-align: center;
+  margin-top: 8px;
+ 
+}
+
+.pitch-card-btn {
+  font-size: 14px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.message-btn{
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  border: none;
+  background: #2563eb;
+  color: white;
+   background: #1d4ed8;
+
+
+}
+.pitch-card-btn-ai {
+  background-color: #2563eb;
+  color: #fff;
+  transition: 0.2s ease;
+   margin-right: 10px;
+}
+
+.pitch-card-btn-ai:hover {
+  background-color: #1e40af;
+}
+
+.pitch-card-btn-delete {
+  font-size: 14px;
+  background-color: #dc2626;
+  color: #fff;
+  transition: 0.2s ease;
+}
+
+.pitch-card-btn-delete:hover {
+  background-color: #b91c1c;
+}
+
+/* ------------------------------------------ */
+/* HEADER STYLES */
+/* ------------------------------------------ */
+
+.pitch-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.pitch-header-title h1 {
+  font-size: 50px;
+  font-weight: 700;
+  margin: 6px 0;
+}
+
+.pitch-header-title p {
+  font-size: 16px;
+   color: #2563eb;
+}
+
+.pitch-header-actions {
+  display: flex;
+  justify-content:right;
+  align-items: right;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.pitch-count-badge {
+  font-size: 20px;
+  font-weight: bold;
+  color: #444;
+}
+
+.pitch-upload-btn {
+  font-size: 14px;
+  padding: 8px 16px;
+  background: #22c55e; /* green */
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.pitch-upload-btn:hover {
+  background: #16a34a;
+}

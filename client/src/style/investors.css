@@ -1,0 +1,216 @@
+/* Page Layout */
+.investors-page {
+  min-height: 100vh;
+  background: #f9fafb;
+  padding: 24px;
+  font-family: sans-serif;
+  color: #0f172a;
+}
+
+@media (min-width: 768px) {
+  .investors-page {
+    padding: 48px;
+  }
+}
+
+.investors-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Header */
+.investors-header {
+  margin-bottom: 40px;
+}
+
+.investors-header h1 {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.investors-header p {
+  font-size: 18px;
+  color: #64748b;
+}
+
+/* Grid */
+.investors-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* Card */
+.investor-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: 0.3s;
+}
+
+.investor-card:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+.investor-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .investor-card-content {
+    flex-direction: row;
+  }
+}
+
+/* Image */
+.investor-image-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.investor-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f1f5f9;
+}
+
+@media (min-width: 768px) {
+  .investor-image {
+    width: 96px;
+    height: 96px;
+  }
+}
+
+.verified-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: white;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+/* Info */
+.investor-info {
+  flex-grow: 1;
+}
+
+.investor-name {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.investor-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.investor-type {
+  font-weight: 600;
+  color: #2563eb;
+  background: #eff6ff;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.investor-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #64748b;
+}
+
+.investor-bio {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+/* Actions */
+.investor-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+@media (min-width: 768px) {
+  .investor-actions {
+    flex-direction: column;
+    margin-top: 0;
+    min-width: 140px;
+  }
+}
+
+/* Buttons */
+button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  border: none;
+}
+
+/* Primary */
+.btn-primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+/* Dark */
+.btn-dark {
+  background: #000000;
+  color: white;
+}
+
+.btn-dark:hover {
+  background: #1f2937;
+}
+
+/* Disabled */
+.btn-disabled {
+  background: #9ca3af;
+  color: #e5e7eb;
+  cursor: not-allowed;
+}
+
+/* Outline */
+.btn-outline {
+  background: white;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+.btn-outline:hover {
+  background: #f9fafb;
+}
+
+/* Danger */
+.btn-danger {
+  background: white;
+  border: 1px solid #e5e7eb;
+  color: #dc2626;
+}
+
+.btn-danger:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
