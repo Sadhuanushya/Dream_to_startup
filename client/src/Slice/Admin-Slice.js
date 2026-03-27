@@ -16,6 +16,7 @@ export const fetchAdminStats = createAsyncThunk(
     }
 );
 
+
 export const fetchAllUsers = createAsyncThunk(
     "admin/fetchAllUsers",
     async (_, { rejectWithValue }) => {

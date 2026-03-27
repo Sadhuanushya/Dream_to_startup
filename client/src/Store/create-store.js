@@ -7,6 +7,7 @@ import MessageReducer from "../Slice/Message-Slice"
 import PaymentReducer from "../Slice/Payment-Slice"
 import AdminReducer from "../Slice/Admin-Slice"
 import NotificationReducer from "../Slice/Notification-Slice"
+import StoryReducer from "../Slice/Story-Slice"
 
 const createStore=()=>{
     return configureStore({
@@ -18,7 +19,8 @@ const createStore=()=>{
             Message:MessageReducer,
             payment:PaymentReducer,
             admin:AdminReducer,
-            notifications:NotificationReducer
+            notifications:NotificationReducer,
+            Stories:StoryReducer
         }
     })
 }

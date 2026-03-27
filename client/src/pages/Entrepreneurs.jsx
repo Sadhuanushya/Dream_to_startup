@@ -77,7 +77,6 @@ export default function Entrepreneurs() {
 
                 <div className="entrepreneur-card-content">
 
-                  {/* LEFT IMAGE */}
                   <div className="entrepreneur-image-wrapper">
                     <img
                       src={ele.profilePicture?.DocumentUrl || placeholderImg}
@@ -91,7 +90,6 @@ export default function Entrepreneurs() {
                     )}
                   </div>
 
-                  {/* MIDDLE CONTENT */}
                   <div className="entrepreneur-info">
                     <h2 className="entrepreneur-name">{ele.fullname}</h2>
 
@@ -114,7 +112,6 @@ export default function Entrepreneurs() {
                     </p> 
                   </div>
 
-                  {/* RIGHT ACTIONS */}
                   <div className="entrepreneur-actions">
                     <button
                       className="btn-primary"
