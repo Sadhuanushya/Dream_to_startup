@@ -387,25 +387,25 @@ export default function InvestorAccount() {
       </div>
 
       {submitError && <p className="error-text">{submitError}</p>}
-  {localStorage.getItem('userId')===InvestorProfile?.userId?._id && (
-      <div style={{ textAlign: "right", marginTop: "1rem" }}>
-        
-        {isEditing ? (
-          <button onClick={handleSave} className="save-btn">
-            {newAccount ? "Create Account" : "Save Changes"}
-          </button>
-        ) : (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="edit-toggle-btn"
-          >
-            Edit Profile
-          </button>
-        )}
+{(newAccount || localStorage.getItem("userId") === InvestorProfile?.userId?._id) && (
+  <div style={{ textAlign: "right", marginTop: "1rem" }}>
+    {isEditing ? (
+      <button onClick={handleSave} className="save-btn">
+        {newAccount ? "Create Account" : "Save Changes"}
+      </button>
+    ) : (
+      <button
+        onClick={() => setIsEditing(true)}
+        className="edit-toggle-btn"
+      >
+        Edit Profile
+      </button>
+    )}
     <button onClick={handleLogout} className="logout-btn">
-            logout
-          </button> 
-      </div>)}
+      Logout
+    </button>
+  </div>
+)}
     </div>
   );
 }

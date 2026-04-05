@@ -607,25 +607,26 @@ const handleSave = async (e) => {
         </div>
       </div>
 
-    {userId===entrepreneurProfile?.userId && (
-      <div style={{ textAlign: "right", marginTop: "1.5rem" }}>
-        {isEditing ? (
-          <button onClick={handleSave} className="save-btn">
-            {newAccount ? "Create Account" : "Save Changes"}
-          </button>
-        ) : (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="edit-toggle-btn"
-          >
-            Edit Profile
-          </button>
-        )}
-            <button onClick={handleLogout} className="logout-btn">
-            logout
-          </button> 
-      </div>
+{(newAccount || userId === entrepreneurProfile?.userId) && (
+  <div style={{ textAlign: "right", marginTop: "1.5rem" }}>
+    {isEditing ? (
+      <button onClick={handleSave} className="save-btn">
+        {newAccount ? "Create Account" : "Save Changes"}
+      </button>
+    ) : (
+      <button
+        onClick={() => setIsEditing(true)}
+        className="edit-toggle-btn"
+      >
+        Edit Profile
+      </button>
     )}
+    <button onClick={handleLogout} className="logout-btn">
+      logout
+    </button>
+  </div>
+)}
+  
 
     </div>
   );

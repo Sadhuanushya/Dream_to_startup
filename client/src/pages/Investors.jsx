@@ -32,7 +32,7 @@ export default function Investors() {
         dispatch(fetchInvestorsList());
         dispatch(fetchNotifications());
     }, [dispatch]);
-
+const currentUserId = localStorage.getItem("userId");
     useEffect(() => {
         if (notifications) {
             const currentUserId = localStorage.getItem("userId");
@@ -133,16 +133,16 @@ return (
                 {localStorage.getItem('role') !== "admin" && (
                   <>
                     {notificationStatus.some(
-                      n => n.receiverId === ele.userId?._id && n.status === "confirmed"
+                      n => n.receiverId === ele.senderId?._id && n.status === "confirmed"
                     ) ? (
                       <button
                         className="btn-primary"
-                        onClick={() => handleMessage(ele.userId._id, ele.userId.username)}
+                        onClick={() => handleMessage(ele.senderId._id, ele.senderId.username)}
                       >
                         Message
                       </button>
                     ) : notificationStatus.some(
-                      n => n.receiverId === ele.userId?._id && n.status === "pending"
+                      n => n.receiverId === ele.senderId?._id && n.status === "pending"
                     ) ? (
                       <button disabled className="btn-disabled">
                         Pending
@@ -151,7 +151,7 @@ return (
                       <button
                         className="btn-dark"
                         onClick={() =>
-                          handleRequest(ele.userId._id, ele.fullName, ele.email, ele._id)
+                          handleRequest(ele.senderId._id, ele.fullName, ele.email, ele._id)
                         }
                       >
                         Request
@@ -162,7 +162,7 @@ return (
 
                 <button
                   className="btn-outline"
-                  onClick={() => handleViewProfile(ele.userId._id)}
+                  onClick={() => handleViewProfile(ele.senderId._id)}
                 >
                   View Profile
                 </button>
